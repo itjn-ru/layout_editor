@@ -7,7 +7,8 @@ import 'package:layout_editor/page.dart';
 import 'package:layout_editor/root.dart';
 
 class ComponentTableMenu extends ComponentAndSourceMenu {
-  ComponentTableMenu(super.layoutModel, super.target, {super.onChanged, super.onDeleted});
+  ComponentTableMenu(super.layoutModel, super.target,
+      {super.onChanged, super.onDeleted});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item?)? onChanged) {
