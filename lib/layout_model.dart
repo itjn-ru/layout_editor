@@ -254,7 +254,6 @@ class LayoutModel {
 
   addItem(Item parent, Item item) {
 
-
     var component = getComponentByItem(parent);
 
 
