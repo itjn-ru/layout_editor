@@ -11,8 +11,6 @@ import 'menu.dart';
 class Items extends StatefulWidget {
 //final Item _item;
 
-
-
   void Function(Item item)? onItemChanged;
 
   Items(/*this._item,*/ {this.onItemChanged, super.key});
@@ -188,23 +186,18 @@ class ItemWidgetState extends State<ItemWidget> {
               size: 18,
             ),
           ),
-
           onTapDown: (details) {
-
-
             var layoutModel = context.read<LayoutModel>();
 
             var menu = ComponentAndSourceMenu.create(layoutModel, widget._item);
 
-            var menuItems = menu.getComponentMenu((p0) {
-
-            },);
+            var menuItems = menu.getComponentMenu(
+              (p0) {},
+            );
 
             if (menuItems.isEmpty) {
               return;
             }
-
-
 
             final offset = details.globalPosition;
 
@@ -218,11 +211,7 @@ class ItemWidgetState extends State<ItemWidget> {
                 ),
                 items: menuItems);
           },
-
-
-
         ),
-
       ];
     } else {
       children = [
@@ -258,7 +247,6 @@ class ItemWidgetState extends State<ItemWidget> {
     );*/
   }
 }
-
 
 /*
 class GridPositionPage extends StatefulWidget {
