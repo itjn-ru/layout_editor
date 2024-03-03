@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:layout_editor/component.dart';
 import 'package:layout_editor/component_group.dart';
 import 'package:layout_editor/component_table_menu.dart';
+import 'package:layout_editor/component_text.dart';
 import 'package:layout_editor/item.dart';
 import 'package:layout_editor/layout_model.dart';
 import 'package:layout_editor/page.dart';
@@ -17,6 +18,7 @@ import 'component_group_menu.dart';
 import 'component_page_menu.dart';
 import 'component_root_menu.dart';
 import 'component_table.dart';
+import 'component_text_menu.dart';
 
 class FAB extends StatelessWidget {
   Function(Item?)? onChanged;
@@ -92,6 +94,9 @@ class ComponentAndSourceMenu {
         case ComponentTable:
           return ComponentTableMenu(layoutModel, target,
               onChanged: onChanged, onDeleted: onDeleted);
+        case ComponentText:
+          return ComponentTextMenu(layoutModel, target,
+              onChanged: onChanged);
 
         default:
           return ComponentAndSourceMenu(layoutModel, target, onChanged: onChanged);
