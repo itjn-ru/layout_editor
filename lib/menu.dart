@@ -5,13 +5,20 @@ import 'package:layout_editor/component.dart';
 import 'package:layout_editor/component_group.dart';
 import 'package:layout_editor/component_table_menu.dart';
 import 'package:layout_editor/component_text.dart';
+import 'package:layout_editor/form_checkbox.dart';
+import 'package:layout_editor/form_checkbox_menu.dart';
+import 'package:layout_editor/form_hidden_field.dart';
+import 'package:layout_editor/form_hidden_field_menu.dart';
 import 'package:layout_editor/item.dart';
 import 'package:layout_editor/layout_model.dart';
 import 'package:layout_editor/page.dart';
 import 'package:layout_editor/root.dart';
+import 'package:layout_editor/source.dart';
 import 'package:layout_editor/source_page_menu.dart';
 import 'package:layout_editor/source_table.dart';
 import 'package:layout_editor/source_table_menu.dart';
+import 'package:layout_editor/source_variable.dart';
+import 'package:layout_editor/source_variable_menu.dart';
 import 'package:provider/provider.dart';
 
 import 'component_group_menu.dart';
@@ -19,6 +26,8 @@ import 'component_page_menu.dart';
 import 'component_root_menu.dart';
 import 'component_table.dart';
 import 'component_text_menu.dart';
+import 'form_text_field.dart';
+import 'form_text_field_menu.dart';
 
 class FAB extends StatelessWidget {
   Function(Item?)? onChanged;
@@ -89,7 +98,7 @@ class ComponentAndSourceMenu {
       return ComponentGroupMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is SourcePage) {
       return SourcePageMenu(layoutModel, target, onChanged: onChanged);
-    } else if (target is LayoutComponent) {
+    } else if (target is LayoutComponent || target is LayoutSource) {
       switch (target.runtimeType) {
         case ComponentTable:
           return ComponentTableMenu(layoutModel, target,
@@ -97,7 +106,18 @@ class ComponentAndSourceMenu {
         case ComponentText:
           return ComponentTextMenu(layoutModel, target,
               onChanged: onChanged);
-
+        case FormCheckbox:
+          return FormCheckboxMenu(layoutModel, target,
+              onChanged: onChanged);
+        case FormHiddenField:
+          return FormHiddenFieldMenu(layoutModel, target,
+              onChanged: onChanged);
+        case FormTextField:
+          return FormTextFieldMenu(layoutModel, target,
+              onChanged: onChanged);
+        case SourceVariable:
+          return SourceVariableMenu(layoutModel, target,
+              onChanged: onChanged);
         default:
           return ComponentAndSourceMenu(layoutModel, target, onChanged: onChanged);
       }
