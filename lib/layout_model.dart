@@ -353,15 +353,17 @@ class LayoutModel {
   deleteItem(Item item) {
     var component = getComponentByItem(item);
 
+    var page = getPageByItem(item);
+
     if (item is ComponentAndSourcePage) {
       root.items.remove(item);
       curItem = root;
     } else if (item is LayoutComponentAndSource) {
-      if (curPage.items.contains(item)) {
-        curPage.items.remove(item);
-        _curItem = curPage;
+      if (page!.items.contains(item)) {
+        page.items.remove(item);
+        _curItem = page;
       } else {
-        var groups = curPage.items.whereType<ComponentGroup>();
+        var groups = page.items.whereType<ComponentGroup>();
 
         for (var group in groups) {
           if (group.items.contains(item)) {
