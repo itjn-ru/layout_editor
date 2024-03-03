@@ -19,10 +19,8 @@ class PropertiesState extends State<Properties> {
   Widget build(BuildContext context) {
     var keys = widget._properties.keys;
 
-    return SizedBox(
-      width: 200,
-      height: 300,
-      child: Table(
+    return Container(
+           child: Table(
         columnWidths: const {0: FixedColumnWidth(50), 1: FixedColumnWidth(100)},
         children: List.generate(
           keys.length,
