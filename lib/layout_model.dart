@@ -15,6 +15,7 @@ import 'package:layout_editor/source_table.dart';
 import 'package:layout_editor/source_variable.dart';
 
 import 'component_and_source.dart';
+import 'form_hidden_field.dart';
 import 'form_text_field.dart';
 
 class LayoutModel {
@@ -29,36 +30,39 @@ class LayoutModel {
     _curItem = value;
 
     if (_curItem is Root) {
-      curComponent = null;
-    } else if (_curItem is ComponentPage) {
-      curPage = _curItem as ComponentPage;
-      curComponent = null;
-    } else if (_curItem is SourcePage) {
-      curPage = _curItem as SourcePage;
-      curComponent = null;
+    } else if (_curItem is ComponentAndSourcePage) {
+      curPage = _curItem as ComponentAndSourcePage;
     } else if (_curItem is LayoutComponentAndSource) {
-      curComponent = _curItem as LayoutComponentAndSource;
       curPage = _itemsOnPage[_curItem] as ComponentAndSourcePage;
     } else {
-      curComponent = _itemsOnComponent[_curItem];
-      curPage = _itemsOnPage[curComponent] as ComponentAndSourcePage;
+      curPage = _itemsOnPage[_curItem] as ComponentAndSourcePage;
     }
   }
 
-  LayoutComponentAndSource? curComponent;
+  //LayoutComponentAndSource? curComponent;
 
-  Map<Item, Item> _itemsOnPage = {};
-  Map<Item, LayoutComponentAndSource> _itemsOnComponent = {};
+  final Map<Item, ComponentAndSourcePage> _itemsOnPage = {};
+  final Map<Item, LayoutComponentAndSource> _itemsOnComponent = {};
 
+  LayoutComponentAndSource? getComponentByItem(Item item) {
+    if (item is LayoutComponentAndSource) {
+      return item;
+    }
 
-  getComponentByItem(Item item) {
-    _itemsOnComponent[item];
+    return _itemsOnComponent[item];
   }
 
+  ComponentAndSourcePage? getPageByItem(Item item) {
+    if (item is ComponentAndSourcePage) {
+      return item;
+    }
+
+    return _itemsOnPage[item];
+  }
 
   LayoutModel() {
     root = Root("макет");
-    _curItem = root;
+    curItem = root;
     curPage = ComponentPage("страница");
     root.items.add(curPage);
     root.items.add(SourcePage("страница данных"));
@@ -68,10 +72,8 @@ class LayoutModel {
     root = Root(map['properties']['name']);
     root.properties = _propertiesFromMap(map['properties']);
     root.items = _itemsFromMap(root, map['items']);
-    curPage =
-        root.items.firstWhere((element) => element is ComponentAndSourcePage)
-            as ComponentAndSourcePage;
-    _curItem = curPage;
+    curItem = root;
+    curPage = root.items.whereType<ComponentPage>().first;
   }
 
   Map<String, Property> _propertiesFromMap(Map map) {
@@ -174,7 +176,6 @@ class LayoutModel {
           if (item.properties[key]?.type == itemProperties[key]?.type) {
             itemProperties[key]!.title = item.properties[key]!.title;
             item.properties[key] = itemProperties[key]!;
-
           }
         }
       });
@@ -182,16 +183,17 @@ class LayoutModel {
       item.items = _itemsFromMap(item, element['items']);
 
       if (item is LayoutComponentAndSource) {
-        curComponent = item;
-        for (var curItem in item.items) {
-          _setComponentForItem(curItem);
+        //curComponent = item;
+        if (item is! ComponentGroup) {
+          for (var curItem in item.items) {
+            _setComponentForItem(item, curItem);
+          }
         }
       }
 
       if (item is ComponentAndSourcePage) {
-        curPage = item;
         for (var curItem in item.items) {
-          _setPageForItem(curItem);
+          _setPageForItem(item, curItem);
         }
       }
 
@@ -254,83 +256,104 @@ class LayoutModel {
 
   addItem(Item parent, Item item) {
 
-    var component = getComponentByItem(parent);
-
 
     if (item is ComponentPage) {
       var indexLastPage = root.items
           .lastIndexWhere((element) => element.runtimeType == ComponentPage);
       root.items.insert(++indexLastPage, item);
-      /*} else if (item is SourcePage) {
-      var indexLastPage = root.items
-          .lastIndexWhere((element) => element.runtimeType == SourcePage);
-      root.items.insert(++indexLastPage, item);*/
     } else if (item is LayoutComponentAndSource) {
-      _curItem.items.add(item);
-      curComponent = item is ComponentGroup ? null : item;
+      //_curItem.items.add(item);
 
-      _setPageForItem(item);
-      _setComponentForItem(item);
+      parent.items.add(item);
+
+      //curComponent = item is ComponentGroup ? null : item;
+
+      var page = getPageByItem(parent);
+
+      _setPageForItem(page!, item);
+
+      if (item is! ComponentGroup) {
+        for (var subItem in item.items) {
+          _setComponentForItem(item, subItem);
+        }
+      }
+      //_setComponentForItem(item);
     } else {
-      if (curComponent == null) {
+      /*if (curComponent == null) {
         return;
       }
 
       var indexLastItem = _curItem.items
           .lastIndexWhere((element) => element.runtimeType == item.runtimeType);
-      _curItem.items.insert(++indexLastItem, item);
-      _setComponentForItem(item);
+      _curItem.items.insert(++indexLastItem, item);*/
+
+      var component = getComponentByItem(parent);
+
+      if (component == null) {
+        return;
+      }
+
+      var indexLastItem = parent.items
+          .lastIndexWhere((element) => element.runtimeType == item.runtimeType);
+      parent.items.insert(++indexLastItem, item);
+
+
 
       switch (item.runtimeType) {
         case ComponentTableColumn:
-          curComponent!.items
+          component.items
               .where((element) => element.runtimeType == ComponentTableRowGroup)
               .forEach((rowGroup) {
             for (var row in rowGroup.items) {
               var cell = ComponentTableCell("ячейка");
               row.items.add(cell);
 
-              _setComponentForItem(cell);
+              //_setComponentForItem(component, cell);
             }
           });
 
         case ComponentTableRowGroup:
           var row = ComponentTableRow("строка");
           item.items.add(row);
-          _setComponentForItem(row);
+          //_setComponentForItem(component, row);
 
-          curComponent!.items
+          component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .forEach((rowGroup) {
             var cell = ComponentTableCell("ячейка");
 
             row.items.add(cell);
 
-            _setComponentForItem(cell);
+            //_setComponentForItem(component, cell);
           });
         case ComponentTableRow:
-          curComponent!.items
+          component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .forEach((rowGroup) {
             var cell = ComponentTableCell("ячейка");
 
             item.items.add(cell);
 
-            _setComponentForItem(cell);
+            //_setComponentForItem(component, cell);
           });
 
         default:
       }
+
+      _setComponentForItem(component, item);
+      var page = getPageByItem(parent);
+      _setPageForItem(page!, item);
+
+
     }
   }
 
   deleteItem(Item item) {
+    var component = getComponentByItem(item);
+
     if (item is ComponentAndSourcePage) {
       root.items.remove(item);
-      curPage =
-          root.items.firstWhere((element) => element is ComponentAndSourcePage)
-              as ComponentAndSourcePage;
-      _curItem = root;
+      curItem = root;
     } else if (item is LayoutComponentAndSource) {
       if (curPage.items.contains(item)) {
         curPage.items.remove(item);
@@ -348,24 +371,24 @@ class LayoutModel {
       }
 
       //if (curPage.items.isEmpty) {
-      curComponent = null;
+      //curComponent = null;
       //} else {
       //  curComponent = curPage.items.first as LayoutComponent;
       //}
     } else {
-      if (curComponent == null) {
+      if (component == null) {
         return;
       }
 
       switch (item.runtimeType) {
         case ComponentTableColumn:
-          var indexOfColumn = curComponent!.items
+          var indexOfColumn = component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .toList()
               .indexOf(item);
 
-          curComponent!.items.remove(item);
-          curComponent!.items
+          component.items.remove(item);
+          component.items
               .where((element) => element.runtimeType == ComponentTableRowGroup)
               .forEach((rowGroup) {
             for (var row in rowGroup.items) {
@@ -373,14 +396,14 @@ class LayoutModel {
             }
           });
 
-          _curItem = curComponent!;
+          curItem = component;
 
         case ComponentTableRowGroup:
-          curComponent!.items.remove(item);
-          _curItem = curComponent!;
+          component.items.remove(item);
+          curItem = component;
         case ComponentTableRow:
           ComponentTableRowGroup? foundGroup;
-          curComponent!.items
+          component.items
               .whereType<ComponentTableRowGroup>()
               .forEach((rowGroup) {
             if (rowGroup.items.where((row) => row == item).isNotEmpty) {
@@ -393,34 +416,34 @@ class LayoutModel {
           }
 
           foundGroup!.items.remove(item);
-          _curItem = foundGroup!;
+          curItem = foundGroup!;
 
         case SourceTableColumn:
-          curComponent!.items.remove(item);
-          _curItem = curComponent!;
+          component.items.remove(item);
+          curItem = component;
 
         default:
       }
     }
   }
 
-  _setPageForItem(Item item) {
-    _itemsOnPage[item] = curPage;
+  _setPageForItem(ComponentAndSourcePage page, Item item) {
+    _itemsOnPage[item] = page;
 
-    for (var curItem in item.items) {
-      _setPageForItem(curItem);
+    for (var subItem in item.items) {
+      _setPageForItem(page, subItem);
     }
   }
 
-  _setComponentForItem(Item item) {
-    if (curComponent == null) {
+  _setComponentForItem(LayoutComponentAndSource? component, Item item) {
+    if (component == null) {
       return;
     }
     //_itemsOnComponent[_curComponent!] = _curComponent!;
-    _itemsOnComponent[item] = curComponent!;
+    _itemsOnComponent[item] = component;
 
     for (var curItem in item.items) {
-      _setComponentForItem(curItem);
+      _setComponentForItem(component, curItem);
     }
   }
 }
