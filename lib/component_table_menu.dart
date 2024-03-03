@@ -12,7 +12,7 @@ class ComponentTableMenu extends ComponentAndSourceMenu {
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item?)? onChanged) {
-    if (layoutModel.curItem is LayoutComponent) {
+    if (target is LayoutComponent) {
       return [
         PopupMenuItem(
           child: Text("Добавить колонку"),
@@ -34,28 +34,28 @@ class ComponentTableMenu extends ComponentAndSourceMenu {
         PopupMenuItem(
           child: const Text("Удалить таблицу"),
           onTap: () {
-            layoutModel.deleteItem(layoutModel.curItem);
+            layoutModel.deleteItem(target);
 
 //            layoutModel.curPage.items.remove(layoutModel.curItem);
 //            layoutModel.curItem = layoutModel.curPage;
 
-            onChanged!(layoutModel.curItem);
+            onChanged!(target);
           },
         ),
       ];
     } else {
-      switch (layoutModel.curItem.runtimeType) {
+      switch (target.runtimeType) {
         case ComponentTableColumn:
           return [
             PopupMenuItem(
               child: Text("Удалить колонку"),
-              onTap: layoutModel.curComponent!.items
+              onTap: layoutModel.getComponentByItem(target)!.items
                           .whereType<ComponentTableColumn>()
                           .length >
                       1
                   ? () {
-                      layoutModel.deleteItem(layoutModel.curItem);
-                      onChanged!(layoutModel.curItem);
+                      layoutModel.deleteItem(target);
+                      onChanged!(target);
                     }
                   : null,
             ),
@@ -72,13 +72,13 @@ class ComponentTableMenu extends ComponentAndSourceMenu {
             ),
             PopupMenuItem(
               child: Text("Удалить группу строк"),
-              onTap: layoutModel.curComponent!.items
+              onTap: layoutModel.getComponentByItem(target)!.items
                           .whereType<ComponentTableRowGroup>()
                           .length >
                       1
                   ? () {
-                      layoutModel.deleteItem(layoutModel.curItem);
-                      onChanged!(layoutModel.curItem);
+                      layoutModel.deleteItem(target);
+                      onChanged!(target);
                     }
                   : null,
             ),
@@ -88,11 +88,11 @@ class ComponentTableMenu extends ComponentAndSourceMenu {
 
           //Ищем группу строк, владеющую этой строкой
           ComponentTableRowGroup? foundGroup;
-          layoutModel.curComponent!.items
+          layoutModel.getComponentByItem(target)!.items
               .whereType<ComponentTableRowGroup>()
               .forEach((rowGroup) {
             if (rowGroup.items
-                .where((row) => row == layoutModel.curItem)
+                .where((row) => row == target)
                 .isNotEmpty) {
               foundGroup = rowGroup;
             }
@@ -107,8 +107,8 @@ class ComponentTableMenu extends ComponentAndSourceMenu {
               child: Text("Удалить строку"),
               onTap: foundGroup!.items.whereType<ComponentTableRow>().length > 1
                   ? () {
-                      layoutModel.deleteItem(layoutModel.curItem);
-                      onChanged!(layoutModel.curItem);
+                      layoutModel.deleteItem(target);
+                      onChanged!(target);
                     }
                   : null,
             ),
