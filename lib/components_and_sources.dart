@@ -27,6 +27,7 @@ class ComponentsAndSourcesState extends State<ComponentsAndSources> {
       width: 362,
       height: 720,
       decoration: BoxDecoration(border: Border.all(width: 1)),
+      constraints: BoxConstraints(minWidth: 362, maxWidth: 362, minHeight: 720),
       child: Consumer<LayoutModel>(
         builder: (context, value, child) {
           if (value.curPage is ComponentPage) {
