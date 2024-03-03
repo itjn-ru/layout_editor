@@ -38,18 +38,8 @@ class SourcePageMenu extends ComponentAndSourceMenu {
           onChanged!(item);
 
         },
-      ),
-      PopupMenuItem(
-        child: Text("Удалить страницу"),
-        onTap: pageCount > 1
-            ? () {
-          layoutModel.root.items.remove(layoutModel.curItem);
-          layoutModel.curItem = layoutModel.root;
-
-          //onChanged!(layoutModel.curItem);
-        }
-            : null,
       )
+
     ];
   }
 }
