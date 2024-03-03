@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:layout_editor/component.dart';
 import 'package:layout_editor/components_and_sources.dart';
@@ -212,9 +213,27 @@ class _MyHomePageState extends State<MyHomePage> {
               }),*/
               ]),
             ),
-            Divider(),
-            Expanded(
-              child: Column(
+
+            SizedBox(width: 10,),
+
+            SizedBox(
+              width: 360,
+              child: ListView(
+                children: [
+                  Consumer<LayoutModel>(
+                    builder: (context, value, child) =>
+                        Properties(value.curItem.properties),
+                  ),
+                ],
+                //_curItem == null ? [] : [Properties(_curItem!.properties)],
+              ),
+            ),
+
+            //Divider(),
+            Spacer(),
+            SizedBox(
+              width: 362,
+              child: ListView(
                 children: [
                   Consumer<LayoutModel>(
                     builder: (context, value, child) {
@@ -224,19 +243,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ], // [Components(_itemsOnPage[_curItem]?.items ?? [])],
               ),
             ),
-            Divider(),
-            SizedBox(
-              width: 360,
-              child: ListView(
-                children: [
-                  Consumer<LayoutModel>(
-                    builder: (context, value, child) =>
-                        Properties(value.curItem.properties ?? {}),
-                  ),
-                ],
-                //_curItem == null ? [] : [Properties(_curItem!.properties)],
-              ),
-            ),
+            //Divider(),
+            Spacer(),
+
           ],
         ),
       ),
