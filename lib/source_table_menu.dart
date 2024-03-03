@@ -38,7 +38,7 @@ class SourceTableMenu extends ComponentAndSourceMenu {
           return [
             PopupMenuItem(
               child: Text("Удалить колонку"),
-              onTap: layoutModel.curComponent!.items
+              onTap: layoutModel.getComponentByItem(target)!.items
                           .whereType<SourceTableColumn>()
                           .length >
                       1
