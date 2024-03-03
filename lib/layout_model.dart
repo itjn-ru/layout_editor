@@ -167,6 +167,8 @@ class LayoutModel {
           item = FormTextField("");
         case "checkbox":
           item = FormCheckbox("");
+        case "hiddenField":
+          item = FormHiddenField("");
       }
 
       var itemProperties = _propertiesFromMap(element['properties']);

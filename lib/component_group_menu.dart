@@ -10,6 +10,7 @@ import 'package:layout_editor/root.dart';
 import 'package:layout_editor/source_table.dart';
 
 import 'component_group.dart';
+import 'form_hidden_field.dart';
 
 class ComponentGroupMenu extends ComponentAndSourceMenu {
   ComponentGroupMenu(super.layoutModel, super.target, {super.onChanged});
@@ -49,6 +50,14 @@ class ComponentGroupMenu extends ComponentAndSourceMenu {
         child: Text("Добавить флажок"),
         onTap: () {
           var item = FormCheckbox("флажок");
+          layoutModel.addItem(target, item);
+          onChanged!(item);
+        },
+      ),
+      PopupMenuItem(
+        child: Text("Добавить скрытое поле"),
+        onTap: () {
+          var item = FormHiddenField("скрытое поле");
           layoutModel.addItem(target, item);
           onChanged!(item);
         },

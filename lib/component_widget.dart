@@ -4,12 +4,14 @@ import 'package:layout_editor/component_table.dart';
 import 'package:layout_editor/component_text.dart';
 import 'package:layout_editor/form_checkbox.dart';
 import 'package:layout_editor/form_checkbox_widget.dart';
+import 'package:layout_editor/form_hidden_field.dart';
 import 'package:layout_editor/form_text_field.dart';
 
 import 'component_group.dart';
 import 'component_group_widget.dart';
 import 'component_table_widget.dart';
 import 'component_text_widget.dart';
+import 'form_hidden_field_widget.dart';
 import 'form_text_field_widget.dart';
 
 class ComponentWidget extends StatelessWidget {
@@ -29,6 +31,8 @@ class ComponentWidget extends StatelessWidget {
         return FormTextFieldWidget(component);
       case FormCheckbox:
         return FormCheckboxWidget(component);
+      case FormHiddenField:
+        return FormHiddenFieldWidget(component);
       default:
         return ComponentWidget(component);
     }

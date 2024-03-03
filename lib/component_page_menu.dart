@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout_editor/component_text.dart';
 import 'package:layout_editor/form_checkbox.dart';
+import 'package:layout_editor/form_hidden_field.dart';
 import 'package:layout_editor/form_text_field.dart';
 import 'package:layout_editor/menu.dart';
 import 'package:layout_editor/component_table.dart';
@@ -59,6 +60,14 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
         child: Text("Добавить флажок"),
         onTap: () {
           var item = FormCheckbox("флажок");
+          layoutModel.addItem(target, item);
+          onChanged!(item);
+        },
+      ),
+      PopupMenuItem(
+        child: Text("Добавить скрытое поле"),
+        onTap: () {
+          var item = FormHiddenField("скрытое поле");
           layoutModel.addItem(target, item);
           onChanged!(item);
         },
