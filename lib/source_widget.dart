@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:layout_editor/component.dart';
 import 'package:layout_editor/component_table.dart';
 import 'package:layout_editor/source.dart';
+import 'package:layout_editor/palette_color.dart';
+import 'package:layout_editor/palette_color_widget.dart';
 import 'package:layout_editor/source_table.dart';
 import 'package:layout_editor/source_table_widget.dart';
 import 'package:layout_editor/source_variable.dart';
@@ -20,6 +22,8 @@ class SourceWidget extends StatelessWidget {
         return SourceVariableWidget(source as SourceVariable);
       case SourceTable:
         return SourceTableWidget(source as SourceTable);
+      case PaletteColor:
+        return PaletteColorWidget(source as PaletteColor);
 
       default:
         return SourceWidget(source);

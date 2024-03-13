@@ -66,6 +66,7 @@ class LayoutModel {
     curPage = ComponentPage("страница");
     root.items.add(curPage);
     root.items.add(SourcePage("страница данных"));
+    root.items.add(PalettePage("палитра"));
   }
 
   fromMap(Map map) {

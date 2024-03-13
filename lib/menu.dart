@@ -12,6 +12,9 @@ import 'package:layout_editor/form_hidden_field_menu.dart';
 import 'package:layout_editor/item.dart';
 import 'package:layout_editor/layout_model.dart';
 import 'package:layout_editor/page.dart';
+import 'package:layout_editor/palette_color.dart';
+import 'package:layout_editor/palette_color_menu.dart';
+import 'package:layout_editor/palette_page_menu.dart';
 import 'package:layout_editor/root.dart';
 import 'package:layout_editor/source.dart';
 import 'package:layout_editor/source_page_menu.dart';
@@ -98,6 +101,8 @@ class ComponentAndSourceMenu {
       return ComponentGroupMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is SourcePage) {
       return SourcePageMenu(layoutModel, target, onChanged: onChanged);
+    } else if (target is PalettePage) {
+      return PalettePageMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is LayoutComponent || target is LayoutSource) {
       switch (target.runtimeType) {
         case ComponentTable:
@@ -117,6 +122,9 @@ class ComponentAndSourceMenu {
               onChanged: onChanged);
         case SourceVariable:
           return SourceVariableMenu(layoutModel, target,
+              onChanged: onChanged);
+        case PaletteColor:
+          return PaletteColorMenu(layoutModel, target,
               onChanged: onChanged);
         default:
           return ComponentAndSourceMenu(layoutModel, target, onChanged: onChanged);
