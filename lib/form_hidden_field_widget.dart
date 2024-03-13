@@ -13,7 +13,7 @@ class FormHiddenFieldWidget extends ComponentWidget {
       text = component["text"] ?? "";
     }
 
-    return Text("");
+    return Text(component["id"]);
 
   }
 }
