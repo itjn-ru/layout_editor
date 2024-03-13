@@ -74,7 +74,20 @@ class LayoutModel {
     root.properties = _propertiesFromMap(map['properties']);
     root.items = _itemsFromMap(root, map['items']);
     curItem = root;
+
+    if(root.items.whereType<ComponentPage>().isEmpty) {
+      root.items.add(ComponentPage("страница"));
+    }
     curPage = root.items.whereType<ComponentPage>().first;
+
+    if(root.items.whereType<SourcePage>().isEmpty) {
+      root.items.add(SourcePage("страница данных"));
+    }
+
+    if(root.items.whereType<PalettePage>().isEmpty) {
+      root.items.add(PalettePage("палитра"));
+    }
+
   }
 
   Map<String, Property> _propertiesFromMap(Map map) {
