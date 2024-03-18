@@ -10,6 +10,6 @@ import 'component_and_source.dart';
 class LayoutComponent extends LayoutComponentAndSource {
   LayoutComponent(super.type, super.name) {
     properties["position"] = Property("положение", Offset(0, 0), type: Offset);
-    properties["size"] = Property("размер", Size(0, 0), type: Size);
+    properties["size"] = Property("размер", Size(360, 30), type: Size);
   }
 }
