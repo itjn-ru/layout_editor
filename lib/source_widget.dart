@@ -22,8 +22,8 @@ class SourceWidget extends StatelessWidget {
         return SourceVariableWidget(source as SourceVariable);
       case SourceTable:
         return SourceTableWidget(source as SourceTable);
-      case PaletteColor:
-        return PaletteColorWidget(source as PaletteColor);
+      case StyleElement:
+        return PaletteColorWidget(source as StyleElement);
 
       default:
         return SourceWidget(source);

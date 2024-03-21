@@ -23,7 +23,7 @@ class PalettePageMenu extends ComponentAndSourceMenu {
         child: Text("Добавить цвет"),
         onTap: () {
 
-          var item = PaletteColor("цвет");
+          var item = StyleElement("цвет");
           layoutModel.addItem(target, item);
           onChanged!(item);
 

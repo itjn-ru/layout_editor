@@ -13,6 +13,6 @@ class SourcePage extends ComponentAndSourcePage {
   SourcePage(name) : super("sourcePage", name);
 }
 
-class PalettePage extends ComponentAndSourcePage {
-  PalettePage(name) : super("palettePage", name);
+class StylePage extends ComponentAndSourcePage {
+  StylePage(name) : super("palettePage", name);
 }

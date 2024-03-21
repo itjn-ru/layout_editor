@@ -101,7 +101,7 @@ class ComponentAndSourceMenu {
       return ComponentGroupMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is SourcePage) {
       return SourcePageMenu(layoutModel, target, onChanged: onChanged);
-    } else if (target is PalettePage) {
+    } else if (target is StylePage) {
       return PalettePageMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is LayoutComponent || target is LayoutSource) {
       switch (target.runtimeType) {
@@ -123,7 +123,7 @@ class ComponentAndSourceMenu {
         case SourceVariable:
           return SourceVariableMenu(layoutModel, target,
               onChanged: onChanged);
-        case PaletteColor:
+        case StyleElement:
           return PaletteColorMenu(layoutModel, target,
               onChanged: onChanged);
         default:
