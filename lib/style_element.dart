@@ -4,7 +4,7 @@ import 'package:layout_editor/style.dart';
 
 class StyleElement extends LayoutStyle {
   StyleElement(name) : super("styleElement", name) {
-    properties["color"] = Property("цвет", Colors.blue, type: Color);
+    properties["color"] = Property("цвет", Colors.black, type: Color);
     properties["backgroundColor"] = Property("цвет фона", Colors.blue, type: Color);
     properties["alignment"] =
         Property("выравнивание", Alignment.centerLeft, type: Alignment);
