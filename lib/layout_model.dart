@@ -13,6 +13,7 @@ import 'package:layout_editor/property.dart';
 import 'package:layout_editor/root.dart';
 import 'package:layout_editor/source_table.dart';
 import 'package:layout_editor/source_variable.dart';
+import 'package:layout_editor/style_element.dart';
 
 import 'component_and_source.dart';
 import 'form_hidden_field.dart';
@@ -248,6 +249,8 @@ class LayoutModel {
           item = FormCheckbox("");
         case "hiddenField":
           item = FormHiddenField("");
+        case "styleElement":
+          item = StyleElement("");
       }
 
       var itemProperties = _propertiesFromMap(element['properties']);
