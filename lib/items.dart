@@ -9,20 +9,22 @@ import 'package:provider/provider.dart';
 import 'menu.dart';
 
 class Items extends StatefulWidget {
-//final Item _item;
+final Item _item;
 
   void Function(Item item)? onItemChanged;
 
-  Items(/*this._item,*/ {this.onItemChanged, super.key});
+  Items(this._item, {this.onItemChanged, super.key});
 
   @override
   State<StatefulWidget> createState() {
-    return PropertiesState();
+    return ItemsState();
   }
 }
 
-class PropertiesState extends State<Items> {
+class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
   //late Item curItem;
+
+  late LayoutModel layoutModel;
 
   @override
   void initState() {
@@ -30,16 +32,21 @@ class PropertiesState extends State<Items> {
 
     //var layoutModel = context.read<LayoutModel>();
 
-    //curItem = layoutModel.curItem!;
+    //curItem = widget._item;// layoutModel.curItem!;
   }
 
   @override
   Widget build(BuildContext context) {
-    var layoutModel = context.read<LayoutModel>();
+
+    super.build(context);
+
+    layoutModel = context.read<LayoutModel>();
+
+
 
     return Container(
       decoration: BoxDecoration(border: Border(right: BorderSide(width: 1))),
-      child: _buildItem(layoutModel.root),
+      child: _buildItem(widget._item),
     );
   }
 
@@ -63,13 +70,18 @@ class PropertiesState extends State<Items> {
         //],
         //)
       );
+
+      var items = item is Root
+          ? item.items.whereType<ComponentPage>().toList()
+          : item.items;
+
       children.addAll(List.generate(
-        item.items.length,
+        items.length,
         (index) => Padding(
-            padding: index == item.items.length - 1
+            padding: index == items.length - 1
                 ? EdgeInsets.zero
                 : EdgeInsets.only(bottom: /*item is Root ? 25 :*/ 5),
-            child: _buildItem(item.items[index])),
+            child: _buildItem(items[index])),
       ));
       children.add(Row(
         children: [
@@ -94,14 +106,25 @@ class PropertiesState extends State<Items> {
       //);
     }
 
-    var layoutModel = context.read<LayoutModel>();
+    //var layoutModel = context.read<LayoutModel>();
+    var curPageType = switch(widget._item.runtimeType) {
+      SourcePage => SourcePage,
+      StylePage => StylePage,
+      _ => ComponentPage
+    };
+
+    var curItem = layoutModel.curItemOnPage[curPageType];
+
+
+    //print(layoutModel.curItem);
+    //print(item);
 
     return InkWell(
       child: Container(
         padding: const EdgeInsets.only(left: 5, bottom: 5, right: 0, top: 5),
         /*const EdgeInsets.all(5),*/
         decoration: BoxDecoration(
-          color: item == layoutModel.curItem
+          color: item == curItem
               ? Colors.amber
               : item is ComponentAndSourcePage
                   ? Colors.grey
@@ -115,7 +138,7 @@ class PropertiesState extends State<Items> {
         child: child,
       ),
       onTap: () {
-        if (item == layoutModel.curItem) {
+        if (item == curItem) {
           return;
         }
 
@@ -129,6 +152,9 @@ class PropertiesState extends State<Items> {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class ItemWidget extends StatefulWidget {

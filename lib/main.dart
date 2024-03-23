@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:layout_editor/component.dart';
 import 'package:layout_editor/components_and_sources.dart';
 import 'package:layout_editor/items.dart';
@@ -85,7 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Item _curPage;
 
-  Item? _curItem;
+  /*Item? _curItem;
+  Item? _curPageItem;
+  Item? _curSourceItem;
+  Item? _curStyleItem;*/
 
   LayoutComponent? _curComponent = null;
 
@@ -127,6 +131,13 @@ class _MyHomePageState extends State<MyHomePage> {
     //_items.add(_curPage);
 
     //_curItem = _root;
+
+    var layoutModel = context.read<LayoutModel>();
+
+    /*_curItem = layoutModel.root;
+    _curPageItem = layoutModel.root;
+    _curSourceItem = layoutModel.root.items.whereType<SourcePage>().first;
+    _curStyleItem = layoutModel.root.items.whereType<PalettePage>().first;*/
   }
 
   @override
@@ -142,6 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //final key = GlobalKey<State<BottomNavigationBar>>();
 
+    LayoutModel layoutModel = context.read<LayoutModel>();
+
     return Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
@@ -153,21 +166,17 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
 
         actions: [
-          Consumer<LayoutModel>(
-            builder: (context, value, child) {
-              return ElevatedButton(
+         ElevatedButton(
                   onPressed: () async {
-                    var map = value.toMap();
+                    var map = layoutModel.toMap();
 
                     await saveFile(
-                        body: saveMap(map), filename: value.root['name']);
+                        body: saveMap(map), filename: layoutModel.root['name']);
                   },
-                  child: Text("Сохранить"));
-            },
-          ),
-          Consumer<LayoutModel>(
-            builder: (context, value, child) {
-              return ElevatedButton(
+                  child: Text("Сохранить")),
+
+
+          ElevatedButton(
                   onPressed: () async {
                     FilePickerResult? result =
                         await FilePicker.platform.pickFiles();
@@ -179,15 +188,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     PlatformFile file = result.files.first;
 
                     var map = readMap(utf8.decode(file.bytes as List<int>));
-                    value.fromMap(map);
+                    layoutModel.fromMap(map);
 
                     //value.root = read(utf8.decode(file.bytes as List<int>));
 
-                    setState(() {});
+                    setState(() {
+                      /*_curItem = value.root;
+                      _curPageItem = value.root;
+                      _curSourceItem =
+                          value.root.items.whereType<SourcePage>().first;
+                      _curStyleItem =
+                          value.root.items.whereType<PalettePage>().first;*/
+                    });
                   },
-                  child: Text("Открыть"));
-            },
-          ),
+                  child: Text("Открыть")),
+
         ],
       ),
       body: Center(
@@ -197,35 +212,146 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             SizedBox(
               width: 360,
-              child: ListView(children: [
-                Consumer<LayoutModel>(
-                  builder: (context, value, child) => Items(
-                    /*value.root,*/ onItemChanged: (item) {
-                      setState(() {});
-                    },
-                  ),
-                ),
+              child: DefaultTabController(
+                length: 3,
+                child: Column(
+                  children: [
+                    TabBar(
+                          onTap: (value) {
+                            switch (value) {
+                              case 0:
+                                layoutModel.curPageType = ComponentPage;
+                                //_curItem = _curPageItem;
 
-                /*Items(_root, onItemChanged: (item) {
-                setState(() {
-                  _curItem = item;
-                });
-              }),*/
-              ]),
+                                break;
+                              case 1:
+                                layoutModel.curPageType = SourcePage;
+                                //_curItem = _curSourceItem;
+                                break;
+                              case 2:
+                                layoutModel.curPageType = StylePage;
+                                //_curItem = _curStyleItem;
+                                break;
+                            }
+                            setState(() {});
+                          },
+                          tabs: const [
+                            Tab(
+                              height: 25,
+                              text: "страницы",
+                            ),
+                            Tab(
+                              height: 25,
+                              text: "данные",
+                            ),
+                            Tab(
+                              height: 25,
+                              text: "стили",
+                            )
+                          ]),
+
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          ListView(
+                            children: [
+                              Items(
+                                layoutModel.root,
+                                  onItemChanged: (item) {
+                                    setState(() {
+                                      //_curPageItem = item;
+                                      //_curItem = item;
+                                    });
+                                  },
+                                ),
+
+
+                              /*Items(_root, onItemChanged: (item) {
+                        setState(() {
+                          _curItem = item;
+                        });
+                      }),*/
+                            ],
+                          ),
+                          ListView(
+                            children: [
+                              Items(
+                                layoutModel.root.items
+                                      .whereType<SourcePage>()
+                                      .first,
+                                  onItemChanged: (item) {
+                                    setState(() {
+                                      //_curSourceItem = item;
+                                      //_curItem = item;
+                                    });
+                                  },
+                                ),
+
+
+                              /*Items(_root, onItemChanged: (item) {
+                        setState(() {
+                          _curItem = item;
+                        });
+                      }),*/
+                            ],
+                          ),
+                          ListView(
+                            children: [
+                              Items(
+                                layoutModel.root.items.whereType<StylePage>().first,
+                                  onItemChanged: (item) {
+                                    setState(() {
+                                      //_curStyleItem = item;
+                                      //_curItem = item;
+                                    });
+                                  },
+                                ),
+
+
+                              /*Items(_root, onItemChanged: (item) {
+                        setState(() {
+                          _curItem = item;
+                        });
+                      }),*/
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
 
-            SizedBox(width: 10,),
+            SizedBox(
+              width: 10,
+            ),
 
             SizedBox(
               width: 360,
-              child: ListView(
+              child: Column(
                 children: [
-                  Consumer<LayoutModel>(
-                    builder: (context, value, child) =>
-                        Properties(value.curItem.properties),
+                  const SizedBox(
+                    height: 25,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 5),
+                      child: Text("cвойства"),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+
+                              Properties(layoutModel.curItem.properties),
+
+                      ],
+                      //_curItem == null ? [] : [Properties(_curItem!.properties)],
+                    ),
                   ),
                 ],
-                //_curItem == null ? [] : [Properties(_curItem!.properties)],
               ),
             ),
 
@@ -237,7 +363,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: [
                   Consumer<LayoutModel>(
                     builder: (context, value, child) {
-                      return ComponentsAndSources(value.curPage.items);
+                      var curPage = value.getPageByItem(value.curItem);
+
+                      return ComponentsAndSources(curPage!);
                     },
                   ),
                 ], // [Components(_itemsOnPage[_curItem]?.items ?? [])],
@@ -245,7 +373,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             //Divider(),
             Spacer(),
-
           ],
         ),
       ),

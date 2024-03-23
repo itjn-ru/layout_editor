@@ -10,9 +10,9 @@ import 'package:provider/provider.dart';
 import 'component_widget.dart';
 
 class ComponentsAndSources extends StatefulWidget {
-  final List<Item> _items;
+  final ComponentAndSourcePage _curPage;
 
-  const ComponentsAndSources(this._items, {super.key});
+  const ComponentsAndSources(this._curPage, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -30,18 +30,18 @@ class ComponentsAndSourcesState extends State<ComponentsAndSources> {
       constraints: BoxConstraints(minWidth: 362, maxWidth: 362, minHeight: 720),
       child: Consumer<LayoutModel>(
         builder: (context, value, child) {
-          if (value.curPage is ComponentPage) {
+          if (widget._curPage is ComponentPage) {
             return Stack(
               //   Column(
               children: List.generate(
-                value.curPage.items.length, //widget._items.length,
+                widget._curPage.items.length, //widget._items.length,
                 (index) => Positioned(
-                  left: value.curPage.items[index]["position"].dx,
-                  top: value.curPage.items[index]["position"].dy,
-                  width: value.curPage.items[index]["size"].width,
-                  height: value.curPage.items[index]["size"].height,
+                  left: widget._curPage.items[index]["position"].dx,
+                  top: widget._curPage.items[index]["position"].dy,
+                  width: widget._curPage.items[index]["size"].width,
+                  height: widget._curPage.items[index]["size"].height,
                   child: ComponentWidget.create(
-                      value.curPage.items[index] as LayoutComponent),
+                      widget._curPage.items[index] as LayoutComponent),
                 ), //widget._items[index] as LayoutComponent),
 
                 //Text(widget._items[index].type),
@@ -50,9 +50,9 @@ class ComponentsAndSourcesState extends State<ComponentsAndSources> {
           } else {
             return Column(
               children: List.generate(
-                value.curPage.items.length, //widget._items.length,
+                widget._curPage.items.length, //widget._items.length,
                 (index) => SourceWidget.create(
-                    value.curPage.items[index] as LayoutSource),
+                    widget._curPage.items[index] as LayoutSource),
                 //widget._items[index] as LayoutComponent),
 
                 //Text(widget._items[index].type),

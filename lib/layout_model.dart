@@ -23,12 +23,40 @@ class LayoutModel {
   late ComponentAndSourcePage curPage;
 
   late Item _curItem;
+  late Item _curComponentItem;
+  late Item _curSourceItem;
+  late Item _curStyleItem;
 
-  Item get curItem => _curItem;
+  late Type curPageType;
+
+
+
+  Item get curItem {
+    //return _curItem;
+
+    return curItemOnPage[curPageType]!;
+
+    /*switch (curPage.runtimeType) {
+      case ComponentPage:
+        return _curComponentItem;
+      case SourcePage:
+        return _curSourceItem;
+      case StylePage:
+        return _curStyleItem;
+      default:
+        return _curItem;
+    }*/
+
+
+  }
 
   set curItem(Item value) {
     _curItem = value;
 
+
+    curItemOnPage[curPageType] = value;
+
+    /*
     if (_curItem is Root) {
     } else if (_curItem is ComponentAndSourcePage) {
       curPage = _curItem as ComponentAndSourcePage;
@@ -37,12 +65,25 @@ class LayoutModel {
     } else {
       curPage = _itemsOnPage[_curItem] as ComponentAndSourcePage;
     }
+
+    switch (curPage.runtimeType) {
+      case ComponentPage:
+        _curComponentItem = value;
+        break;
+      case SourcePage:
+        _curSourceItem = value;
+        break;
+      case StylePage:
+        _curStyleItem = value;
+        break;
+    }*/
   }
 
   //LayoutComponentAndSource? curComponent;
 
   final Map<Item, ComponentAndSourcePage> _itemsOnPage = {};
   final Map<Item, LayoutComponentAndSource> _itemsOnComponent = {};
+  final Map<Type, Item> curItemOnPage = {};
 
   LayoutComponentAndSource? getComponentByItem(Item item) {
     if (item is LayoutComponentAndSource) {
@@ -53,6 +94,10 @@ class LayoutModel {
   }
 
   ComponentAndSourcePage? getPageByItem(Item item) {
+    if (item is Root) {
+      return item.items.whereType<ComponentPage>().first;
+    }
+
     if (item is ComponentAndSourcePage) {
       return item;
     }
@@ -62,11 +107,21 @@ class LayoutModel {
 
   LayoutModel() {
     root = Root("макет");
-    curItem = root;
     curPage = ComponentPage("страница");
+    curPageType = ComponentPage;
+    //curItem = root;
+
+    curItemOnPage[ComponentPage] = root;
+
     root.items.add(curPage);
-    root.items.add(SourcePage("страница данных"));
-    root.items.add(PalettePage("палитра"));
+
+    var sourcePage = SourcePage("страница данных");
+    root.items.add(sourcePage);
+    curItemOnPage[SourcePage] = sourcePage;
+
+    var palettePage = StylePage("палитра");
+    root.items.add(palettePage);
+    curItemOnPage[StylePage] = palettePage;
   }
 
   fromMap(Map map) {
@@ -74,20 +129,30 @@ class LayoutModel {
     root.properties = _propertiesFromMap(map['properties']);
     root.items = _itemsFromMap(root, map['items']);
     curItem = root;
+    curItemOnPage[ComponentPage] = root;
 
-    if(root.items.whereType<ComponentPage>().isEmpty) {
+    if (root.items.whereType<ComponentPage>().isEmpty) {
       root.items.add(ComponentPage("страница"));
     }
     curPage = root.items.whereType<ComponentPage>().first;
 
-    if(root.items.whereType<SourcePage>().isEmpty) {
-      root.items.add(SourcePage("страница данных"));
+    if (root.items.whereType<SourcePage>().isEmpty) {
+      var sourcePage = SourcePage("страница данных");
+      root.items.add(sourcePage);
+      curItemOnPage[SourcePage] = sourcePage;
+    } else {
+      var sourcePage = root.items.whereType<SourcePage>().first;
+      curItemOnPage[SourcePage] = sourcePage;
     }
 
-    if(root.items.whereType<PalettePage>().isEmpty) {
-      root.items.add(PalettePage("палитра"));
+    if (root.items.whereType<StylePage>().isEmpty) {
+      var palettePage = StylePage("палитра");
+      root.items.add(palettePage);
+      curItemOnPage[StylePage] = palettePage;
+    } else {
+      var palettePage = root.items.whereType<StylePage>().first;
+      curItemOnPage[StylePage] = palettePage;
     }
-
   }
 
   Map<String, Property> _propertiesFromMap(Map map) {
@@ -271,8 +336,6 @@ class LayoutModel {
   }
 
   addItem(Item parent, Item item) {
-
-
     if (item is ComponentPage) {
       var indexLastPage = root.items
           .lastIndexWhere((element) => element.runtimeType == ComponentPage);
@@ -312,8 +375,6 @@ class LayoutModel {
       var indexLastItem = parent.items
           .lastIndexWhere((element) => element.runtimeType == item.runtimeType);
       parent.items.insert(++indexLastItem, item);
-
-
 
       switch (item.runtimeType) {
         case ComponentTableColumn:
@@ -359,8 +420,6 @@ class LayoutModel {
       _setComponentForItem(component, item);
       var page = getPageByItem(parent);
       _setPageForItem(page!, item);
-
-
     }
   }
 
