@@ -22,10 +22,10 @@ class StyleElementWidget extends StyleWidget {
         //alignment: column["alignment"],
         child: Text(
       cellText,
-      //style: TextStyle(
-      //fontSize: column["fontSize"],
-      //fontWeight: column["fontWeight"],
-      //)
+      style: TextStyle(
+      fontSize: style["fontSize"],
+      fontWeight: style["fontWeight"],
+      )
     ));
 
     /*var columns = source.items.whereType<SourceTableColumn>();

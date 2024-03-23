@@ -8,7 +8,7 @@ class StyleElement extends LayoutStyle {
     properties["backgroundColor"] = Property("цвет фона", Colors.blue, type: Color);
     properties["alignment"] =
         Property("выравнивание", Alignment.centerLeft, type: Alignment);
-    properties["fontSize"] = Property("размер шрифта", 11, type: int);
+    properties["fontSize"] = Property("размер шрифта", 11, type: double);
     properties["fontWeight"] = Property("насыщенность шрифта", FontWeight.normal, type: FontWeight);
   }
 
