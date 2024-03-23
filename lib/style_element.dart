@@ -4,7 +4,7 @@ import 'package:layout_editor/property.dart';
 import 'package:layout_editor/source.dart';
 
 class StyleElement extends LayoutSource {
-  StyleElement(name) : super("paletteColor", name) {
+  StyleElement(name) : super("styleElement", name) {
     properties["color"] = Property("цвет", Colors.blue, type: Color);
   }
 

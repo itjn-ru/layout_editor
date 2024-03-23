@@ -20,10 +20,10 @@ class StylePageMenu extends ComponentAndSourceMenu {
     return [
 
       PopupMenuItem(
-        child: Text("Добавить цвет"),
+        child: Text("Добавить стиль"),
         onTap: () {
 
-          var item = StyleElement("цвет");
+          var item = StyleElement("стиль");
           layoutModel.addItem(target, item);
           onChanged!(item);
 
