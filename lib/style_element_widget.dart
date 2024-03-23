@@ -4,13 +4,14 @@ import 'package:layout_editor/component_widget.dart';
 import 'package:layout_editor/item.dart';
 import 'package:layout_editor/source_table.dart';
 import 'package:layout_editor/source_widget.dart';
+import 'package:layout_editor/style_widget.dart';
 
-class PaletteColorWidget extends SourceWidget {
-  PaletteColorWidget(source) : super(source);
+class StyleElementWidget extends StyleWidget {
+  StyleElementWidget(style) : super(style);
 
   @override
   Widget buildWidget(BuildContext context) {
-    var cellText = source["name"] ?? "";
+    var cellText = style["name"] ?? "";
 
     return Container(
         //height: row.height,

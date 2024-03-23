@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:layout_editor/component.dart';
 import 'package:layout_editor/component_table.dart';
 import 'package:layout_editor/source.dart';
+import 'package:layout_editor/style.dart';
 import 'package:layout_editor/style_element.dart';
 import 'package:layout_editor/style_element_widget.dart';
 import 'package:layout_editor/source_table.dart';
@@ -11,20 +12,18 @@ import 'package:layout_editor/source_variable_widget.dart';
 
 import 'component_table_widget.dart';
 
-class SourceWidget extends StatelessWidget {
-  final LayoutSource source;
+class StyleWidget extends StatelessWidget {
+  final LayoutStyle style;
 
-  SourceWidget(this.source);
+  StyleWidget(this.style);
 
-  factory SourceWidget.create(LayoutSource source) {
+  factory StyleWidget.create(LayoutSource source) {
     switch (source.runtimeType) {
-      case SourceVariable:
-        return SourceVariableWidget(source as SourceVariable);
-      case SourceTable:
-        return SourceTableWidget(source as SourceTable);
+      case StyleElement:
+        return StyleElementWidget(source as StyleElement);
 
       default:
-        return SourceWidget(source);
+        return StyleElementWidget(source);
     }
   }
 
@@ -36,6 +35,7 @@ class SourceWidget extends StatelessWidget {
   }
 
   Widget buildWidget(BuildContext context) {
-    return Text(source.type);
+    return Text(style.type);
   }
+  
 }

@@ -5,8 +5,8 @@ import 'package:layout_editor/item.dart';
 import 'package:layout_editor/page.dart';
 import 'package:layout_editor/root.dart';
 
-class PaletteColorMenu extends ComponentAndSourceMenu {
-  PaletteColorMenu(super.layoutModel, super.target, {super.onChanged});
+class StyleElementMenu extends ComponentAndSourceMenu {
+  StyleElementMenu(super.layoutModel, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
