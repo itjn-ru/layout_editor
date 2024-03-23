@@ -17,13 +17,13 @@ class StyleWidget extends StatelessWidget {
 
   StyleWidget(this.style);
 
-  factory StyleWidget.create(LayoutSource source) {
-    switch (source.runtimeType) {
+  factory StyleWidget.create(LayoutStyle style) {
+    switch (style.runtimeType) {
       case StyleElement:
-        return StyleElementWidget(source as StyleElement);
+        return StyleElementWidget(style as StyleElement);
 
       default:
-        return StyleElementWidget(source);
+        return StyleElementWidget(style);
     }
   }
 
