@@ -5,6 +5,7 @@ import 'package:layout_editor/component_table.dart';
 import 'package:layout_editor/property.dart';
 import 'package:layout_editor/property_alignment_widget.dart';
 import 'package:layout_editor/property_color_widget.dart';
+import 'package:layout_editor/property_font_weight_widget.dart';
 import 'package:layout_editor/property_offset_widget.dart';
 import 'package:layout_editor/property_size_widget.dart';
 import 'package:layout_editor/property_text_style_widget.dart';
@@ -30,6 +31,8 @@ class PropertyWidget extends StatefulWidget {
         return PropertyAlignmentWidget(property);
       case TextStyle:
         return PropertyTextStyleWidget(property);
+      case FontWeight:
+        return PropertyFontWeightWidget(property);
       case Uuid:
         return PropertyUuidWidget(property);
       default:
