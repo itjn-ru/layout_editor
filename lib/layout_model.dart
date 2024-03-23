@@ -120,9 +120,9 @@ class LayoutModel {
     root.items.add(sourcePage);
     curItemOnPage[SourcePage] = sourcePage;
 
-    var palettePage = StylePage("палитра");
-    root.items.add(palettePage);
-    curItemOnPage[StylePage] = palettePage;
+    var stylePage = StylePage("страница стилей");
+    root.items.add(stylePage);
+    curItemOnPage[StylePage] = stylePage;
   }
 
   fromMap(Map map) {
@@ -147,7 +147,7 @@ class LayoutModel {
     }
 
     if (root.items.whereType<StylePage>().isEmpty) {
-      var palettePage = StylePage("палитра");
+      var palettePage = StylePage("страница стилей");
       root.items.add(palettePage);
       curItemOnPage[StylePage] = palettePage;
     } else {
@@ -217,6 +217,8 @@ class LayoutModel {
           item = ComponentPage("");
         case "sourcePage":
           item = SourcePage("");
+        case "stylePage":
+          item = StylePage("");
         case "group":
           item = ComponentGroup("");
         case "table":
