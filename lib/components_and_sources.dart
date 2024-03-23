@@ -5,6 +5,8 @@ import 'package:layout_editor/layout_model.dart';
 import 'package:layout_editor/page.dart';
 import 'package:layout_editor/source.dart';
 import 'package:layout_editor/source_widget.dart';
+import 'package:layout_editor/style.dart';
+import 'package:layout_editor/style_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'component_widget.dart';
@@ -47,12 +49,28 @@ class ComponentsAndSourcesState extends State<ComponentsAndSources> {
                 //Text(widget._items[index].type),
               ),
             );
-          } else {
+          }
+
+          else if (widget._curPage is SourcePage) {
             return Column(
               children: List.generate(
                 widget._curPage.items.length, //widget._items.length,
-                (index) => SourceWidget.create(
+                    (index) => SourceWidget.create(
                     widget._curPage.items[index] as LayoutSource),
+                //widget._items[index] as LayoutComponent),
+
+                //Text(widget._items[index].type),
+              ),
+            );
+          }
+
+
+          else {
+            return Column(
+              children: List.generate(
+                widget._curPage.items.length, //widget._items.length,
+                (index) => StyleWidget.create(
+                    widget._curPage.items[index] as LayoutStyle),
                 //widget._items[index] as LayoutComponent),
 
                 //Text(widget._items[index].type),
