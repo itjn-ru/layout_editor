@@ -12,6 +12,7 @@ import 'package:layout_editor/form_hidden_field_menu.dart';
 import 'package:layout_editor/item.dart';
 import 'package:layout_editor/layout_model.dart';
 import 'package:layout_editor/page.dart';
+import 'package:layout_editor/style.dart';
 import 'package:layout_editor/style_element.dart';
 import 'package:layout_editor/style_element_menu.dart';
 import 'package:layout_editor/style_page_menu.dart';
@@ -103,7 +104,7 @@ class ComponentAndSourceMenu {
       return SourcePageMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is StylePage) {
       return StylePageMenu(layoutModel, target, onChanged: onChanged);
-    } else if (target is LayoutComponent || target is LayoutSource) {
+    } else if (target is LayoutComponent || target is LayoutSource || target is LayoutStyle) {
       switch (target.runtimeType) {
         case ComponentTable:
           return ComponentTableMenu(layoutModel, target,
