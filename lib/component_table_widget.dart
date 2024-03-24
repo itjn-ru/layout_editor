@@ -2,6 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:layout_editor/component_table.dart';
 import 'package:layout_editor/component_widget.dart';
 import 'package:layout_editor/item.dart';
+import 'package:layout_editor/layout_model.dart';
+import 'package:layout_editor/style_element.dart';
+import 'package:provider/provider.dart';
 
 class ComponentTableWidget extends ComponentWidget {
   ComponentTableWidget(component) : super(component);
@@ -19,13 +22,13 @@ class ComponentTableWidget extends ComponentWidget {
       columnWidthIndex++;
     }
 
+    LayoutModel layoutModel = context.read<LayoutModel>();
+
     List<TableRow> tableRows = [];
 
-    var rowGroups =
-        component.items.whereType<ComponentTableRowGroup>();
+    var rowGroups = component.items.whereType<ComponentTableRowGroup>();
 
     for (var rowGroup in rowGroups) {
-
       var rows = rowGroup.items.whereType<ComponentTableRow>();
 
       for (var row in rows) {
@@ -41,18 +44,21 @@ class ComponentTableWidget extends ComponentWidget {
             cellText = cell["text"] ?? "";
           }
 
+          var style = layoutModel.getStyleElementById(cell['style'].id) ??
+              StyleElement("стиль");
+
           tableCells.add(TableCell(
             child: Container(
                 //height: row.height,
                 decoration: BoxDecoration(
                   border: Border.all(),
-                  color: cell["color"],
+                  color: style["backgroundColor"],
                 ),
                 alignment: cell["alignment"],
                 child: Text(cellText,
                     style: TextStyle(
-                      fontSize: cell["fontSize"],
-                      fontWeight: cell["fontWeight"],
+                      fontSize: style["fontSize"],
+                      fontWeight: style["fontWeight"],
                     ))),
           ));
         }
