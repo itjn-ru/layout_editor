@@ -9,6 +9,6 @@ class PropertyUuidWidget extends PropertyWidget {
   Widget buildWidget(BuildContext context, Function onChanged) {
 
 
-    return Text(property.value);
+    return Text(property.value.toString());
   }
 }
