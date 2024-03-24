@@ -13,7 +13,9 @@ import 'package:layout_editor/property.dart';
 import 'package:layout_editor/root.dart';
 import 'package:layout_editor/source_table.dart';
 import 'package:layout_editor/source_variable.dart';
+import 'package:layout_editor/style.dart';
 import 'package:layout_editor/style_element.dart';
+import 'package:uuid_type/uuid_type.dart';
 
 import 'component_and_source.dart';
 import 'form_hidden_field.dart';
@@ -30,8 +32,6 @@ class LayoutModel {
 
   late Type curPageType;
 
-
-
   Item get curItem {
     //return _curItem;
 
@@ -47,13 +47,10 @@ class LayoutModel {
       default:
         return _curItem;
     }*/
-
-
   }
 
   set curItem(Item value) {
     _curItem = value;
-
 
     curItemOnPage[curPageType] = value;
 
@@ -81,6 +78,27 @@ class LayoutModel {
   }
 
   //LayoutComponentAndSource? curComponent;
+
+  List<Style> get styles {
+    var styleList = <Style>[];
+
+    var stylePage = root.items.whereType<StylePage>().first;
+
+    var list = stylePage.items.whereType<StyleElement>();
+
+    for (var style in list) {
+      styleList.add(Style(style['id'], style['name']));
+    }
+    return styleList;
+  }
+
+  StyleElement? getStyleElementById(Uuid id) {
+    var stylePage = root.items.whereType<StylePage>().first;
+
+    var list = stylePage.items.whereType<StyleElement>();
+
+    return list.where((element) => element['id'] == id).firstOrNull;
+  }
 
   final Map<Item, ComponentAndSourcePage> _itemsOnPage = {};
   final Map<Item, LayoutComponentAndSource> _itemsOnComponent = {};
@@ -123,6 +141,13 @@ class LayoutModel {
     var stylePage = StylePage("страница стилей");
     root.items.add(stylePage);
     curItemOnPage[StylePage] = stylePage;
+
+    StyleElement basicElement = StyleElement("базовый стиль");
+    basicElement.properties['id'] =
+        Property("идентификатор", Uuid.nil, type: Uuid);
+    stylePage.items.add(basicElement);
+    //curItemOnPage[StylePage] = basicElement;
+    _setPageForItem(stylePage, basicElement);
   }
 
   fromMap(Map map) {
@@ -147,13 +172,29 @@ class LayoutModel {
     }
 
     if (root.items.whereType<StylePage>().isEmpty) {
-      var palettePage = StylePage("страница стилей");
-      root.items.add(palettePage);
-      curItemOnPage[StylePage] = palettePage;
+      var stylePage = StylePage("страница стилей");
+      root.items.add(stylePage);
+      curItemOnPage[StylePage] = stylePage;
     } else {
-      var palettePage = root.items.whereType<StylePage>().first;
-      curItemOnPage[StylePage] = palettePage;
+      var stylePage = root.items.whereType<StylePage>().first;
+      curItemOnPage[StylePage] = stylePage;
     }
+
+    //добавляем базовый стиль, если отсутствует в файле
+    var stylePage = root.items.whereType<StylePage>().first;
+
+    if (stylePage.items
+        .whereType<StyleElement>()
+        .where((element) => element['id'] == Uuid.nil)
+        .isEmpty) {
+      StyleElement basicElement = StyleElement("базовый стиль");
+      basicElement.properties['id'] =
+          Property("идентификатор", Uuid.nil, type: Uuid);
+      stylePage.items.insert(0, basicElement);
+      //curItemOnPage[StylePage] = basicElement;
+      _setPageForItem(stylePage, basicElement);
+    }
+    //добавляем базовый стиль
   }
 
   Map<String, Property> _propertiesFromMap(Map map) {
@@ -174,8 +215,14 @@ class LayoutModel {
                   Size(double.tryParse(value['width']) ?? 0,
                       double.tryParse(value['height']) ?? 0),
                   type: Size),
+              "id" => Property("идентификатор", Uuid.parse(value), type: Uuid),
               "color" =>
                 Property("цвет", Color(int.tryParse(value) ?? 0), type: Color),
+              "style" => Property(
+                  "стиль",
+                  Style(value['id'] ?? Uuid.nil,
+                      value['name'] ?? "базовый стиль"),
+                  type: Style),
               'textStyle' => Property(
                   "стиль текста",
                   TextStyle(
@@ -314,6 +361,10 @@ class LayoutModel {
             'height': property.value.height.toString()
           },
         Color => property.value.value.toRadixString(16).toUpperCase(),
+        Style => {
+            'id': property.value.id.toString(),
+            'name': property.value.name.toString()
+          },
         TextStyle => {
             'fontSize': property.value.fontSize,
             'fontWeight': property.value.fontWeight.value
