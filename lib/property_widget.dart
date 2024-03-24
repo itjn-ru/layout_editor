@@ -8,9 +8,10 @@ import 'package:layout_editor/property_color_widget.dart';
 import 'package:layout_editor/property_font_weight_widget.dart';
 import 'package:layout_editor/property_offset_widget.dart';
 import 'package:layout_editor/property_size_widget.dart';
-import 'package:layout_editor/property_text_style_widget.dart';
+import 'package:layout_editor/property_style_widget.dart';
 import 'package:layout_editor/property_uuid_widget.dart';
-import 'package:uuid/uuid.dart';
+import 'package:layout_editor/style.dart';
+import 'package:uuid_type/uuid_type.dart';
 
 import 'component_table_widget.dart';
 
@@ -29,8 +30,8 @@ class PropertyWidget extends StatefulWidget {
         return PropertyColorWidget(property);
       case Alignment:
         return PropertyAlignmentWidget(property);
-      case TextStyle:
-        return PropertyTextStyleWidget(property);
+      case Style:
+        return PropertyStyleWidget(property);
       case FontWeight:
         return PropertyFontWeightWidget(property);
       case Uuid:
