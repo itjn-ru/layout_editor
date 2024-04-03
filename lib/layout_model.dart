@@ -220,7 +220,7 @@ class LayoutModel {
                 Property("цвет", Color(int.tryParse(value) ?? 0), type: Color),
               "style" => Property(
                   "стиль",
-                  Style(value['id'] ?? Uuid.nil,
+                  Style(Uuid.tryParse(value['id']) ?? Uuid.nil,
                       value['name'] ?? "базовый стиль"),
                   type: Style),
               'textStyle' => Property(
