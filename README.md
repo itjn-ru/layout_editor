@@ -1,6 +1,6 @@
-## Лицензия
+## License
 
-Этот проект лицензирован в соответствии с [MIT License](LICENSE).
+This project is licensed under the terms of the [MIT License](LICENSE).
 
 
 # layout_editor
