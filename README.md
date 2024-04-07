@@ -1,3 +1,8 @@
+## Лицензия
+
+Этот проект лицензирован в соответствии с [MIT License](LICENSE).
+
+
 # layout_editor
 
 Layout editor.
