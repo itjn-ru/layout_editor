@@ -30,6 +30,8 @@ import 'component_page_menu.dart';
 import 'component_root_menu.dart';
 import 'component_table.dart';
 import 'component_text_menu.dart';
+import 'form_radio.dart';
+import 'form_radio_menu.dart';
 import 'form_text_field.dart';
 import 'form_text_field_menu.dart';
 
@@ -45,7 +47,8 @@ class FAB extends StatelessWidget {
         var keyContext = (key as GlobalKey).currentContext;
         var layoutModel = context.read<LayoutModel>();
 
-        var menu = ComponentAndSourceMenu.create(layoutModel, layoutModel.curItem);
+        var menu =
+            ComponentAndSourceMenu.create(layoutModel, layoutModel.curItem);
 
         var menuItems = menu.getComponentMenu(onChanged);
 
@@ -90,7 +93,8 @@ class ComponentAndSourceMenu {
   void Function(Item?)? onChanged;
   void Function(Item?)? onDeleted;
 
-  ComponentAndSourceMenu(this.layoutModel, this.target, {this.onChanged, this.onDeleted});
+  ComponentAndSourceMenu(this.layoutModel, this.target,
+      {this.onChanged, this.onDeleted});
 
   factory ComponentAndSourceMenu.create(LayoutModel layoutModel, Item target,
       {void Function(Item?)? onChanged, Function(Item?)? onDeleted}) {
@@ -104,41 +108,40 @@ class ComponentAndSourceMenu {
       return SourcePageMenu(layoutModel, target, onChanged: onChanged);
     } else if (target is StylePage) {
       return StylePageMenu(layoutModel, target, onChanged: onChanged);
-    } else if (target is LayoutComponent || target is LayoutSource || target is LayoutStyle) {
+    } else if (target is LayoutComponent ||
+        target is LayoutSource ||
+        target is LayoutStyle) {
       switch (target.runtimeType) {
         case ComponentTable:
           return ComponentTableMenu(layoutModel, target,
               onChanged: onChanged, onDeleted: onDeleted);
         case ComponentText:
-          return ComponentTextMenu(layoutModel, target,
-              onChanged: onChanged);
+          return ComponentTextMenu(layoutModel, target, onChanged: onChanged);
+        case FormRadio:
+          return FormRadioMenu(layoutModel, target, onChanged: onChanged);
         case FormCheckbox:
-          return FormCheckboxMenu(layoutModel, target,
-              onChanged: onChanged);
+          return FormCheckboxMenu(layoutModel, target, onChanged: onChanged);
         case FormHiddenField:
-          return FormHiddenFieldMenu(layoutModel, target,
-              onChanged: onChanged);
+          return FormHiddenFieldMenu(layoutModel, target, onChanged: onChanged);
         case FormTextField:
-          return FormTextFieldMenu(layoutModel, target,
-              onChanged: onChanged);
+          return FormTextFieldMenu(layoutModel, target, onChanged: onChanged);
         case SourceVariable:
-          return SourceVariableMenu(layoutModel, target,
-              onChanged: onChanged);
+          return SourceVariableMenu(layoutModel, target, onChanged: onChanged);
         case StyleElement:
-          return StyleElementMenu(layoutModel, target,
-              onChanged: onChanged);
+          return StyleElementMenu(layoutModel, target, onChanged: onChanged);
         default:
-          return ComponentAndSourceMenu(layoutModel, target, onChanged: onChanged);
+          return ComponentAndSourceMenu(layoutModel, target,
+              onChanged: onChanged);
       }
     } else {
-
       var component = layoutModel.getComponentByItem(target);
 
-      if(/*layoutModel.curC*/component == null) {
-        return ComponentAndSourceMenu(layoutModel, target, onChanged: onChanged);
+      if (/*layoutModel.curC*/ component == null) {
+        return ComponentAndSourceMenu(layoutModel, target,
+            onChanged: onChanged);
       }
 
-      switch (/*layoutModel.curC*/component.runtimeType) {
+      switch (/*layoutModel.curC*/ component.runtimeType) {
         case ComponentTable:
           return ComponentTableMenu(layoutModel, target,
               onChanged: onChanged, onDeleted: onDeleted);
@@ -146,9 +149,9 @@ class ComponentAndSourceMenu {
           return SourceTableMenu(layoutModel, target,
               onChanged: onChanged, onDeleted: onDeleted);
         default:
-          return ComponentAndSourceMenu(layoutModel, target, onChanged: onChanged);
+          return ComponentAndSourceMenu(layoutModel, target,
+              onChanged: onChanged);
       }
-
     }
   }
 

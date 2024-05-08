@@ -11,6 +11,7 @@ import 'package:layout_editor/root.dart';
 import 'package:layout_editor/source_table.dart';
 
 import 'component_group.dart';
+import 'form_radio.dart';
 
 class ComponentPageMenu extends ComponentAndSourceMenu {
   ComponentPageMenu(super.layoutModel, super.target, {super.onChanged});
@@ -27,6 +28,8 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
         child: Text("Добавить группу"),
         onTap: () {
           var item = ComponentGroup("группа");
+          var page = layoutModel.getPageByItem(target);
+          //item.properties['size']?.value = Size(page?.properties['size']?.width, 30);
           layoutModel.addItem(target, item);
           onChanged!(item);
         },
@@ -52,6 +55,14 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
         child: Text("Добавить текстовое поле"),
         onTap: () {
           var item = FormTextField("текстовое поле");
+          layoutModel.addItem(target, item);
+          onChanged!(item);
+        },
+      ),
+      PopupMenuItem(
+        child: Text("Добавить радиокнопку"),
+        onTap: () {
+          var item = FormRadio("радиокнопка");
           layoutModel.addItem(target, item);
           onChanged!(item);
         },

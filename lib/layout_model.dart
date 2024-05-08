@@ -19,6 +19,7 @@ import 'package:uuid_type/uuid_type.dart';
 
 import 'component_and_source.dart';
 import 'form_hidden_field.dart';
+import 'form_radio.dart';
 import 'form_text_field.dart';
 
 class LayoutModel {
@@ -294,6 +295,8 @@ class LayoutModel {
           item = SourceVariable("");
         case "textField":
           item = FormTextField("");
+        case "radio":
+          item = FormRadio("");
         case "checkbox":
           item = FormCheckbox("");
         case "hiddenField":

@@ -11,6 +11,7 @@ import 'package:layout_editor/source_table.dart';
 
 import 'component_group.dart';
 import 'form_hidden_field.dart';
+import 'form_radio.dart';
 
 class ComponentGroupMenu extends ComponentAndSourceMenu {
   ComponentGroupMenu(super.layoutModel, super.target, {super.onChanged});
@@ -42,6 +43,14 @@ class ComponentGroupMenu extends ComponentAndSourceMenu {
         child: Text("Добавить текстовое поле"),
         onTap: () {
           var item = FormTextField("текстовое поле");
+          layoutModel.addItem(target, item);
+          onChanged!(item);
+        },
+      ),
+      PopupMenuItem(
+        child: Text("Добавить радиокнопку"),
+        onTap: () {
+          var item = FormRadio("радиокнопка");
           layoutModel.addItem(target, item);
           onChanged!(item);
         },
