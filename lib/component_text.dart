@@ -12,6 +12,6 @@ class ComponentText extends LayoutComponent {
     properties["source"] = Property("источник", "");
     properties["alignment"] =
         Property("выравнивание", Alignment.centerLeft, type: Alignment);
-    properties["style"] = Property("стиль", Style.basic, type: Style);
+
   }
 }
