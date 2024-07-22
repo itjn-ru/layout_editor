@@ -14,5 +14,5 @@ class SourcePage extends ComponentAndSourcePage {
 }
 
 class StylePage extends ComponentAndSourcePage {
-  StylePage(name) : super("palettePage", name);
+  StylePage(name) : super("stylePage", name);
 }
