@@ -4,7 +4,6 @@ class ComponentAndSourcePage extends Item {
   ComponentAndSourcePage(type, name) : super(type, name);
 }
 
-
 class ComponentPage extends ComponentAndSourcePage {
   ComponentPage(name) : super("componentPage", name);
 }
