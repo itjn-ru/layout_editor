@@ -218,7 +218,7 @@ class LayoutModel {
                   type: Size),
               "id" => Property("идентификатор", Uuid.parse(value), type: Uuid),
               "color" =>
-                Property("цвет", Color(int.tryParse(value) ?? 0), type: Color),
+                Property("цвет", Color(int.tryParse(value, radix: 16) ?? 0), type: Color),
               "style" => Property(
                   "стиль",
                   Style(Uuid.tryParse(value['id']) ?? Uuid.nil,
