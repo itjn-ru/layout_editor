@@ -27,11 +27,15 @@ class ComponentTableColumn extends Item {
 }
 
 class ComponentTableRowGroup extends Item {
-  ComponentTableRowGroup(name) : super("rowGroup", name);
+  ComponentTableRowGroup(name) : super("rowGroup", name) {
+    properties["style"] = Property("стиль", Style.basic, type: Style);
+  }
 }
 
 class ComponentTableRow extends Item {
-  ComponentTableRow(name) : super("row", name);
+  ComponentTableRow(name) : super("row", name) {
+    properties["style"] = Property("стиль", Style.basic, type: Style);
+  }
 }
 
 class ComponentTableCell extends Item {
