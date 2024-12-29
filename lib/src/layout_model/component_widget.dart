@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:xml_edit/xml_edit.dart';
+import '../../admin_layout_editor.dart';
 import 'component.dart';
 import 'component_radio_widget.dart';
 import 'component_table.dart';

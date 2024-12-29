@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xml_edit/src/layout_model/layout_model.dart';
+import '../../admin_layout_editor.dart';
 import 'property.dart';
 import 'property_widget.dart';
 
