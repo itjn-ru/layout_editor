@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:xml_edit/src/layout_model/process.dart';
 
+import 'process.dart';
 import 'process_element.dart';
 import 'process_element_widget.dart';
 

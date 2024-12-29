@@ -98,7 +98,7 @@ class LayoutModel extends ChangeNotifier {
     return _itemsOnComponent[item];
   }
 
-  ComponentAndSourcePage? getPageByItem(Item item) {
+  ComponentAndSourcePage getPageByItem(Item item) {
     if (item is Root) {
       return item.items.whereType<ComponentPage>().first;
     }
@@ -107,7 +107,7 @@ class LayoutModel extends ChangeNotifier {
       return item;
     }
 
-    return _itemsOnPage[item];
+    return _itemsOnPage[item]!;
   }
 
   LayoutModel() {

@@ -10,9 +10,8 @@ import 'menu.dart';
 class Items extends StatefulWidget {
   final Item _item;
 final LayoutModel layoutModel;
-  final void Function(Item item)? onItemChanged;
 
-  const Items(this._item, this.layoutModel, {this.onItemChanged, super.key});
+  const Items(this._item, this.layoutModel, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -100,10 +99,6 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
         widget.layoutModel.curItem = item;
         setState(() {
           widget.layoutModel.curItem = item;
-
-          if (widget.onItemChanged != null) {
-            widget.onItemChanged!(item);
-          }
         });
       },
     );

@@ -1,5 +1,3 @@
-import 'package:xml_edit/src/layout_model/process.dart';
-
 import 'canvas/main_canvas.dart';
 import 'package:flutter/material.dart';
 import 'layout_model.dart';
@@ -9,14 +7,14 @@ import 'style.dart';
 import 'style_widget.dart';
 
 class ComponentsAndSources extends StatelessWidget {
-  final ComponentAndSourcePage curPage;
   final LayoutModel layoutModel;
 final BoxConstraints constraints;
   final ScreenSizeEnum screenSize;
-  const ComponentsAndSources(this.curPage, this.layoutModel, this.constraints,this.screenSize, {super.key});
+  const ComponentsAndSources(this.layoutModel, this.constraints,this.screenSize, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    final ComponentAndSourcePage curPage =layoutModel.getPageByItem(layoutModel.curItem)!;
       if (curPage is StylePage) {
         return Column(
           children: List.generate(

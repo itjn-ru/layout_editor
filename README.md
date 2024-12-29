@@ -23,17 +23,72 @@ TODO: List what your package can do. Maybe include images, gifs, or videos.
 TODO: List prerequisites and provide or point to information on how to
 start using the package.
 
-## Usage
+## Использование
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+Вывод компонентов макета:
 ```dart
-const like = 'sample';
+Column(
+  children: [
+    Items(layoutModel.root,layoutModel),
+  ],
+),
 ```
 
-## Additional information
+Вывод источников-переменных макета:
+```dart
+Column(
+  children: [
+    Items(
+        layoutModel.root.items
+            .whereType<SourcePage>()
+            .first,layoutModel,
+    ),
+  ],
+),
+```
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Вывод стилей макета:
+```dart
+Column(
+  children: [
+    Items(
+        layoutModel.root.items
+            .whereType<StylePage>()
+            .first,layoutModel, 
+    ),
+  ],
+),
+```
+
+
+Вывод процессов макета:
+```dart
+Column(
+  children: [
+    ProcessItems(
+        layoutModel.root.items
+            .whereType<ProcessPage>()
+            .first,layoutModel,
+    ),
+  ],
+),
+```
+
+Вывод вьюшки, как страница выглядит
+Обязательно указать размер экрана из [enum ScreenSizeEnum]
+```dart
+LayoutBuilder(
+    builder: (context, constraints) {
+        return Consumer<LayoutModel>(
+            builder: (context, value, child) {
+                final curPage = value.getPageByItem(value.curItem);
+                return ComponentsAndSources(curPage!,value,constraints, screenSize);
+            },
+        );
+    }
+),
+```
+
+## Дополнительная информация
+
+Обернуть провайдером LayoutModel

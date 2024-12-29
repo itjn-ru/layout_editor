@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:xml_edit/src/layout_model/layout_model.dart';
+import '../../admin_layout_editor.dart';
 import 'property.dart';
 import 'property_alignment_widget.dart';
 import 'property_color_widget.dart';
