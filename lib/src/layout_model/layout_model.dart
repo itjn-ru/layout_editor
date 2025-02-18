@@ -26,7 +26,7 @@ import 'form_hidden_field.dart';
 import 'form_radio.dart';
 import 'form_text_field.dart';
 
-class LayoutModel{
+class LayoutModel {
   late Root root;
   late ComponentAndSourcePage curPage;
 
@@ -45,19 +45,18 @@ class LayoutModel{
     _curItem = value;
 
     curItemOnPage[curPageType] = value;
-
   }
 
   Item get curComponentItem {
-    return _curComponentItem??ComponentPage('страница');
+    return _curComponentItem ?? ComponentPage('страница');
   }
 
   set curComponentItem(Item value) {
     _curComponentItem = value;
-
   }
+
   Item get curSourceItem {
-    return _curSourceItem??SourcePage('страница данных');
+    return _curSourceItem ?? SourcePage('страница данных');
   }
 
   set curSourceItem(Item value) {
@@ -114,6 +113,10 @@ class LayoutModel{
   }
 
   LayoutModel() {
+    init();
+  }
+
+  void init() {
     root = Root('макет');
     curPage = ComponentPage('страница');
     curPageType = ComponentPage;
@@ -198,8 +201,6 @@ class LayoutModel{
       _setPageForItem(stylePage, basicElement);
     }
     //добавляем базовый стиль
-
-
   }
 
   Map<String, Property> _propertiesFromMap(Map map) {
@@ -208,9 +209,9 @@ class LayoutModel{
         return MapEntry(
             key,
             switch (key) {
-            'statusId' =>Property('Status Id',value, type: String),
-            'title' =>Property('title',value, type: String),
-            'creatorTitle' =>Property('Creator Title',value, type: String),
+              'statusId' => Property('Status Id', value, type: String),
+              'title' => Property('title', value, type: String),
+              'creatorTitle' => Property('Creator Title', value, type: String),
               'Uint8List' =>
                 // Property('картинка', Uint8List.fromList(value.codeUnits), type: Uint8List ),
                 Property('картинка', base64.decode(value), type: Uint8List),
@@ -282,15 +283,14 @@ class LayoutModel{
                   Size(double.tryParse(value['width']) ?? 0,
                       double.tryParse(value['height']) ?? 0),
                   type: Size),
-              'id' => Property('идентификатор', value,
-                  type: String),
+              'id' => Property('идентификатор', value, type: String),
               'color' => Property(
                   'цвет', Color(int.tryParse(value, radix: 16) ?? 0),
                   type: Color),
               'style' => Property(
                   'стиль',
-                  Style(value['id'] ?? UuidNil,
-                      value['name'] ?? 'базовый стиль'),
+                  Style(
+                      value['id'] ?? UuidNil, value['name'] ?? 'базовый стиль'),
                   type: Style),
               'textStyle' => Property(
                   'стиль текста',
@@ -358,7 +358,7 @@ class LayoutModel{
         case 'row':
           item = ComponentTableRow('');
         case 'cell':
-          item = ComponentTableCell('','');
+          item = ComponentTableCell('', '');
         case 'text':
           item = ComponentText('');
         case 'variable':
@@ -525,7 +525,7 @@ class LayoutModel{
               .where((element) => element.runtimeType == ComponentTableRowGroup)
               .forEach((rowGroup) {
             for (final row in rowGroup.items) {
-              final cell = ComponentTableCell('ячейка','');
+              final cell = ComponentTableCell('ячейка', '');
               row.items.add(cell);
 
               //_setComponentForItem(component, cell);
@@ -540,7 +540,7 @@ class LayoutModel{
           component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .forEach((rowGroup) {
-            final cell = ComponentTableCell('ячейка','');
+            final cell = ComponentTableCell('ячейка', '');
 
             row.items.add(cell);
           });
@@ -548,7 +548,7 @@ class LayoutModel{
           component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .forEach((rowGroup) {
-            final cell = ComponentTableCell('ячейка','');
+            final cell = ComponentTableCell('ячейка', '');
 
             item.items.add(cell);
           });

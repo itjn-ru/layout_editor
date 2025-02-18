@@ -104,4 +104,21 @@ class LayoutModelEditorProject {
       SnackbarType.success,
     );
   }
+
+  void create(){
+    try {
+    controller.layoutModel.init();
+    } catch (e) {
+      showNodeEditorSnackbar(
+        'Не удалось создать новый проект',
+        SnackbarType.error,
+      );
+      return;
+    }
+    controller.eventBus.emit(NewProjectEvent(id: const Uuid().v4()));
+    showNodeEditorSnackbar(
+      'Создан новый проект',
+      SnackbarType.success,
+    );
+  }
 }

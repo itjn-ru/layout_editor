@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart' show DeepCollectionEquality;
 import 'package:uuid/uuid.dart';
@@ -17,6 +16,7 @@ class MainCanvas extends StatefulWidget {
   final List<Item> items;
   final ScreenSizeEnum screenSize;
   final LayoutModelController controller;
+
   const MainCanvas({
     super.key,
     required this.items,
@@ -37,7 +37,8 @@ class _MainCanvasState extends State<MainCanvas> {
   double wrappedHeight = 0;
   Offset position = const Offset(0, 0);
   late double _canvasHeight;
-  late double _canvasWidth ;
+  late double _canvasWidth;
+
   final TransformationController _transform = TransformationController();
   double scaleConstraints = 1.0;
   double scaleSize = 1;
@@ -50,13 +51,14 @@ class _MainCanvasState extends State<MainCanvas> {
   late LayoutModel layoutModel;
   Function deepEq = const DeepCollectionEquality().equals;
   bool changed = false;
-late BoxConstraints oldConstraints;
+  late BoxConstraints oldConstraints;
+
   @override
   void initState() {
     widget.controller.eventBus.events.listen(_handleRunnerEvents);
-    oldConstraints=widget.constraints;
-    _canvasWidth = widget.constraints.maxWidth-20;
-    _canvasHeight = widget.constraints.maxHeight-20;
+    oldConstraints = widget.constraints;
+    _canvasWidth = widget.constraints.maxWidth - 20;
+    _canvasHeight = widget.constraints.maxHeight - 20;
     scaleConstraints = _canvasWidth / widget.screenSize.width;
     cellWidth = cellWidth * scaleConstraints;
     cellHeight = cellHeight * scaleConstraints;
@@ -65,30 +67,32 @@ late BoxConstraints oldConstraints;
   }
 
   void _handleRunnerEvents(LayoutModelEvent event) {
-    if (event is SelectionEvent||event is PanEnd ) {
-     setState(() {
-
-     });
-    }
+    if (mounted)
+      if (event is SelectionEvent ||
+          event is PanEnd ||
+          event is NewProjectEvent) {
+        setState(() {});
+      }
   }
+
   @override
   void dispose() {
     _transform.dispose();
     super.dispose();
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     // templateWidgets = _initWidgetList();
-     if((oldConstraints.maxWidth-widget.constraints.maxWidth).abs()>10) {
-       oldConstraints=widget.constraints;
-       _canvasWidth = widget.constraints.maxWidth-20;
-       _canvasHeight = widget.constraints.maxHeight-20;
-       scaleConstraints = _canvasWidth / widget.screenSize.width;
-       cellWidth = cellWidth * scaleConstraints.truncateToDouble();
-       cellHeight = cellHeight * scaleConstraints.truncateToDouble();
-       viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);
-     }
+    if ((oldConstraints.maxWidth - widget.constraints.maxWidth).abs() > 10) {
+      oldConstraints = widget.constraints;
+      _canvasWidth = widget.constraints.maxWidth - 20;
+      _canvasHeight = widget.constraints.maxHeight - 20;
+      scaleConstraints = _canvasWidth / widget.screenSize.width;
+      cellWidth = cellWidth * scaleConstraints.truncateToDouble();
+      cellHeight = cellHeight * scaleConstraints.truncateToDouble();
+      viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);
+    }
     if (!onIteraction) {
       items = widget.items;
       templateWidgets = _initWidgetList();
@@ -115,17 +119,17 @@ late BoxConstraints oldConstraints;
           child: InteractiveViewer.builder(
               panEnabled: true,
               transformationController: _transform,
-              onInteractionStart: (details) { },
+              onInteractionStart: (details) {},
               onInteractionUpdate: (details) {
                 /*setState(() {
                   onIteraction = true;
                 });*/
                 _onPanUpdate(details.focalPointDelta);
-                widget.controller.eventBus.emit(PanEnd(id:const Uuid().v4()));
+                widget.controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
               },
               onInteractionEnd: (scaleEndDetails) {
                 scaleSize = _transform.value.getMaxScaleOnAxis();
-                widget.controller.eventBus.emit(PanEnd(id:const Uuid().v4()));
+                widget.controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
                 /*setState(() {
                   onIteraction = false;
                 });*/
@@ -164,7 +168,8 @@ late BoxConstraints oldConstraints;
           //key: UniqueKey(),
           position: Offset(itemChild["position"]?.dx * scaleConstraints ?? 0,
               itemChild["position"]?.dy * scaleConstraints ?? 0),
-          initWidth: itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
+          initWidth:
+          itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
           initHeight: itemChild["size"]?.height * scaleConstraints ?? 50,
           cellWidth: cellWidth / 2,
           cellHeight: cellHeight / 2,
@@ -172,7 +177,7 @@ late BoxConstraints oldConstraints;
           canvasHeight: _canvasHeight,
           bgColor: Colors.white,
           squareColor: Colors.blueAccent,
-          scaleConstraints:scaleConstraints,
+          scaleConstraints: scaleConstraints,
           controller: widget.controller,
           child: itemChild,
         ),
@@ -189,7 +194,7 @@ late BoxConstraints oldConstraints;
       canvasHeight: _canvasHeight,
       cellHeight: cellHeight,
       cellWidth: cellWidth,
-      scaleConstraints:scaleConstraints,
+      scaleConstraints: scaleConstraints,
       bgColor: Colors.white,
       squareColor: Colors.blueAccent,
       controller: widget.controller,
@@ -201,7 +206,7 @@ late BoxConstraints oldConstraints;
     matrix.translate(delta.dx, delta.dy);
     if (delta.dy < 0) {
       Rect rect =
-          Rect.fromLTRB(0, 0, _canvasWidth, viewport.height + delta.dy.abs());
+      Rect.fromLTRB(0, 0, _canvasWidth, viewport.height + delta.dy.abs());
       setState(() {
         viewport = rect;
       });

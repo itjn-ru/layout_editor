@@ -1,5 +1,8 @@
+import 'package:uuid/uuid.dart';
+
 import '../layout_model.dart';
 import 'event_bus.dart';
+import 'events.dart';
 import 'project.dart';
 
 class LayoutModelController {
@@ -26,4 +29,5 @@ class LayoutModelController {
     eventBus.close();
   }
   void clear(){}
+
 }

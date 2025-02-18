@@ -19,3 +19,4 @@ export 'src/layout_model/process_items.dart';
 export 'src/layout_model/controller/layout_model_controller.dart';
 export 'src/layout_model/controller/project.dart';
 export 'src/layout_model/controller/helpers/constants.dart';
+export 'src/layout_model/controller/events.dart';
