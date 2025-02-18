@@ -3,6 +3,7 @@
 
 ## Motivation
 Без изменения кода, загрузки в store изменять UI и обмен данными с сервером приложения клиента.   
+![admin-layout-photo](https://github.com/user-attachments/assets/adfe04bb-2789-467a-90aa-ab821ca82a89)
 
 ## Использование
 
