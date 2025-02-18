@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'component_group.dart';
 import 'component_table.dart';
 import 'component_text.dart';
+import 'constants.dart';
 import 'form_checkbox.dart';
 import 'form_image.dart';
 import 'form_slider_button.dart';
@@ -25,7 +26,7 @@ import 'form_hidden_field.dart';
 import 'form_radio.dart';
 import 'form_text_field.dart';
 
-class LayoutModel extends ChangeNotifier {
+class LayoutModel{
   late Root root;
   late ComponentAndSourcePage curPage;
 
@@ -45,7 +46,6 @@ class LayoutModel extends ChangeNotifier {
 
     curItemOnPage[curPageType] = value;
 
-    notifyListeners();
   }
 
   Item get curComponentItem {
@@ -54,7 +54,7 @@ class LayoutModel extends ChangeNotifier {
 
   set curComponentItem(Item value) {
     _curComponentItem = value;
-    notifyListeners();
+
   }
   Item get curSourceItem {
     return _curSourceItem??SourcePage('страница данных');
@@ -62,7 +62,10 @@ class LayoutModel extends ChangeNotifier {
 
   set curSourceItem(Item value) {
     _curSourceItem = value;
-    notifyListeners();
+  }
+
+  ProcessPage get processes {
+    return root.items.whereType<ProcessPage>().first;
   }
 
   List<Style> get styles {
@@ -78,7 +81,7 @@ class LayoutModel extends ChangeNotifier {
     return styleList;
   }
 
-  StyleElement? getStyleElementById(UuidValue id) {
+  StyleElement? getStyleElementById(String id) {
     final stylePage = root.items.whereType<StylePage>().first;
 
     final list = stylePage.items.whereType<StyleElement>();
@@ -134,13 +137,13 @@ class LayoutModel extends ChangeNotifier {
 
     final StyleElement basicElement = StyleElement('базовый стиль');
     basicElement.properties['id'] =
-        Property('идентификатор', UuidValue.nil, type: Uuid);
+        Property('идентификатор', UuidNil, type: String);
     stylePage.items.add(basicElement);
     //curItemOnPage[StylePage] = basicElement;
     _setPageForItem(stylePage, basicElement);
   }
 
-  Future<void> fromMap(Map map) async {
+  void fromMap(Map map) {
     root = Root(map['properties']['name']);
     root
       ..properties = _propertiesFromMap(map['properties'])
@@ -185,11 +188,11 @@ class LayoutModel extends ChangeNotifier {
 
     if (stylePage.items
         .whereType<StyleElement>()
-        .where((element) => element['id'] == UuidValue.nil)
+        .where((element) => element['id'] == UuidNil)
         .isEmpty) {
       final StyleElement basicElement = StyleElement('базовый стиль');
       basicElement.properties['id'] =
-          Property('идентификатор', UuidValue.nil, type: Uuid);
+          Property('идентификатор', UuidNil, type: String);
       stylePage.items.insert(0, basicElement);
       //curItemOnPage[StylePage] = basicElement;
       _setPageForItem(stylePage, basicElement);
@@ -197,8 +200,6 @@ class LayoutModel extends ChangeNotifier {
     //добавляем базовый стиль
 
 
-
-    notifyListeners();
   }
 
   Map<String, Property> _propertiesFromMap(Map map) {
@@ -281,14 +282,14 @@ class LayoutModel extends ChangeNotifier {
                   Size(double.tryParse(value['width']) ?? 0,
                       double.tryParse(value['height']) ?? 0),
                   type: Size),
-              'id' => Property('идентификатор', UuidValue.fromString(value),
-                  type: UuidValue),
+              'id' => Property('идентификатор', value,
+                  type: String),
               'color' => Property(
                   'цвет', Color(int.tryParse(value, radix: 16) ?? 0),
                   type: Color),
               'style' => Property(
                   'стиль',
-                  Style(UuidValue.fromString(value['id']) ?? UuidValue.nil,
+                  Style(value['id'] ?? UuidNil,
                       value['name'] ?? 'базовый стиль'),
                   type: Style),
               'textStyle' => Property(
@@ -319,7 +320,6 @@ class LayoutModel extends ChangeNotifier {
             });
       },
     );
-    notifyListeners();
     return properties;
   }
 
@@ -635,7 +635,6 @@ class LayoutModel extends ChangeNotifier {
         default:
       }
     }
-    notifyListeners();
   }
 
   _setPageForItem(ComponentAndSourcePage page, Item item) {
@@ -644,7 +643,6 @@ class LayoutModel extends ChangeNotifier {
     for (final subItem in item.items) {
       _setPageForItem(page, subItem);
     }
-    notifyListeners();
   }
 
   void _setComponentForItem(LayoutComponentAndSource? component, Item item) {
@@ -657,6 +655,5 @@ class LayoutModel extends ChangeNotifier {
     for (final curItem in item.items) {
       _setComponentForItem(component, curItem);
     }
-    notifyListeners();
   }
 }

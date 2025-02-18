@@ -17,5 +17,9 @@ class StylePage extends ComponentAndSourcePage {
 }
 
 class ProcessPage extends ComponentAndSourcePage {
-  ProcessPage(name) : super("processPage", name);
+  ProcessPage(name, {this.viewport}) : super("processPage", name);
+  Map<String, dynamic>? viewport = {
+    "offset": [0.0, 0.0],
+    "zoom": 1.0
+  };
 }

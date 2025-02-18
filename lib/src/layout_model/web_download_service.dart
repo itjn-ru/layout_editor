@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:html' as html;
 
 import 'package:file_picker/file_picker.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart';
 
 Future<void> saveFile(
     {required String body, required String filename}) async {
@@ -70,12 +70,12 @@ Future<void> loadFile(
 
 class WebUploadService {
   Future<void> load({required String url, required PlatformFile file}) async {
-    Uri uri = Uri.parse(url);
+  /*  Uri uri = Uri.parse(url);
 
-    var request = http.MultipartRequest('POST', uri);
+    var request = MultipartRequest('POST', uri);
 
 
-    final http.MultipartFile multipartFile = http.MultipartFile.fromBytes(
+    final MultipartFile multipartFile = MultipartFile.fromBytes(
         "file", file.bytes!.toList(),
         filename: file.name);
     request.files.add(multipartFile);
@@ -83,7 +83,7 @@ class WebUploadService {
     try {
       final response = await request.send();
       if (response.statusCode == 200) {}
-    } catch (e) {}
+    } catch (e) {}*/
   }
 }
 

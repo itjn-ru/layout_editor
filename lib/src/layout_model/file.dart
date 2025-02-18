@@ -47,11 +47,11 @@ _saveMapItems(XmlBuilder builder, List items) {
   });
 }
 
-Map readMap(String layout) {
+Map<String,dynamic>  readMap(String layout) {
   final xml = XmlDocument.parse(layout);
   final xmlRoot = xml.rootElement;
 
-  final Map root = {};
+  final Map<String,dynamic>  root = {};
   root['properties'] = _readMapProperties(xmlRoot.getElement("properties"));
   root['items'] = _readMapItems(xmlRoot.getElement("items"));
 

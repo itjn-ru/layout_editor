@@ -1,5 +1,6 @@
 import 'canvas/main_canvas.dart';
 import 'package:flutter/material.dart';
+import 'controller/layout_model_controller.dart';
 import 'layout_model.dart';
 import 'page.dart';
 import 'process_widget.dart';
@@ -10,7 +11,8 @@ class ComponentsAndSources extends StatelessWidget {
   final LayoutModel layoutModel;
 final BoxConstraints constraints;
   final ScreenSizeEnum screenSize;
-  const ComponentsAndSources(this.layoutModel, this.constraints,this.screenSize, {super.key});
+  final LayoutModelController controller;
+  const ComponentsAndSources(this.layoutModel, this.constraints,this.screenSize, {super.key,required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +30,8 @@ final BoxConstraints constraints;
             ? MainCanvas(
                 items: curPage.items,
                 constraints: constraints,
-                layoutModel: layoutModel,
             screenSize:screenSize,
+          controller: controller,
               )
             : Container();
       } else {
@@ -37,8 +39,8 @@ final BoxConstraints constraints;
         return MainCanvas(
           items: curPage.items,
           constraints: constraints,
-          layoutModel: layoutModel,
           screenSize:screenSize,
+          controller: controller,
         );
       }
 

@@ -1,5 +1,7 @@
 import 'component_table.dart';
 import 'package:flutter/material.dart';
+import 'controller/events.dart';
+import 'controller/layout_model_controller.dart';
 import 'item.dart';
 import 'layout_model.dart';
 import 'page.dart';
@@ -9,9 +11,10 @@ import 'menu.dart';
 
 class Items extends StatefulWidget {
   final Item _item;
-final LayoutModel layoutModel;
+  final LayoutModelController controller;
+//final LayoutModel layoutModel;
 
-  const Items(this._item, this.layoutModel, {super.key});
+  const Items(this._item, this.controller, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -33,7 +36,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
     if (item.items.isNotEmpty) {
       final children = <Widget>[];
       children.add(
-        ItemWidget(item, widget.layoutModel),
+        ItemWidget(item, widget.controller.layoutModel),
       );
 
       final items = item is Root
@@ -64,7 +67,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
 
       child = ListView(shrinkWrap: true, children: children);
     } else {
-      child = ItemWidget(item,widget.layoutModel);
+      child = ItemWidget(item,widget.controller.layoutModel);
     }
 
     final curPageType = switch (widget._item.runtimeType) {
@@ -73,7 +76,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
       _ => ComponentPage
     };
 
-    final curItem = widget.layoutModel.curItemOnPage[curPageType];
+    final curItem = widget.controller.layoutModel.curItemOnPage[curPageType];
 
     return InkWell(
       child: Container(
@@ -94,12 +97,13 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
           return;
         }
         if (curPageType is ComponentPage) {
-          widget.layoutModel.curComponentItem = item;
+          widget.controller.layoutModel.curComponentItem = item;
         }
-        widget.layoutModel.curItem = item;
+        widget.controller.layoutModel.curItem = item;
         setState(() {
-          widget.layoutModel.curItem = item;
+          widget.controller.layoutModel.curItem = item;
         });
+        widget.controller.eventBus.emit(SelectionEvent(id: item.id));
       },
     );
   }

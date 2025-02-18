@@ -3,16 +3,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid_value.dart';
 import 'component_and_source.dart';
+import 'constants.dart';
 
 class LayoutStyle extends LayoutComponentAndSource {
   LayoutStyle(super.type, super.name);
 }
 
 class Style {
-  UuidValue id;
+  String id;
   String name;
 
-  static Style basic = Style(UuidValue.nil, 'базовый стиль');
+  static Style basic = Style(UuidNil, 'базовый стиль');
 
   Style(this.id, this.name);
 

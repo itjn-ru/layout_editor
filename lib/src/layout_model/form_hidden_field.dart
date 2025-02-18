@@ -6,7 +6,7 @@ class FormHiddenField extends LayoutComponent {
   FormHiddenField(name) : super("hiddenField", name) {
     properties["caption"] = Property("подпись", "");
     properties["id"] =
-        Property("идентификатор", const Uuid().v1obj(), type: UuidValue);
+        Property("идентификатор", const Uuid().v4, type: String);
     properties["source"] = Property("источник", "");
   }
 }

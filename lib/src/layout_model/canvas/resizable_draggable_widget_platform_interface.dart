@@ -1,4 +1,4 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart' show PlatformInterface;
 
 import 'resizable_draggable_widget_method_channel.dart';
 

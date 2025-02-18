@@ -1,6 +1,8 @@
+import 'package:admin_layout_editor/admin_layout_editor.dart';
 import 'package:flutter/material.dart';
 import '../component.dart';
 import '../component_widget.dart';
+import '../controller/events.dart';
 import '../item.dart';
 import '../layout_model.dart';
 import 'resizable_draggable_widget_platform_interface.dart';
@@ -16,15 +18,12 @@ class ResizableDraggableWidget extends StatefulWidget {
     this.bgColor,
     this.squareColor,
     this.changed,
-    required this.delete,
-    required this.switchActive,
     required this.canvasWidth,
     required this.canvasHeight,
-    required this.layoutModel,
+    required this.controller,
     this.cellWidth = 10.0,
     this.cellHeight = 10.0,
     required this.position,
-    this.deActive,
   });
 
   ///Начальня ширина, по умолчанию ширина canvas
@@ -41,10 +40,7 @@ class ResizableDraggableWidget extends StatefulWidget {
   final Function(double width, double height, Offset tranformOffset)? changed;
   final double canvasHeight;
   final double canvasWidth;
-  final Function(Key index)? delete;
-  final Function(Key index)? switchActive;
-  final Function(Key index)? deActive;
-  final LayoutModel layoutModel;
+  final LayoutModelController controller;
 
   @override
   State<ResizableDraggableWidget> createState() =>
@@ -94,10 +90,10 @@ late final curComponentItem;*/
     _dynamicSH = _dynamicH;
     _child = IgnorePointer(
         child: ComponentWidget.create(
-            widget.child as LayoutComponent, widget.layoutModel));
+            widget.child as LayoutComponent, widget.controller.layoutModel));
     _sqColor = widget.squareColor == null ? Colors.white : widget.squareColor!;
     _bgColor = widget.bgColor == null ? Colors.amber : widget.bgColor!;
-    if (widget.layoutModel.curItem == widget.child) {
+    if (widget.controller.layoutModel.curItem == widget.child) {
       // context.read<ActiveWidgetProvider>().activeKey = widget.key!;
       _showSquare = true;
     } else {
@@ -214,26 +210,6 @@ late final curComponentItem;*/
           _panIntervalOffset = _panUpdateOffset - _panStartOffset;
           refreshH(dir, _panIntervalOffset.dy);
         }
-
-        /*else {
-          if (dir == Alignment.bottomRight) {
-            _panIntervalOffset = -_panUpdateOffset + _panStartOffset;
-            refreshW(dir, _panIntervalOffset.dx);
-            refreshH(dir, _panIntervalOffset.dy);
-          } else if (dir == Alignment.topRight) {
-            _panIntervalOffset = _panUpdateOffset - _panStartOffset;
-            refreshW(dir, -_panIntervalOffset.dx);
-            refreshH(dir, _panIntervalOffset.dy);
-          } else if (dir == Alignment.bottomLeft) {
-            _panIntervalOffset = -_panUpdateOffset + _panStartOffset;
-            refreshW(dir, -_panIntervalOffset.dx);
-            refreshH(dir, _panIntervalOffset.dy);
-          } else if (dir == Alignment.topLeft) {
-            _panIntervalOffset = _panUpdateOffset - _panStartOffset;
-            refreshW(dir, _panIntervalOffset.dx);
-            refreshH(dir, _panIntervalOffset.dy);
-          }*/
-
         if (widget.changed != null) {
           widget.changed!(
               _dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
@@ -244,6 +220,7 @@ late final curComponentItem;*/
         _lockH = false;
         trLastW = trW;
         _lockW = false;
+        widget.controller.eventBus.emit(PanEnd(id: widget.child!.id));
       }),
       child: Visibility(
         visible: _showSquare,
@@ -288,10 +265,9 @@ late final curComponentItem;*/
             top: -10,
             child: IconButton(
                 onPressed: () {
-                  setState(() {
-                    widget.layoutModel.deleteItem(widget.child!);
-                  });
-                //  widget.delete!(widget.key!);
+                    widget.controller.layoutModel.deleteItem(widget.child!);
+                    widget.controller.eventBus
+                        .emit(RemoveItemEvent(id: widget.child!.id));
                 },
                 icon: const Icon(Icons.delete)))
       ]),
@@ -304,28 +280,15 @@ late final curComponentItem;*/
 
   @override
   Widget build(BuildContext context) {
-    //_showSquare=context.read<ActiveWidgetProvider>().activeKey==widget.key?true:false;
-    //_showSquare = value.curComponentItem==widget.child! ? true : false;
     return Transform.translate(
         offset: updateMoveOffset + Offset(trW, trH),
-        child: /* Consumer<ActiveWidgetProvider>(
-            builder: (context, activeProvider, child) {
-          _showSquare = activeProvider.activeKey == widget.key ? true : false;
-          return*/
-
-            GestureDetector(
-          behavior: HitTestBehavior.opaque,
+        child: GestureDetector(
           child: getResizeable(),
           onTap: () {
-            // print(widget.key);
-            //print(context.read<ActiveWidgetProvider>().activeKey);
-
-            widget.layoutModel.curItem = widget.child!;
-            if (updateMoveOffset != const Offset(0, 0)) {
-              print('TAP!');
-              widget.deActive!(widget.key!);
-            }
-            },
+            widget.controller.layoutModel.curItem = widget.child!;
+            widget.controller.eventBus
+                .emit(SelectionEvent(id: widget.child!.id));
+          },
           onPanStart: (details) {
             if (_showSquare) startMoveOffset = details.localPosition;
           },
@@ -359,6 +322,7 @@ late final curComponentItem;*/
           },
           onPanEnd: (details) {
             if (_showSquare) endMoveOffset = updateMoveOffset;
+            widget.controller.eventBus.emit(PanEnd(id: widget.child!.id));
           },
           //);
           //}

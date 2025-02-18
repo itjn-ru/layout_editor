@@ -4,6 +4,8 @@ import 'package:collection/collection.dart' show DeepCollectionEquality;
 import '../component.dart';
 import '../component_widget.dart';
 import '../components_and_sources.dart';
+import '../controller/events.dart';
+import '../controller/layout_model_controller.dart';
 import '../item.dart';
 import '../layout_model.dart';
 import 'grid_background_widget.dart';
@@ -12,14 +14,14 @@ import 'resizable_draggable_widget.dart';
 class MainCanvas extends StatefulWidget {
   final BoxConstraints constraints;
   final List<Item> items;
-  final LayoutModel layoutModel;
   final ScreenSizeEnum screenSize;
+  final LayoutModelController controller;
   const MainCanvas({
     super.key,
-    required this.layoutModel,
     required this.items,
     required this.constraints,
     required this.screenSize,
+    required this.controller,
   });
 
   @override
@@ -50,6 +52,7 @@ class _MainCanvasState extends State<MainCanvas> {
 late BoxConstraints oldConstraints;
   @override
   void initState() {
+    //widget.controller.eventBus.events.listen(_handleRunnerEvents);
     oldConstraints=widget.constraints;
     _canvasWidth = widget.constraints.maxWidth-20;
     _canvasHeight = widget.constraints.maxHeight-20;
@@ -60,6 +63,13 @@ late BoxConstraints oldConstraints;
     super.initState();
   }
 
+  void _handleRunnerEvents(LayoutModelEvent event) {
+    if (event is SelectionEvent ) {
+     /*setState(() {
+
+     });*/
+    }
+  }
   @override
   void dispose() {
     _transform.dispose();
@@ -97,74 +107,47 @@ late BoxConstraints oldConstraints;
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
-        child: DragTarget<Widget>(
-          builder: (
-            BuildContext context,
-            List<dynamic> accepted,
-            List<dynamic> rejected,
-          ) {
-            return Container(
-              color: Colors.grey.shade50,
-              width: _canvasWidth,
-              height: _canvasHeight,
-              child: InteractiveViewer.builder(
-                  panEnabled: true,
-                  transformationController: _transform,
-                  onInteractionStart: (details) {
-                    /*  context.read<ActiveWidgetProvider>().activeKey =
-                            activeWidget;*/
-                  },
-                  onInteractionUpdate: (details) {
-                    setState(() {
-                      onIteraction = true;
-                    });
-                    _onPanUpdate(details.focalPointDelta);
-                  },
-                  onInteractionEnd: (scaleEndDetails) {
-                    scaleSize = _transform.value.getMaxScaleOnAxis();
+        child: Container(
+          color: Colors.grey.shade50,
+          width: _canvasWidth,
+          height: _canvasHeight,
+          child: InteractiveViewer.builder(
+              panEnabled: true,
+              transformationController: _transform,
+              onInteractionStart: (details) {},
+              onInteractionUpdate: (details) {
+                setState(() {
+                  onIteraction = true;
+                });
+                _onPanUpdate(details.focalPointDelta);
+              },
+              onInteractionEnd: (scaleEndDetails) {
+                scaleSize = _transform.value.getMaxScaleOnAxis();
 
-                    setState(() {
-                      onIteraction = false;
-                    });
-                  },
-                  minScale: 1,
-                  maxScale: 8,
-                  builder: (BuildContext context, quad) {
-                    return SizedBox.fromSize(
-                      key: UniqueKey(),
-                      size: viewport.size,
-                      child: //Consumer<LayoutModel>(builder: (_, value, __) {
-                          // items = value.curItem.items;
-                          //   componentsItems(items);
-                          //templateWidgets = _initWidgetList();
-                          //return
-                          Stack(clipBehavior: Clip.none, children: [
-                        Positioned.fill(
-                          child: GridBackgroundBuilder(
-                            quad: quad,
-                            cellHeight: cellHeight,
-                            cellWidth: cellWidth,
-                            canvasWidth: _canvasWidth,
-                          ),
-                        ),
-                        ...templateWidgets,
-                      ]),
-                      // }),
-                    );
-                  }),
-            );
-          },
-          onAcceptWithDetails: (DragTargetDetails<Widget> details) {
-            final UniqueKey uniqueKey = UniqueKey();
-            //context.read<ActiveWidgetProvider>().activeKey = uniqueKey;
-            RenderBox? renderBox =
-                globalKey.currentContext?.findRenderObject() as RenderBox;
-            final localPosition = renderBox.globalToLocal(details.offset);
-            setState(() {
-              templateWidgets
-                  .add(textField(uniqueKey, localPosition)); //details.data);
-            });
-          },
+                setState(() {
+                  onIteraction = false;
+                });
+              },
+              minScale: 1,
+              maxScale: 8,
+              builder: (BuildContext context, quad) {
+                return SizedBox.fromSize(
+                  key: UniqueKey(),
+                  size: viewport.size,
+                  child: Stack(clipBehavior: Clip.none, children: [
+                    Positioned.fill(
+                      child: GridBackgroundBuilder(
+                        quad: quad,
+                        cellHeight: cellHeight,
+                        cellWidth: cellWidth,
+                        canvasWidth: _canvasWidth,
+                      ),
+                    ),
+                    ...templateWidgets,
+                  ]),
+                  // }),
+                );
+              }),
         ),
       ),
     );
@@ -176,7 +159,7 @@ late BoxConstraints oldConstraints;
       ..addAll(List.generate(
         componentsItems.length, //widget._items.length,
         (index) => ComponentWidget.create(
-            componentsItems[index] as LayoutComponent, widget.layoutModel),
+            componentsItems[index] as LayoutComponent, widget.controller.layoutModel),
       ));
   }
 
@@ -197,7 +180,7 @@ late BoxConstraints oldConstraints;
         bgColor: Colors.white,
         squareColor: Colors.blueAccent,
         changed: (width, height, tranformOffset) {
-          final component = widget.layoutModel.curPage.items
+          final component = widget.controller.layoutModel.curPage.items
               .firstWhere((e) => e == itemChild);
           component.properties["position"]?.value = Offset(
               (tranformOffset.dx / scaleConstraints).round().toDouble(),
@@ -210,22 +193,7 @@ late BoxConstraints oldConstraints;
             wrappedWidth = width;
           });*/
         },
-        delete: (i) {
-          setState(() {
-            templateWidgets.removeWhere((e) => e.key == i);
-          });
-        },
-        deActive: (key) {
-          setState(() {
-            changed = true;
-          });
-        },
-        switchActive: (key) {
-          setState(() {
-         //   activeWidget = key;
-          });
-        },
-        layoutModel: widget.layoutModel,
+        controller: widget.controller,
         child: itemChild,
       ));
     }
@@ -250,18 +218,7 @@ late BoxConstraints oldConstraints;
             wrappedWidth = width;
           });
         },*/
-      delete: (i) {
-        setState(() {
-          templateWidgets.removeWhere((e) => e.key == i);
-        });
-      },
-
-      switchActive: (key) {
-        setState(() {
-          activeWidget = key;
-        });
-      },
-      layoutModel: widget.layoutModel,
+      controller: widget.controller,
     );
   }
 
