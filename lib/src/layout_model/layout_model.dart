@@ -209,6 +209,7 @@ class LayoutModel {
         return MapEntry(
             key,
             switch (key) {
+              'process' => Property('Процесс', value, type: String),
               'statusId' => Property('Status Id', value, type: String),
               'title' => Property('title', value, type: String),
               'creatorTitle' => Property('Creator Title', value, type: String),

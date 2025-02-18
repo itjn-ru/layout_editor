@@ -129,6 +129,7 @@ class _MainCanvasState extends State<MainCanvas> {
               },
               onInteractionEnd: (scaleEndDetails) {
                 scaleSize = _transform.value.getMaxScaleOnAxis();
+                widget.controller.viewportZoom=scaleSize;
                 widget.controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
                 /*setState(() {
                   onIteraction = false;

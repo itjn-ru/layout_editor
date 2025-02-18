@@ -1,5 +1,12 @@
+import 'package:flutter/gestures.dart';
+
+import '../flutter_context_menu/components/menu_header.dart';
+import '../flutter_context_menu/components/menu_item.dart';
+import '../flutter_context_menu/core/models/context_menu_entry.dart';
+import 'canvas/context_menu.dart';
 import 'component_table.dart';
 import 'package:flutter/material.dart';
+import 'controller/helpers/renderbox.dart';
 import 'item.dart';
 import 'layout_model.dart';
 import 'page.dart';
@@ -54,7 +61,7 @@ class ProcessItemsState extends State<ProcessItems>
       child = Column(
         children: [
           ProcessItemWidget(item, widget.layoutModel),
-         /* Wrap(
+          /* Wrap(
               direction: first ? Axis.vertical : Axis.horizontal,
               children: children),*/
           Column(children: children),
@@ -119,8 +126,6 @@ class ProcessItemsState extends State<ProcessItems>
   bool get wantKeepAlive => true;
 }
 
-
-
 class ProcessItemWidget extends StatefulWidget {
   final Item _item;
   final LayoutModel layoutModel;
@@ -143,24 +148,70 @@ class ProcessItemWidgetState extends State<ProcessItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    List<ContextMenuEntry> editorContextMenuEntries=
+      [
+        const MenuHeader(text: "Editor Menu"),
+        MenuItem(
+            label: 'Center View',
+            icon: Icons.center_focus_strong,
+            onSelected: () {}),
+        MenuItem(
+          label: 'Reset Zoom',
+          icon: Icons.zoom_in,
+          onSelected: () {},
+        ),
+        //const MenuDivider(),
+        MenuItem.submenu(
+          label: 'Добавить',
+          icon: Icons.paste,
+            items:[
+              MenuItem(
+                label: 'Параллельно',
+                icon: Icons.widgets,
+                onSelected: () {},
+              ),
+              MenuItem(
+                label: 'Последовательно',
+                icon: Icons.widgets,
+                onSelected: () {},
+              ),
+            ],
+        ),
+      ];
+
+
+    return Padding(
       padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: dragging ? Colors.green : Colors.transparent,
-      ),
-      child: MouseRegion(
-        onEnter: (event) {
-          setState(() {
-            hover = true;
-          });
-        },
-        onExit: (event) {
-          setState(() {
-            hover = false;
-          });
+      child: Listener(
+        behavior: HitTestBehavior.deferToChild,
+        onPointerDown: (PointerDownEvent event) {
+          if (event.buttons == kSecondaryMouseButton) {
+
+           /* showMenu(context: context,
+                position: buttonMenuPosition(event),
+                items: [
+              PopupMenuItem<int>(
+                value: 0,
+                child: Text('Working a lot harder'),
+              ),
+              PopupMenuItem<int>(
+                value: 1,
+                child: Text('Working a lot less'),
+              ),
+              PopupMenuItem<int>(
+                value: 1,
+                child: Text('Working a lot smarter'),
+              ),
+            ]);*/
+            createAndShowContextMenu(
+              context,
+              entries: editorContextMenuEntries,
+              position: event.position,
+            );
+          }
         },
         child: Row(
-         // alignment: WrapAlignment.spaceBetween,
+          // alignment: WrapAlignment.spaceBetween,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
@@ -170,55 +221,46 @@ class ProcessItemWidgetState extends State<ProcessItemWidget> {
                 maxLines: 2,
               ),
             ),
-            InkWell(
-              child: const Padding(
-                padding: EdgeInsets.only(left: 5, right: 15),
-                child: Icon(
-                  Icons.more_vert,
-                  size: 18,
-                ),
-              ),
-              onTapDown: (details) {
-                final menu = ComponentAndSourceMenu.create(
-                    widget.layoutModel, widget._item);
-
-                final menuItems = menu.getComponentMenu(
-                  (p0) {},
-                );
-
-                if (menuItems.isEmpty) {
-                  return;
-                }
-
-                final offset = details.globalPosition;
-
-                showMenu(
-                    context: context,
-                    position: RelativeRect.fromLTRB(
-                      offset.dx,
-                      offset.dy,
-                      MediaQuery.of(context).size.width - offset.dx,
-                      MediaQuery.of(context).size.height - offset.dy,
-                    ),
-                    items: menuItems);
-              },
-            ),
           ],
         ),
       ),
     );
-
-    return MouseRegion(
-      onEnter: (event) {
-        setState(() {
-          hover = true;
-        });
-      },
-      onExit: (event) {
-        setState(() {
-          hover = false;
-        });
-      },
+  }
+  RelativeRect buttonMenuPosition(PointerDownEvent event) {
+    final RenderBox bar = context.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+    Overlay.of(context).context.findRenderObject() as RenderBox;
+    const Offset offset = Offset.zero;
+    final RelativeRect rect = RelativeRect.fromRect(Rect.fromPoints(event.localPosition,event.position),
+      //offset & overlay.size,);
+    offset &overlay.size,
     );
+    /*final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        bar.localToGlobal(
+            bar.size.centerRight(offset),
+            ancestor: overlay),
+        bar.localToGlobal(
+             bar.size.centerRight(offset),
+            ancestor: overlay),
+      ),
+      offset & overlay.size,
+    );*/
+    return rect;
+  }
+  List<ContextMenuEntry> createSubmenuEntries() {
+    List<ContextMenuEntry> list = [
+      MenuItem(
+        label: 'Параллельно',
+        icon: Icons.widgets,
+        onSelected: () {},
+      ),
+      MenuItem(
+        label: 'Последовательно',
+        icon: Icons.widgets,
+        onSelected: () {},
+      ),
+    ];
+    return list;
   }
 }
