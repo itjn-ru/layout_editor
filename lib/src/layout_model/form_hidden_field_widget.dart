@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'canvas/layout_model_inherit.dart';
 import 'component_widget.dart';
 import 'hidden_field_file.dart';
+import 'style_element.dart';
 
 class FormHiddenFieldWidget extends ComponentWidget {
-  const FormHiddenFieldWidget(super.component, super.layoutModel, {super.key});
+  const FormHiddenFieldWidget(super.component, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -13,6 +15,9 @@ class FormHiddenFieldWidget extends ComponentWidget {
     if (text.isEmpty) {
       text = component['text'] ?? '';
     }
+    final layoutModel = LayoutModelInheritedWidget.of(context).layoutModel;
+    var style = layoutModel.getStyleElementById(component['style'].id) ??
+        StyleElement("стиль");
     if (component['style']?.name == 'вложение') {
       return HiddenFieldFile(component: component);
     } else if (component['name'] == 'фото') {

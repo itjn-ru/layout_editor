@@ -8,15 +8,14 @@ import 'style.dart';
 import 'style_widget.dart';
 
 class ComponentsAndSources extends StatelessWidget {
-  final LayoutModel layoutModel;
 final BoxConstraints constraints;
   final ScreenSizeEnum screenSize;
   final LayoutModelController controller;
-  const ComponentsAndSources(this.layoutModel, this.constraints,this.screenSize, {super.key,required this.controller});
+  const ComponentsAndSources( this.constraints,this.screenSize, {super.key,required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    final ComponentAndSourcePage curPage =layoutModel.getPageByItem(layoutModel.curItem)!;
+    final ComponentAndSourcePage curPage =controller.layoutModel.getPageByItem(controller.layoutModel.curItem)!;
       if (curPage is StylePage) {
         return Column(
           children: List.generate(
@@ -35,7 +34,7 @@ final BoxConstraints constraints;
               )
             : Container();
       } else {
-        final curPage = layoutModel.root.items.first;
+        final curPage = controller.layoutModel.root.items.first;
         return MainCanvas(
           items: curPage.items,
           constraints: constraints,

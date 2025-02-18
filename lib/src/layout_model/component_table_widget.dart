@@ -1,3 +1,4 @@
+import 'canvas/layout_model_inherit.dart';
 import 'style_element.dart';
 import 'package:flutter/material.dart';
 import 'component_widget.dart';
@@ -7,7 +8,7 @@ import 'component_table.dart';
 import 'item.dart';
 
 class ComponentTableWidget extends ComponentWidget {
-  const ComponentTableWidget(super.component, super.layoutModel, {super.key});
+  const ComponentTableWidget(super.component,{super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -43,7 +44,7 @@ class ComponentTableWidget extends ComponentWidget {
           if (cellText.isEmpty) {
             cellText = cell["text"] ?? "";
           }
-
+          final layoutModel = LayoutModelInheritedWidget.of(context).layoutModel;
           var style = layoutModel.getStyleElementById(cell['style'].id) ??
               StyleElement("стиль");
 

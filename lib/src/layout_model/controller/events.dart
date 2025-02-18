@@ -207,6 +207,7 @@ final class PanEnd extends LayoutModelEvent {
   const PanEnd({required super.id});
 }
 
+
 /// Класс, позволяющий задавать логику сериализации и десериализации
 /// для пользовательских типов данных.
 class DataHandler {

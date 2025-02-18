@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'component_widget.dart';
 
 class FormImageWidget extends ComponentWidget {
-  const FormImageWidget(super.component, super.layoutModel, {super.key});
+  const FormImageWidget(super.component, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

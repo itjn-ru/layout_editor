@@ -1,10 +1,9 @@
-import 'package:admin_layout_editor/admin_layout_editor.dart';
 import 'package:flutter/material.dart';
 import '../component.dart';
 import '../component_widget.dart';
 import '../controller/events.dart';
+import '../controller/layout_model_controller.dart';
 import '../item.dart';
-import '../layout_model.dart';
 import 'resizable_draggable_widget_platform_interface.dart';
 
 ///Возвращает изменяемый виджет
@@ -17,10 +16,11 @@ class ResizableDraggableWidget extends StatefulWidget {
     this.child,
     this.bgColor,
     this.squareColor,
-    this.changed,
+    // this.changed,
     required this.canvasWidth,
     required this.canvasHeight,
     required this.controller,
+    required this.scaleConstraints,
     this.cellWidth = 10.0,
     this.cellHeight = 10.0,
     required this.position,
@@ -31,13 +31,15 @@ class ResizableDraggableWidget extends StatefulWidget {
 
   ///Начальная высота, по умолчанию 60
   final double? initHeight;
+  final double scaleConstraints;
   final double cellWidth;
   final double cellHeight;
   final Offset position;
   final Item? child;
   final Color? squareColor;
   final Color? bgColor;
-  final Function(double width, double height, Offset tranformOffset)? changed;
+
+  //final Function(double width, double height, Offset tranformOffset)? changed;
   final double canvasHeight;
   final double canvasWidth;
   final LayoutModelController controller;
@@ -89,8 +91,7 @@ late final curComponentItem;*/
     _dynamicSW = _dynamicW;
     _dynamicSH = _dynamicH;
     _child = IgnorePointer(
-        child: ComponentWidget.create(
-            widget.child as LayoutComponent, widget.controller.layoutModel));
+        child: ComponentWidget.create(widget.child as LayoutComponent));
     _sqColor = widget.squareColor == null ? Colors.white : widget.squareColor!;
     _bgColor = widget.bgColor == null ? Colors.amber : widget.bgColor!;
     if (widget.controller.layoutModel.curItem == widget.child) {
@@ -210,10 +211,7 @@ late final curComponentItem;*/
           _panIntervalOffset = _panUpdateOffset - _panStartOffset;
           refreshH(dir, _panIntervalOffset.dy);
         }
-        if (widget.changed != null) {
-          widget.changed!(
-              _dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
-        }
+        onChanged(_dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
       },
       onPanEnd: ((details) {
         trLastH = trH;
@@ -265,9 +263,9 @@ late final curComponentItem;*/
             top: -10,
             child: IconButton(
                 onPressed: () {
-                    widget.controller.layoutModel.deleteItem(widget.child!);
-                    widget.controller.eventBus
-                        .emit(RemoveItemEvent(id: widget.child!.id));
+                  widget.controller.layoutModel.deleteItem(widget.child!);
+                  widget.controller.eventBus
+                      .emit(RemoveItemEvent(id: widget.child!.id));
                 },
                 icon: const Icon(Icons.delete)))
       ]),
@@ -312,12 +310,10 @@ late final curComponentItem;*/
                     (intervalOffset.dy / widget.cellHeight).round() *
                         widget.cellHeight);
               });
-              if (widget.changed != null) {
-                widget.child!.properties["position"]?.value =
-                    updateMoveOffset + Offset(trW, trH);
-                widget.changed!(
-                    _dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
-              }
+              widget.child!.properties["position"]?.value =
+                  updateMoveOffset + Offset(trW, trH);
+              onChanged(
+                  _dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
             }
           },
           onPanEnd: (details) {
@@ -327,5 +323,15 @@ late final curComponentItem;*/
           //);
           //}
         ));
+  }
+
+  void onChanged(double width, double height, Offset tranformOffset) {
+    final component = widget.controller.layoutModel.curPage.items
+        .firstWhere((e) => e == widget.child);
+    component.properties["position"]?.value = Offset(
+        (tranformOffset.dx / widget.scaleConstraints).round().toDouble(),
+        (tranformOffset.dy / widget.scaleConstraints).round().toDouble());
+    component.properties["size"]?.value =
+        Size(width / widget.scaleConstraints, height / widget.scaleConstraints);
   }
 }

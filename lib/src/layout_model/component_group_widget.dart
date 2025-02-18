@@ -4,7 +4,7 @@ import 'component.dart';
 import 'component_widget.dart';
 
 class ComponentGroupWidget extends ComponentWidget {
-  const ComponentGroupWidget(super.component,super.layoutModel, {super.key});
+  const ComponentGroupWidget(super.component, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -26,7 +26,7 @@ class ComponentGroupWidget extends ComponentWidget {
                     constraints.maxWidth,
                 height: component.items[index]['size'].height,*/
                 child: ComponentWidget.create(
-                    component.items[index] as LayoutComponent, layoutModel),
+                    component.items[index] as LayoutComponent),
               ),
             ),
           ),

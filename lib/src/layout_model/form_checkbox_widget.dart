@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'canvas/layout_model_inherit.dart';
 import 'component_widget.dart';
 import 'style_element.dart';
 
 class FormCheckboxWidget extends ComponentWidget {
-  const FormCheckboxWidget(super.component, super.layoutModel, {super.key});
+  const FormCheckboxWidget(super.component, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
-    var style = StyleElement("стиль");
+    final layoutModel = LayoutModelInheritedWidget.of(context).layoutModel;
+    var style = layoutModel.getStyleElementById(component['style'].id) ??
+        StyleElement("стиль");
     final double fontSize= style['fontSize'];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

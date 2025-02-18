@@ -20,29 +20,29 @@ import 'form_text_field_widget.dart';
 
 class ComponentWidget extends StatelessWidget {
   final LayoutComponent component;
-final LayoutModel layoutModel;
-  const ComponentWidget(this.component,this.layoutModel, {super.key});
 
-  factory ComponentWidget.create(LayoutComponent component,LayoutModel layoutModel) {
+  const ComponentWidget(this.component, {super.key});
+
+  factory ComponentWidget.create(LayoutComponent component) {
     switch (component.runtimeType) {
       case const (FormHiddenField):
-        return FormHiddenFieldWidget(component,layoutModel);
+        return FormHiddenFieldWidget(component);
       case const (FormRadio):
-        return ComponentRadioWidget(component,layoutModel);
+        return ComponentRadioWidget(component);
       case const (ComponentGroup):
-        return ComponentGroupWidget(component,layoutModel);
+        return ComponentGroupWidget(component);
       case const (ComponentText):
-        return ComponentTextWidget(component,layoutModel);
+        return ComponentTextWidget(component);
       case const (ComponentTable):
-        return ComponentTableWidget(component,layoutModel);
+        return ComponentTableWidget(component);
       case const (FormTextField):
-        return FormTextFieldWidget(component,layoutModel);
+        return FormTextFieldWidget(component);
       case const (FormImage):
-        return FormImageWidget(component,layoutModel);
+        return FormImageWidget(component);
       case const (FormCheckbox):
-        return FormCheckboxWidget(component,layoutModel);
+        return FormCheckboxWidget(component);
       default:
-        return ComponentWidget(component,layoutModel);
+        return ComponentWidget(component);
     }
   }
 
@@ -56,5 +56,4 @@ final LayoutModel layoutModel;
   Widget buildWidget(BuildContext context) {
     return Text(component.type);
   }
-  
 }

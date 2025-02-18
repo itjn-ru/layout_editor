@@ -1,14 +1,15 @@
+
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart' show DeepCollectionEquality;
+import 'package:uuid/uuid.dart';
 
-import '../component.dart';
-import '../component_widget.dart';
 import '../components_and_sources.dart';
 import '../controller/events.dart';
 import '../controller/layout_model_controller.dart';
 import '../item.dart';
 import '../layout_model.dart';
 import 'grid_background_widget.dart';
+import 'layout_model_inherit.dart';
 import 'resizable_draggable_widget.dart';
 
 class MainCanvas extends StatefulWidget {
@@ -52,7 +53,7 @@ class _MainCanvasState extends State<MainCanvas> {
 late BoxConstraints oldConstraints;
   @override
   void initState() {
-    //widget.controller.eventBus.events.listen(_handleRunnerEvents);
+    widget.controller.eventBus.events.listen(_handleRunnerEvents);
     oldConstraints=widget.constraints;
     _canvasWidth = widget.constraints.maxWidth-20;
     _canvasHeight = widget.constraints.maxHeight-20;
@@ -64,10 +65,10 @@ late BoxConstraints oldConstraints;
   }
 
   void _handleRunnerEvents(LayoutModelEvent event) {
-    if (event is SelectionEvent ) {
-     /*setState(() {
+    if (event is SelectionEvent||event is PanEnd ) {
+     setState(() {
 
-     });*/
+     });
     }
   }
   @override
@@ -114,19 +115,20 @@ late BoxConstraints oldConstraints;
           child: InteractiveViewer.builder(
               panEnabled: true,
               transformationController: _transform,
-              onInteractionStart: (details) {},
+              onInteractionStart: (details) { },
               onInteractionUpdate: (details) {
-                setState(() {
+                /*setState(() {
                   onIteraction = true;
-                });
+                });*/
                 _onPanUpdate(details.focalPointDelta);
+                widget.controller.eventBus.emit(PanEnd(id:const Uuid().v4()));
               },
               onInteractionEnd: (scaleEndDetails) {
                 scaleSize = _transform.value.getMaxScaleOnAxis();
-
-                setState(() {
+                widget.controller.eventBus.emit(PanEnd(id:const Uuid().v4()));
+                /*setState(() {
                   onIteraction = false;
-                });
+                });*/
               },
               minScale: 1,
               maxScale: 8,
@@ -153,48 +155,27 @@ late BoxConstraints oldConstraints;
     );
   }
 
-  void componentsItems(List<Item> componentsItems) {
-    components
-      ..clear()
-      ..addAll(List.generate(
-        componentsItems.length, //widget._items.length,
-        (index) => ComponentWidget.create(
-            componentsItems[index] as LayoutComponent, widget.controller.layoutModel),
-      ));
-  }
-
-  List<ResizableDraggableWidget> _initWidgetList() {
-    final List<ResizableDraggableWidget> _list = [];
+  List<LayoutModelInheritedWidget> _initWidgetList() {
+    final List<LayoutModelInheritedWidget> _list = [];
     for (final itemChild in items) {
-      _list.add(ResizableDraggableWidget(
-        key: UniqueKey(),
-        position: Offset(itemChild["position"]?.dx * scaleConstraints ?? 0,
-            itemChild["position"]?.dy * scaleConstraints ?? 0),
-        initWidth: itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
-        initHeight: itemChild["size"]?.height * scaleConstraints ?? 50,
-        cellWidth: cellWidth / 2,
-        cellHeight: cellHeight / 2,
-        canvasWidth: _canvasWidth,
-        canvasHeight: _canvasHeight,
-        //active: activeWidget == key ? true : false,
-        bgColor: Colors.white,
-        squareColor: Colors.blueAccent,
-        changed: (width, height, tranformOffset) {
-          final component = widget.controller.layoutModel.curPage.items
-              .firstWhere((e) => e == itemChild);
-          component.properties["position"]?.value = Offset(
-              (tranformOffset.dx / scaleConstraints).round().toDouble(),
-              (tranformOffset.dy / scaleConstraints).round().toDouble());
-          component.properties["size"]?.value =
-              Size(width / scaleConstraints, height / scaleConstraints);
-          /* setState(() {
-            position = tranformOffset;
-            wrappedHeight = height;
-            wrappedWidth = width;
-          });*/
-        },
-        controller: widget.controller,
-        child: itemChild,
+      _list.add(LayoutModelInheritedWidget(
+        layoutModel: widget.controller.layoutModel,
+        child: ResizableDraggableWidget(
+          //key: UniqueKey(),
+          position: Offset(itemChild["position"]?.dx * scaleConstraints ?? 0,
+              itemChild["position"]?.dy * scaleConstraints ?? 0),
+          initWidth: itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
+          initHeight: itemChild["size"]?.height * scaleConstraints ?? 50,
+          cellWidth: cellWidth / 2,
+          cellHeight: cellHeight / 2,
+          canvasWidth: _canvasWidth,
+          canvasHeight: _canvasHeight,
+          bgColor: Colors.white,
+          squareColor: Colors.blueAccent,
+          scaleConstraints:scaleConstraints,
+          controller: widget.controller,
+          child: itemChild,
+        ),
       ));
     }
     return _list;
@@ -208,16 +189,9 @@ late BoxConstraints oldConstraints;
       canvasHeight: _canvasHeight,
       cellHeight: cellHeight,
       cellWidth: cellWidth,
-      //active: activeWidget == key ? true : false,
+      scaleConstraints:scaleConstraints,
       bgColor: Colors.white,
       squareColor: Colors.blueAccent,
-      /*changed: (width, height, tranformOffset) {
-          setState(() {
-            position = tranformOffset;
-            wrappedHeight = height;
-            wrappedWidth = width;
-          });
-        },*/
       controller: widget.controller,
     );
   }
