@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'form_hidden_field.dart';
+import '../flutter_context_menu/flutter_context_menu.dart';
+import 'controller/events.dart';
 import 'menu.dart';
 import 'item.dart';
 import 'page.dart';
 
-import 'component_group.dart';
 
 class ComponentRootMenu extends ComponentAndSourceMenu {
-  ComponentRootMenu(super.layoutModel, super.target, {super.onChanged});
+  ComponentRootMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -16,8 +16,25 @@ class ComponentRootMenu extends ComponentAndSourceMenu {
         child: const Text("Добавить страницу"),
         onTap: () {
           final ComponentPage item = ComponentPage("страница");
-          layoutModel.addItem(target, item);
+          controller.layoutModel.addItem(target, item);
           onChanged!(item);
+        },
+      ),
+    ];
+  }
+
+  @override
+  List<ContextMenuEntry> getContextMenu(
+      void Function(LayoutModelEvent event)? onChanged) {
+    return [
+      const MenuHeader(text: "Редактирование"),
+      MenuItem(
+        label: 'Добавить страницу',
+        icon: Icons.add,
+        onSelected: () {
+          final ComponentPage item = ComponentPage("страница");
+          controller.layoutModel.addItem(target, item);
+          onChanged!(AddItemEvent(id: item.id));
         },
       ),
     ];

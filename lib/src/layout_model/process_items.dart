@@ -1,26 +1,13 @@
-import 'package:flutter/gestures.dart';
 
-import '../flutter_context_menu/components/menu_header.dart';
-import '../flutter_context_menu/components/menu_item.dart';
-import '../flutter_context_menu/core/models/context_menu_entry.dart';
+import '../../admin_layout_editor.dart';
 import 'canvas/context_menu.dart';
-import 'component_table.dart';
 import 'package:flutter/material.dart';
-import 'controller/helpers/renderbox.dart';
-import 'item.dart';
-import 'layout_model.dart';
-import 'page.dart';
-import 'root.dart';
-
-import 'menu.dart';
 
 class ProcessItems extends StatefulWidget {
   final Item _item;
-  final LayoutModel layoutModel;
-  final void Function(Item item)? onItemChanged;
+  final LayoutModelController controller;
 
-  const ProcessItems(this._item, this.layoutModel,
-      {this.onItemChanged, super.key});
+  const ProcessItems(this._item, this.controller, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -36,13 +23,14 @@ class ProcessItemsState extends State<ProcessItems>
     return LayoutBuilder(builder: (context, constraints) {
       return SizedBox(
           width: constraints.maxWidth,
-          child: _buildItem(widget._item, true, constraints.maxWidth));
+          height: constraints.maxHeight,
+          child: _buildItem(widget._item, null, constraints.maxWidth));
     });
   }
 
-  Widget _buildItem(Item item, bool first, double width) {
+  Widget _buildItem(Item item, String? processType, double width) {
     Widget child;
-    final curItem = widget.layoutModel.curItem;
+    final curItem = widget.controller.layoutModel.curItem;
     if (item.items.isNotEmpty) {
       final children = <Widget>[];
 
@@ -54,213 +42,139 @@ class ProcessItemsState extends State<ProcessItems>
             //width: (width - 5) / (first ? 1 : items.length),
             child: Padding(
                 padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
-                child: _buildItem(items[index], false,
-                    (width) / (first ? 1 : items.length) - 5 * items.length))),
+                child: _buildItem(
+                    items[index],
+                    item.properties['processType']?.value,
+                    (width) / (items.length) - 5 * items.length))),
       ));
-
+      processType = item.properties['processType']?.value ?? 'последовательно';
       child = Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ProcessItemWidget(item, widget.layoutModel),
-          /* Wrap(
-              direction: first ? Axis.vertical : Axis.horizontal,
-              children: children),*/
-          Column(children: children),
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: Text(
+              item['name'],
+              softWrap: true,
+            ),
+          ),
+          Flex(
+              mainAxisSize: MainAxisSize.min,
+              direction: processType != 'параллельно'
+                  ? Axis.vertical
+                  : Axis.horizontal,
+              children: children),
         ],
       );
     } else {
-      child = InkWell(
-        onTap: () {
-          if (item == curItem) {
-            return;
-          }
-          widget.layoutModel.curItem = item;
-          setState(() {
-            widget.layoutModel.curItem = item;
-
-            if (widget.onItemChanged != null) {
-              widget.onItemChanged!(item);
-            }
-          });
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: item == curItem
-                ? Colors.amber
-                : item is ComponentAndSourcePage
-                    ? Colors.grey
-                    : Colors.white,
-            border: Border.all(),
-          ),
-          child: ProcessItemWidget(item, widget.layoutModel),
-        ),
-      );
+      child = ProcessItemWidget(item, widget.controller);
     }
 
-    return InkWell(
-        onTap: () {
-          if (item == curItem) {
-            return;
-          }
-          widget.layoutModel.curItem = item;
-          setState(() {
-            widget.layoutModel.curItem = item;
-
-            if (widget.onItemChanged != null) {
-              widget.onItemChanged!(item);
-            }
-          });
-        },
-        child: Container(
-            decoration: BoxDecoration(
-              color: item == curItem
-                  ? Colors.amber
-                  : item is ComponentAndSourcePage
-                      ? Colors.grey
-                      : Colors.white,
-              border: Border.all(),
-            ),
-            child: child));
+    return ItemWrapper(controller: widget.controller, item: item, child: child);
   }
 
   @override
   bool get wantKeepAlive => true;
 }
 
-class ProcessItemWidget extends StatefulWidget {
-  final Item _item;
-  final LayoutModel layoutModel;
+class ItemWrapper extends StatefulWidget {
+  final Item item;
+  final LayoutModelController controller;
+  final Widget child;
 
-  const ProcessItemWidget(this._item, this.layoutModel, {super.key});
+  const ItemWrapper({
+    super.key,
+    required this.child,
+    required this.controller,
+    required this.item,
+  });
 
   @override
-  State<StatefulWidget> createState() => ProcessItemWidgetState();
+  State<ItemWrapper> createState() => _ItemWrapperState();
 }
 
-class ProcessItemWidgetState extends State<ProcessItemWidget> {
-  late bool hover;
-  bool dragging = false;
+class _ItemWrapperState extends State<ItemWrapper> {
+  Offset? position;
 
   @override
-  void initState() {
+    void initState() {
+      widget.controller.eventBus.events.listen(_handleRunnerEvents);
     super.initState();
-    hover = true;
+  }
+
+  void _handleRunnerEvents(LayoutModelEvent event) {
+    if (mounted && (event is SelectionEvent ||
+          event is PanEnd ||
+          event is NewProjectEvent)) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<ContextMenuEntry> editorContextMenuEntries=
-      [
-        const MenuHeader(text: "Editor Menu"),
-        MenuItem(
-            label: 'Center View',
-            icon: Icons.center_focus_strong,
-            onSelected: () {}),
-        MenuItem(
-          label: 'Reset Zoom',
-          icon: Icons.zoom_in,
-          onSelected: () {},
-        ),
-        //const MenuDivider(),
-        MenuItem.submenu(
-          label: 'Добавить',
-          icon: Icons.paste,
-            items:[
-              MenuItem(
-                label: 'Параллельно',
-                icon: Icons.widgets,
-                onSelected: () {},
-              ),
-              MenuItem(
-                label: 'Последовательно',
-                icon: Icons.widgets,
-                onSelected: () {},
-              ),
-            ],
-        ),
-      ];
-
-
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: Listener(
-        behavior: HitTestBehavior.deferToChild,
-        onPointerDown: (PointerDownEvent event) {
-          if (event.buttons == kSecondaryMouseButton) {
-
-           /* showMenu(context: context,
-                position: buttonMenuPosition(event),
-                items: [
-              PopupMenuItem<int>(
-                value: 0,
-                child: Text('Working a lot harder'),
-              ),
-              PopupMenuItem<int>(
-                value: 1,
-                child: Text('Working a lot less'),
-              ),
-              PopupMenuItem<int>(
-                value: 1,
-                child: Text('Working a lot smarter'),
-              ),
-            ]);*/
-            createAndShowContextMenu(
-              context,
-              entries: editorContextMenuEntries,
-              position: event.position,
-            );
+    return MouseRegion(
+      onEnter: (event) {
+        setState(() {
+          position = event.position;
+        });
+      },
+      child: GestureDetector(
+        onTap: () {
+          if (widget.item == widget.controller.layoutModel.curItem) {
+            return;
           }
+          widget.controller.layoutModel.curItem = widget.item;
+          widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
         },
-        child: Row(
-          // alignment: WrapAlignment.spaceBetween,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                widget._item['name'],
-                overflow: TextOverflow.clip,
-                maxLines: 2,
+        onSecondaryTap: () {
+          final menu = ComponentAndSourceMenu.create(
+              widget.controller, widget.item);
+
+          final menuItems = menu.getContextMenu(
+            (event) => widget.controller.eventBus.emit(event),
+          );
+          createAndShowContextMenu(
+            context,
+            entries: menuItems,
+            position: position!,
+          );
+          if (widget.item == widget.controller.layoutModel.curItem) {
+            return;
+          }
+          widget.controller.layoutModel.curItem = widget.item;
+          widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
+        },
+        child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(
+                width: widget.item == widget.controller.layoutModel.curItem
+                    ? 2.0
+                    : 1.0,
               ),
             ),
-          ],
-        ),
+            child: widget.child),
       ),
     );
   }
-  RelativeRect buttonMenuPosition(PointerDownEvent event) {
-    final RenderBox bar = context.findRenderObject() as RenderBox;
-    final RenderBox overlay =
-    Overlay.of(context).context.findRenderObject() as RenderBox;
-    const Offset offset = Offset.zero;
-    final RelativeRect rect = RelativeRect.fromRect(Rect.fromPoints(event.localPosition,event.position),
-      //offset & overlay.size,);
-    offset &overlay.size,
+}
+
+class ProcessItemWidget extends StatelessWidget {
+  final Item _item;
+  final LayoutModelController controller;
+
+  const ProcessItemWidget(this._item, this.controller, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        _item['name'],
+        textAlign: TextAlign.center,
+        softWrap: true,
+      ),
     );
-    /*final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        bar.localToGlobal(
-            bar.size.centerRight(offset),
-            ancestor: overlay),
-        bar.localToGlobal(
-             bar.size.centerRight(offset),
-            ancestor: overlay),
-      ),
-      offset & overlay.size,
-    );*/
-    return rect;
-  }
-  List<ContextMenuEntry> createSubmenuEntries() {
-    List<ContextMenuEntry> list = [
-      MenuItem(
-        label: 'Параллельно',
-        icon: Icons.widgets,
-        onSelected: () {},
-      ),
-      MenuItem(
-        label: 'Последовательно',
-        icon: Icons.widgets,
-        onSelected: () {},
-      ),
-    ];
-    return list;
   }
 }

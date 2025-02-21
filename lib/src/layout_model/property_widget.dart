@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import '../../admin_layout_editor.dart';
+import 'controller/events.dart';
+import 'controller/layout_model_controller.dart';
 import 'property.dart';
 import 'property_alignment_widget.dart';
 import 'property_color_widget.dart';
@@ -12,80 +12,66 @@ import 'property_offset_widget.dart';
 import 'property_size_widget.dart';
 import 'property_style_widget.dart';
 import 'property_uuid_widget.dart';
-import 'style.dart';
 import 'package:uuid/uuid.dart';
-
+import 'style.dart';
 import 'property_border_style_widget.dart';
 
-class PropertyWidget extends StatefulWidget {
-  final Property property;
-final LayoutModel layoutModel;
-  const PropertyWidget(this.property, this.layoutModel, {super.key});
+class PropertyWidget extends StatelessWidget {
+  final String propertyKey;
+final LayoutModelController controller;
+  const PropertyWidget(this.controller, this.propertyKey, {super.key});
 
-  factory PropertyWidget.create(Property property, LayoutModel layoutModel) {
-    switch (property.type) {
+  factory PropertyWidget.create(LayoutModelController controller, String propertyKey) {
+    switch (controller.layoutModel.curItem.properties[propertyKey]?.type) {
       case const (CustomBorderStyle):
-        return PropertyBorderStyleWidget(property,layoutModel);
+        return PropertyBorderStyleWidget(controller,propertyKey);
       case const (Offset):
-        return PropertyOffsetWidget(property,layoutModel);
-      case Size _:
-        return PropertySizeWidget(property,layoutModel);
-      case Color:
-        return PropertyColorWidget(property,layoutModel);
-      case Alignment:
-        return PropertyAlignmentWidget(property,layoutModel);
-      case Style:
-        return PropertyStyleWidget(property,layoutModel);
-      case FontWeight:
-        return PropertyFontWeightWidget(property,layoutModel);
-      case UuidValue:
-        return PropertyUuidWidget(property,layoutModel);
-      case Uint8List:
-        return PropertyImageWidget(property,layoutModel);
+        return PropertyOffsetWidget(controller,propertyKey);
+      case const (Size) :
+        return PropertySizeWidget(controller,propertyKey);
+      case const (Color):
+        return PropertyColorWidget(controller,propertyKey);
+      case const (Alignment):
+        return PropertyAlignmentWidget(controller,propertyKey);
+      case const (Style):
+        return PropertyStyleWidget(controller,propertyKey);
+      case const (FontWeight):
+        return PropertyFontWeightWidget(controller,propertyKey);
+      case const (UuidValue):
+        return PropertyUuidWidget(controller,propertyKey);
+      case const (Uint8List):
+        return PropertyImageWidget(controller,propertyKey);
       default:
-        return PropertyWidget(property,layoutModel);
+        return PropertyWidget(controller,propertyKey);
     }
   }
 
-  Widget buildWidget(BuildContext context, Function onChanged) {
-    final controller = TextEditingController();
-    controller.text = property.value.toString();
+
+  @override
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
+    final txtController = TextEditingController();
+    txtController.text = property.value.toString();
+    txtController.selection = TextSelection.fromPosition(TextPosition(offset: txtController.text.length));
     return Row(children: [
       Expanded(
           child: TextField(
-        controller: controller,
-        onChanged: (value) {
-          switch (property.type) {
-            case double:
-              property.value = double.tryParse(value);
-            default:
-              property.value = value;
-          }
-        },
-      ))
+            controller: txtController,
+            focusNode: FocusNode(),
+            onTap: ()=>controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+            onSubmitted: (value)=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+            onTapOutside: (value)=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+            onEditingComplete:()=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+            onChanged: (value) {
+              switch (property.type) {
+                case const (double):
+                  property.value = double.tryParse(value);
+                default:
+                  property.value = value;
+              }
+
+            },
+          ))
     ]);
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    return _PropertyWidgetState();
-  }
-}
-
-class _PropertyWidgetState extends State<PropertyWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: widget.buildWidget(
-        context,
-        () {
-          setState(() {});
-        },
-      ),
-    );
-  }
-
-  onChanged() {
-    setState(() {});
   }
 }

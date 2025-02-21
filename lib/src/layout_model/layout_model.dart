@@ -1,32 +1,20 @@
-import 'dart:convert';
-import 'dart:typed_data';
+import 'package:uuid/uuid.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'component_group.dart';
 import 'component_table.dart';
-import 'component_text.dart';
 import 'constants.dart';
-import 'form_checkbox.dart';
-import 'form_image.dart';
-import 'form_slider_button.dart';
+import 'from_map_to_map_mixin.dart';
 import 'item.dart';
 import 'page.dart';
-import 'process_element.dart';
+import 'process_group.dart';
 import 'property.dart';
 import 'root.dart';
 import 'source_table.dart';
-import 'source_variable.dart';
 import 'style.dart';
 import 'style_element.dart';
-import 'package:uuid/uuid.dart';
-
 import 'component_and_source.dart';
-import 'form_hidden_field.dart';
-import 'form_radio.dart';
-import 'form_text_field.dart';
 
-class LayoutModel {
+class LayoutModel with FromMapToMap {
   late Root root;
   late ComponentAndSourcePage curPage;
 
@@ -149,7 +137,7 @@ class LayoutModel {
   void fromMap(Map map) {
     root = Root(map['properties']['name']);
     root
-      ..properties = _propertiesFromMap(map['properties'])
+      ..properties = propertiesFromMap(map['properties'])
       ..items = _itemsFromMap(root, map['items']);
     curItem = root;
     curItemOnPage[ComponentPage] = root;
@@ -203,186 +191,13 @@ class LayoutModel {
     //добавляем базовый стиль
   }
 
-  Map<String, Property> _propertiesFromMap(Map map) {
-    final Map<String, Property> properties = map.map(
-      (key, value) {
-        return MapEntry(
-            key,
-            switch (key) {
-              'process' => Property('Процесс', value, type: String),
-              'statusId' => Property('Status Id', value, type: String),
-              'title' => Property('title', value, type: String),
-              'creatorTitle' => Property('Creator Title', value, type: String),
-              'Uint8List' =>
-                // Property('картинка', Uint8List.fromList(value.codeUnits), type: Uint8List ),
-                Property('картинка', base64.decode(value), type: Uint8List),
-              'horizontalAlignment' => Property('горизонтальное выравнивание',
-                  double.tryParse(value.toString()),
-                  type: double),
-              'verticalAlignment' => Property('вертикальное выравнивание',
-                  double.tryParse(value.toString()),
-                  type: double),
-              'stylefontSize' => Property(
-                  'размер шрифта', double.tryParse(value.toString() ?? '9'),
-                  type: double),
-              'isItalic' =>
-                Property('Курсив', value == 'true' ? true : false, type: bool),
-              'topBorder' => Property(
-                  'Верхняя граница',
-                  value.runtimeType == CustomBorderStyle
-                      ? value
-                      : CustomBorderStyle.fromMap(value),
-                  type: CustomBorderStyle),
-              'leftBorder' => Property(
-                  'Левая граница',
-                  value.runtimeType == CustomBorderStyle
-                      ? value
-                      : CustomBorderStyle.fromMap(value),
-                  type: CustomBorderStyle),
-              'rightBorder' => Property(
-                  'Правая граница',
-                  value.runtimeType == CustomBorderStyle
-                      ? value
-                      : CustomBorderStyle.fromMap(value),
-                  type: CustomBorderStyle),
-              'bottomBorder' => Property(
-                  'Нижняя граница',
-                  value.runtimeType == CustomBorderStyle
-                      ? value
-                      : CustomBorderStyle.fromMap(value),
-                  type: CustomBorderStyle),
-              'colspan' => Property(
-                  'объединение строк', int.tryParse(value) ?? 0,
-                  type: int),
-              'rowspan' => Property(
-                  'объединение колонок', int.tryParse(value) ?? 0,
-                  type: int),
-              'width' =>
-                Property('ширина', double.tryParse(value), type: double),
-              'height' =>
-                Property('высота', double.tryParse(value), type: double),
-              'fontWeight' => Property("насыщенность шрифта",
-                  FontWeight.values[((int.tryParse(value) ?? 400) ~/ 100) - 1],
-                  type: FontWeight),
-/*
-              'rowMergeStart' =>
-                  Property('начало объединения строк', int.tryParse(value)??-1, type: int),
-              'rowMergeSpan' =>
-                  Property('кол-во объединения строк', int.tryParse(value)??-1, type: int),
-              'columnMergestart' =>
-                  Property('начало объединения колонок', int.tryParse(value)??-1, type: int),
-              'columnMergeSpan' =>
-                  Property('кол-во объединения колонок', int.tryParse(value)??-1, type: int),
-*/
-              'position' => Property(
-                  'положение',
-                  Offset(double.tryParse(value['left']) ?? 0,
-                      double.tryParse(value['top']) ?? 0),
-                  type: Offset),
-              'size' => Property(
-                  'размер',
-                  Size(double.tryParse(value['width']) ?? 0,
-                      double.tryParse(value['height']) ?? 0),
-                  type: Size),
-              'id' => Property('идентификатор', value, type: String),
-              'color' => Property(
-                  'цвет', Color(int.tryParse(value, radix: 16) ?? 0),
-                  type: Color),
-              'style' => Property(
-                  'стиль',
-                  Style(
-                      value['id'] ?? UuidNil, value['name'] ?? 'базовый стиль'),
-                  type: Style),
-              'textStyle' => Property(
-                  'стиль текста',
-                  TextStyle(
-                    fontSize: double.tryParse(value['fontSize']) ?? 0,
-                    fontWeight: switch (
-                        int.tryParse(value['fontWeight']) ?? 0) {
-                      100 => FontWeight.w100,
-                      200 => FontWeight.w200,
-                      300 => FontWeight.w300,
-                      4400 => FontWeight.w300,
-                      500 => FontWeight.w500,
-                      600 => FontWeight.w600,
-                      700 => FontWeight.w700,
-                      800 => FontWeight.w800,
-                      900 => FontWeight.w900,
-                      _ => FontWeight.normal
-                    },
-                  ),
-                  type: TextStyle),
-              'alignment' => Property(
-                  'выравнивание',
-                  Alignment(double.tryParse(value['x']) ?? 0,
-                      double.tryParse(value['y']) ?? 0),
-                  type: Alignment),
-              _ => Property(key, value)
-            });
-      },
-    );
-    return properties;
-  }
-
   List<Item> _itemsFromMap(Item parent, List list) {
     final List<Item> items = [];
 
     for (final element in list) {
-      Item item = Item('item', 'item');
-      switch (element['type']) {
-        case 'componentPage':
-          item = ComponentPage('');
-        case 'sourcePage':
-          item = SourcePage('');
-        case 'stylePage':
-          item = StylePage('');
-        case 'processPage':
-          item = ProcessPage('');
-        case 'group':
-          item = ComponentGroup('');
-        case 'table':
-          if (parent is ComponentPage) {
-            item = ComponentTable('');
-          } else if (parent is SourcePage) {
-            item = SourceTable('');
-          } else if (parent is ComponentGroup) {
-            item = ComponentTable('');
-          }
-        case 'column':
-          if (parent is ComponentTable) {
-            item = ComponentTableColumn('');
-          } else if (parent is SourceTable) {
-            item = SourceTableColumn('');
-          }
-        case 'rowGroup':
-          item = ComponentTableRowGroup('');
-        case 'row':
-          item = ComponentTableRow('');
-        case 'cell':
-          item = ComponentTableCell('', '');
-        case 'text':
-          item = ComponentText('');
-        case 'variable':
-          item = SourceVariable('');
-        case 'textField':
-          item = FormTextField('');
-        case 'radio':
-          item = FormRadio('');
-        case 'image':
-          item = FormImage('');
-        case "sliderButton":
-          item = FormSliderButton('');
-        case 'checkbox':
-          item = FormCheckbox('');
-        case 'hiddenField':
-          item = FormHiddenField('');
-        case 'styleElement':
-          item = StyleElement('');
-        case 'processElement':
-          item = ProcessElement('');
-      }
+      Item item = switchItem(element, parent);
 
-      final itemProperties = _propertiesFromMap(element['properties']);
+      final itemProperties = propertiesFromMap(element['properties']);
 
       item.properties.forEach((key, value) {
         if (itemProperties.containsKey(key)) {
@@ -424,76 +239,28 @@ class LayoutModel {
     final Map map = {};
 
     map['layout'] = {
-      'properties': _propertiesToMap(root),
-      'items': _itemsToMap(root)
+      'properties': propertiesToMap(root),
+      'items': itemsToMap(root)
     };
 
     return map['layout'];
   }
 
-  Map _propertiesToMap(Item item) {
-    final map = {};
-
-    item.properties.forEach((key, property) {
-      map[key] = switch (property.type) {
-        //Uint8List=>String.fromCharCodes(property.value as List<int>),
-        Uint8List => base64.encode(property.value),
-        CustomBorderStyle => property.value.toMap(),
-        Offset => {
-            'left': property.value.dx.toString(),
-            'top': property.value.dy.toString()
-          },
-        Size => {
-            'width': property.value.width.toString(),
-            'height': property.value.height.toString()
-          },
-        Color => property.value.value.toRadixString(16).toUpperCase(),
-        Style => {
-            'id': property.value.id.toString(),
-            'name': property.value.name.toString()
-          },
-        FontWeight => property.value.value.toString(),
-        TextStyle => {
-            'fontSize': property.value.fontSize,
-            'fontWeight': property.value.fontWeight.value
-          },
-        Alignment => {'x': property.value.x, 'y': property.value.y},
-        _ => property.value.toString(),
-      };
-    });
-
-    return map;
-  }
-
-  List _itemsToMap(Item item) {
-    final list = [];
-
-    for (item in item.items) {
-      list.add({
-        'type': item.type,
-        'properties': _propertiesToMap(item),
-        'items': _itemsToMap(item)
-      });
-    }
-
-    return list;
-  }
-
-  void addItem(Item parent, Item item) {
+  void addItem(Item parent, Item item, {int? index}) {
     if (item is ComponentPage) {
       var indexLastPage = root.items
           .lastIndexWhere((element) => element.runtimeType == ComponentPage);
-      root.items.insert(++indexLastPage, item);
+      root.items.insert(index??++indexLastPage, item);
     } else if (item is LayoutComponentAndSource) {
       //_curItem.items.add(item);
 
-      parent.items.add(item);
+      parent.items.insert(index??parent.items.length, item);
 
       //curComponent = item is ComponentGroup ? null : item;
 
       final page = getPageByItem(parent);
 
-      _setPageForItem(page!, item);
+      _setPageForItem(page, item);
 
       if (item is! ComponentGroup) {
         for (final subItem in item.items) {
@@ -518,22 +285,22 @@ class LayoutModel {
 
       var indexLastItem = parent.items
           .lastIndexWhere((element) => element.runtimeType == item.runtimeType);
-      parent.items.insert(++indexLastItem, item);
+      parent.items.insert(index??++indexLastItem, item);
 
       switch (item.runtimeType) {
-        case ComponentTableColumn:
+        case const (ComponentTableColumn):
           component.items
               .where((element) => element.runtimeType == ComponentTableRowGroup)
               .forEach((rowGroup) {
             for (final row in rowGroup.items) {
-              final cell = ComponentTableCell('ячейка', '');
+              final cell = ComponentTableCell('ячейка');
               row.items.add(cell);
 
               //_setComponentForItem(component, cell);
             }
           });
 
-        case ComponentTableRowGroup:
+        case const (ComponentTableRowGroup):
           final row = ComponentTableRow('строка');
           item.items.add(row);
           //_setComponentForItem(component, row);
@@ -541,15 +308,15 @@ class LayoutModel {
           component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .forEach((rowGroup) {
-            final cell = ComponentTableCell('ячейка', '');
+            final cell = ComponentTableCell('ячейка');
 
             row.items.add(cell);
           });
-        case ComponentTableRow:
+        case const (ComponentTableRow):
           component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .forEach((rowGroup) {
-            final cell = ComponentTableCell('ячейка', '');
+            final cell = ComponentTableCell('ячейка');
 
             item.items.add(cell);
           });
@@ -559,8 +326,12 @@ class LayoutModel {
 
       _setComponentForItem(component, item);
       final page = getPageByItem(parent);
-      _setPageForItem(page!, item);
+      _setPageForItem(page, item);
     }
+  }
+
+  void deleteCurrentItem() {
+    deleteItem(curItem);
   }
 
   void deleteItem(Item item) {
@@ -572,13 +343,21 @@ class LayoutModel {
       root.items.remove(item);
       curItem = root;
     } else if (item is LayoutComponentAndSource) {
-      if (page!.items.contains(item)) {
+      if (page.items.contains(item)) {
         page.items.remove(item);
         _curItem = page;
       } else {
         final groups = page.items.whereType<ComponentGroup>();
 
         for (final group in groups) {
+          if (group.items.contains(item)) {
+            group.items.remove(item);
+            _curItem = group;
+            break;
+          }
+        }
+        final processGroups = page.items.whereType<ProcessGroup>();
+        for (final group in processGroups) {
           if (group.items.contains(item)) {
             group.items.remove(item);
             _curItem = group;
@@ -592,7 +371,7 @@ class LayoutModel {
       }
 
       switch (item.runtimeType) {
-        case ComponentTableColumn:
+        case const (ComponentTableColumn):
           final indexOfColumn = component.items
               .where((element) => element.runtimeType == ComponentTableColumn)
               .toList()
@@ -609,10 +388,10 @@ class LayoutModel {
 
           curItem = component;
 
-        case ComponentTableRowGroup:
+        case const (ComponentTableRowGroup):
           component.items.remove(item);
           curItem = component;
-        case ComponentTableRow:
+        case const (ComponentTableRow):
           ComponentTableRowGroup? foundGroup;
           component.items
               .whereType<ComponentTableRowGroup>()
@@ -629,11 +408,13 @@ class LayoutModel {
           foundGroup!.items.remove(item);
           curItem = foundGroup!;
 
-        case SourceTableColumn:
+        case const (SourceTableColumn):
           component.items.remove(item);
           curItem = component;
 
         default:
+          component.items.remove(item);
+          curItem = component;
       }
     }
   }
@@ -656,5 +437,25 @@ class LayoutModel {
     for (final curItem in item.items) {
       _setComponentForItem(component, curItem);
     }
+  }
+
+  Item? findParent(Item parent, Item item, Item pasteItem) {
+    if (parent.items.isEmpty) return null;
+    if (parent.items.contains(item)) {
+      final index = parent.items.indexOf(item);
+      addItem(parent, pasteItem,index:index);
+      return parent;
+    }
+    for (var element in parent.items) {
+      if (element.items.contains(item)) {
+        final index = element.items.indexOf(item);
+        addItem(element, pasteItem,index:index);
+        return element;
+      } else {
+        var newParent = findParent(element, item,pasteItem);
+        if (newParent != null) return newParent;
+      }
+    }
+    return null;
   }
 }

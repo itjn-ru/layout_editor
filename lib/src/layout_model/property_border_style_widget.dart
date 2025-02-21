@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:uuid/uuid.dart';
+import 'controller/events.dart';
 import 'property_widget.dart';
 import 'style.dart';
 
 
 class PropertyBorderStyleWidget extends PropertyWidget {
-  const PropertyBorderStyleWidget(super.property, super.layoutModel, {super.key});
+  const PropertyBorderStyleWidget(super.controller, super.propertyKey, {super.key});
 
   @override
-  Widget buildWidget(BuildContext context, Function onChanged) {
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
     final controllerWidth = TextEditingController();
     controllerWidth.text = property.value.width.toString();
 
-    final List<CustomBorderSide> sides = CustomBorderSide.values;
+    const List<CustomBorderSide> sides = CustomBorderSide.values;
 
     if (!sides.contains(property.value.side)) {
       property.value = CustomBorderSide.none;
@@ -26,7 +29,16 @@ class PropertyBorderStyleWidget extends PropertyWidget {
             const Text('Ширина: '),
             Expanded(
               child: TextField(
+                focusNode: FocusNode(),
                 controller: controllerWidth,
+                onTap: () =>
+                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+                onSubmitted: (value) =>
+                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+                onTapOutside: (value) =>
+                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+                onEditingComplete: () =>
+                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
                 onChanged: (value) {
                   property.value.width =
                       double.tryParse(value) ?? 0;
@@ -79,5 +91,8 @@ class PropertyBorderStyleWidget extends PropertyWidget {
         ),
       ],
     );
+  }
+  onChanged(){
+    controller.eventBus.emit(ChangeItem(id: const Uuid().v4()));
   }
 }

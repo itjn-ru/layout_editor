@@ -3,7 +3,7 @@ import 'item.dart';
 import 'menu.dart';
 
 class FormImageMenu extends ComponentAndSourceMenu {
-  FormImageMenu(super.layoutModel, super.target, {super.onChanged});
+  FormImageMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -11,7 +11,7 @@ class FormImageMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: const Text("Удалить картинку"),
         onTap: () {
-          layoutModel.deleteItem(target);
+  controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

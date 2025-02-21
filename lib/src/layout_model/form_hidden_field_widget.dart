@@ -10,7 +10,7 @@ class FormHiddenFieldWidget extends ComponentWidget {
   @override
   Widget buildWidget(BuildContext context) {
     String text = component['source']?.isNotEmpty ?? false
-        ? '\$' + component['source']
+        ? '\$${component["source"]}'
         : '';
     if (text.isEmpty) {
       text = component['text'] ?? '';

@@ -1,7 +1,6 @@
 import 'package:uuid/uuid.dart';
 
 import '../file.dart';
-import '../layout_model.dart';
 import 'events.dart';
 import 'helpers/snackbar.dart';
 import 'layout_model_controller.dart';

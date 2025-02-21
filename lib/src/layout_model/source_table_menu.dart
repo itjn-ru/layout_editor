@@ -5,17 +5,17 @@ import 'source.dart';
 import 'source_table.dart';
 
 class SourceTableMenu extends ComponentAndSourceMenu {
-  SourceTableMenu(super.layoutModel, super.target, {super.onChanged, super.onDeleted});
+  SourceTableMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item?)? onChanged) {
-    if (layoutModel.curItem is LayoutSource) {
+    if (controller.layoutModel.curItem is LayoutSource) {
       return [
         PopupMenuItem(
           child: Text("Добавить колонку"),
           onTap: () {
             var item = SourceTableColumn("колонка");
-            layoutModel.addItem(target, item);
+            controller.layoutModel.addItem(target, item);
             onChanged!(item);
           },
         ),
@@ -23,28 +23,28 @@ class SourceTableMenu extends ComponentAndSourceMenu {
         PopupMenuItem(
           child: const Text("Удалить таблицу"),
           onTap: () {
-            layoutModel.deleteItem(layoutModel.curItem);
+            controller.layoutModel.deleteItem(controller.layoutModel.curItem);
 
-//            layoutModel.curPage.items.remove(layoutModel.curItem);
-//            layoutModel.curItem = layoutModel.curPage;
+//            controller.layoutModel.curPage.items.remove(controller.layoutModel.curItem);
+//            controller.layoutModel.curItem = controller.layoutModel.curPage;
 
-            onChanged!(layoutModel.curItem);
+            onChanged!(controller.layoutModel.curItem);
           },
         ),
       ];
     } else {
-      switch (layoutModel.curItem.runtimeType) {
+      switch (controller.layoutModel.curItem.runtimeType) {
         case SourceTableColumn:
           return [
             PopupMenuItem(
               child: Text("Удалить колонку"),
-              onTap: layoutModel.getComponentByItem(target)!.items
+              onTap: controller.layoutModel.getComponentByItem(target)!.items
                           .whereType<SourceTableColumn>()
                           .length >
                       1
                   ? () {
-                      layoutModel.deleteItem(layoutModel.curItem);
-                      onChanged!(layoutModel.curItem);
+                      controller.layoutModel.deleteItem(controller.layoutModel.curItem);
+                      onChanged!(controller.layoutModel.curItem);
                     }
                   : null,
             ),

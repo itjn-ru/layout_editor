@@ -3,7 +3,7 @@ import 'menu.dart';
 import 'item.dart';
 
 class FormTextFieldMenu extends ComponentAndSourceMenu {
-  FormTextFieldMenu(super.layoutModel, super.target, {super.onChanged});
+  FormTextFieldMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -11,7 +11,7 @@ class FormTextFieldMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: const Text("Удалить текстовое поле"),
         onTap: () {
-          layoutModel.deleteItem(target);
+  controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

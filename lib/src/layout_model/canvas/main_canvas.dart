@@ -67,12 +67,11 @@ class _MainCanvasState extends State<MainCanvas> {
   }
 
   void _handleRunnerEvents(LayoutModelEvent event) {
-    if (mounted)
-      if (event is SelectionEvent ||
+    if (mounted && (event is SelectionEvent ||
           event is PanEnd ||
-          event is NewProjectEvent) {
-        setState(() {});
-      }
+          event is NewProjectEvent)) {
+      setState(() {});
+    }
   }
 
   @override

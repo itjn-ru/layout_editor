@@ -1,9 +1,8 @@
-import 'component_table.dart';
+import 'canvas/context_menu.dart';
 import 'package:flutter/material.dart';
 import 'controller/events.dart';
 import 'controller/layout_model_controller.dart';
 import 'item.dart';
-import 'layout_model.dart';
 import 'page.dart';
 import 'root.dart';
 
@@ -36,7 +35,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
     if (item.items.isNotEmpty) {
       final children = <Widget>[];
       children.add(
-        ItemWidget(item, widget.controller.layoutModel),
+        ItemWidget(item, widget.controller),
       );
 
       final items = item is Root
@@ -67,7 +66,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
 
       child = ListView(shrinkWrap: true, children: children);
     } else {
-      child = ItemWidget(item,widget.controller.layoutModel);
+      child = ItemWidget(item,widget.controller);
     }
 
     final curPageType = switch (widget._item.runtimeType) {
@@ -113,9 +112,9 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
 }
 
 class ItemWidget extends StatefulWidget {
-  final Item _item;
-final LayoutModel layoutModel;
-  const ItemWidget(this._item, this.layoutModel, {super.key});
+  final Item item;
+final LayoutModelController controller;
+  const ItemWidget(this.item, this.controller, {super.key});
 
   @override
   State<StatefulWidget> createState() => ItemWidgetState();
@@ -124,127 +123,64 @@ final LayoutModel layoutModel;
 class ItemWidgetState extends State<ItemWidget> {
   late bool hover;
   bool dragging = false;
-
+  Offset? position;
   @override
   void initState() {
     super.initState();
-    hover = true;
   }
 
   @override
   Widget build(BuildContext context) {
-      return Container(
-        padding: const EdgeInsets.only(bottom: 5, top: 5, left: 5, right: 5),
-        decoration: BoxDecoration(
-          color: dragging ? Colors.green : Colors.transparent,
-        ),
-        child: DragTarget<String>(onMove: (DragTargetDetails<String> details) {
+      return MouseRegion(
+        onEnter: (event) {
           setState(() {
-            dragging = true;
+            position = event.position;
           });
-        }, onLeave: (details) {
-          setState(() {
-            dragging = false;
-          });
-        }, onAcceptWithDetails: (DragTargetDetails<String> details) {
-          setState(() {
-            dragging = false;
-            widget._item.properties['source']?.value = details.data;
-            final source = details.data ?? '';
-            if (source != '') {
-                final SourcePage page =
-                    widget.layoutModel.root.items.whereType<SourcePage>().first;
-                final Item sourceData =
-                page.items.firstWhere((e) => e.properties['name']?.value == source);
-                widget._item.items.clear();
-                var row = ComponentTableRow("строка");
-
-                for(final sourceItem in sourceData.items){
-                  row.items.add(ComponentTableCell("ячейка",sourceItem['name']));
-                  widget._item.items.add(ComponentTableColumn(sourceItem['name']));
-                }
-                var rowGroup = ComponentTableRowGroup("группа строк");
-                rowGroup.items.add(row);
-                widget._item.items.add(rowGroup);
-                setState(() {
-                });
+        },
+        child: GestureDetector(
+          onTap: () {
+            if (widget.item == widget.controller.layoutModel.curItem) {
+              return;
             }
-          });
-        }, builder: (
-          BuildContext context,
-          List<dynamic> accepted,
-          List<dynamic> rejected,
-        ) {
-          return MouseRegion(
-            onEnter: (event) {
-              setState(() {
-                hover = true;
-              });
-            },
-            onExit: (event) {
-              setState(() {
-                hover = false;
-              });
-            },
-            child: Row(
+            widget.controller.layoutModel.curItem = widget.item;
+            widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
+          },
+          onSecondaryTap: () {
+            final menu = ComponentAndSourceMenu.create(
+                widget.controller, widget.item);
+
+            final menuItems = menu.getContextMenu(
+                  (event) => widget.controller.eventBus.emit(event),
+            );
+            createAndShowContextMenu(
+              context,
+              entries: menuItems,
+              position: position!,
+            );
+            if (widget.item == widget.controller.layoutModel.curItem) {
+              return;
+            }
+            widget.controller.layoutModel.curItem = widget.item;
+            widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
+          },
+          child: Container(
+            padding: const EdgeInsets.only(bottom: 5, top: 5, left: 5, right: 5),
+            decoration: BoxDecoration(
+              color: dragging ? Colors.green : Colors.transparent,
+            ),
+            child:  Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget._item['name'],
+                  widget.item['name'],
                   overflow: TextOverflow.clip,
                   maxLines: 2,
                 ),
-                if (hover)
-                  InkWell(
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 5, right: 15),
-                      child: Icon(
-                        Icons.more_vert,
-                        size: 18,
-                      ),
-                    ),
-                    onTapDown: (details) {
-                      final menu = ComponentAndSourceMenu.create(
-                          widget.layoutModel, widget._item);
-
-                      final menuItems = menu.getComponentMenu(
-                        (p0) {},
-                      );
-
-                      if (menuItems.isEmpty) {
-                        return;
-                      }
-
-                      final offset = details.globalPosition;
-
-                      showMenu(
-                          context: context,
-                          position: RelativeRect.fromLTRB(
-                            offset.dx,
-                            offset.dy,
-                            MediaQuery.of(context).size.width - offset.dx,
-                            MediaQuery.of(context).size.height - offset.dy,
-                          ),
-                          items: menuItems);
-                    },
-                  ),
               ],
             ),
-          );
-        }),
+          ),
+        ),
       );
 
-    return MouseRegion(
-      onEnter: (event) {
-        setState(() {
-          hover = true;
-        });
-      },
-      onExit: (event) {
-        setState(() {
-          hover = false;
-        });
-      },
-    );
   }
 }

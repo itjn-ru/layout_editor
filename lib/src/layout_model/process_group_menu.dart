@@ -1,27 +1,18 @@
-import 'package:admin_layout_editor/src/layout_model/process_group.dart';
+import 'package:admin_layout_editor/src/layout_model/process_element.dart';
 import 'package:flutter/material.dart';
 import '../../admin_layout_editor.dart';
 import '../flutter_context_menu/components/menu_divider.dart';
 import '../flutter_context_menu/components/menu_header.dart';
 import '../flutter_context_menu/components/menu_item.dart';
 import '../flutter_context_menu/core/models/context_menu_entry.dart';
-import 'process_element.dart';
+import 'process_group.dart';
 
-class ProcessPageMenu extends ComponentAndSourceMenu {
-  ProcessPageMenu(super.controller, super.target, {super.onChanged});
+class ProcessGroupMenu extends ComponentAndSourceMenu {
+  ProcessGroupMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
-    return [
-      PopupMenuItem(
-        child: const Text("Добавить процесс"),
-        onTap: () {
-          var item = ProcessElement("процесс");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      )
-    ];
+      return [];
   }
 
   @override
@@ -54,6 +45,15 @@ class ProcessPageMenu extends ComponentAndSourceMenu {
             },
           ),
         ],
+      ),
+      MenuItem(
+        label: 'Добавить процесс',
+        icon: Icons.add,
+        onSelected: () {
+          var item = ProcessElement("процесс");
+          controller.layoutModel.addItem(target, item);
+          onChanged!(AddItemEvent(id: item.id));
+        },
       ),
       const MenuDivider(),
       MenuItem(

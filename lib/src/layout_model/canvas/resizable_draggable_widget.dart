@@ -79,8 +79,8 @@ class _ResizableDraggableWidgetState extends State<ResizableDraggableWidget> {
 late final curComponentItem;*/
   @override
   void initState() {
-    trW = widget.position.dx ?? 0;
-    trH = widget.position.dy ?? 0;
+    trW = widget.position.dx;
+    trH = widget.position.dy;
 
     trLastH = trH;
     trLastW = trW;

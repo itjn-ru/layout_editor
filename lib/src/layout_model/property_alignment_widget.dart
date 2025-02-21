@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'controller/events.dart';
 import 'property_widget.dart';
 
 class PropertyAlignmentWidget extends PropertyWidget {
-  const PropertyAlignmentWidget(super.property, super.layoutModel, {super.key});
+  const PropertyAlignmentWidget(super.controller, super.propertyKey, {super.key});
 
   @override
-  Widget buildWidget(BuildContext context, Function onChanged) {
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
     return Row(
       children: [
         Expanded(
@@ -42,7 +45,7 @@ class PropertyAlignmentWidget extends PropertyWidget {
                 .toList(),
             onChanged: (Object? value) {
               property.value = value;
-              onChanged();
+              controller.eventBus.emit(ChangeItem(id: const Uuid().v4()));
             },
           ),
         ),

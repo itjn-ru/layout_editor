@@ -3,7 +3,7 @@ import 'item.dart';
 import 'menu.dart';
 
 class FormSliderButtonMenu extends ComponentAndSourceMenu {
-  FormSliderButtonMenu(super.layoutModel, super.target, {super.onChanged});
+  FormSliderButtonMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -11,7 +11,7 @@ class FormSliderButtonMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: Text("Удалить переключатель"),
         onTap: () {
-          layoutModel.deleteItem(target);
+          controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

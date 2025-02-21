@@ -202,7 +202,7 @@ class CustomAnimatedToggleSwitch<T extends Object?> extends StatefulWidget {
   final PositionListener<T>? positionListener;
 
   const CustomAnimatedToggleSwitch({
-    Key? key,
+    super.key,
     required this.current,
     required this.values,
     required this.iconBuilder,
@@ -239,8 +239,7 @@ class CustomAnimatedToggleSwitch<T extends Object?> extends StatefulWidget {
   })  : assert(foregroundIndicatorBuilder != null ||
       backgroundIndicatorBuilder != null),
         assert(separatorBuilder == null ||
-            (spacing > 0 && iconArrangement == IconArrangement.row)),
-        super(key: key);
+            (spacing > 0 && iconArrangement == IconArrangement.row));
 
   @override
   State<CustomAnimatedToggleSwitch<T>> createState() =>
@@ -926,12 +925,12 @@ class WidgetPart extends StatelessWidget {
   final Widget child;
 
   const WidgetPart({
-    Key? key,
+    super.key,
     this.width = double.infinity,
     this.height = double.infinity,
     required this.left,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

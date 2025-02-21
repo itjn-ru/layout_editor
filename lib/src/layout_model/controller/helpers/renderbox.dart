@@ -95,3 +95,15 @@ Offset? screenToWorld(
 
   return Offset(canvasX, canvasY);
 }
+
+RelativeRect buttonMenuPosition(BuildContext context, PointerDownEvent event) {
+  final RenderBox bar = context.findRenderObject() as RenderBox;
+  final RenderBox overlay =
+  Overlay.of(context).context.findRenderObject() as RenderBox;
+  const Offset offset = Offset.zero;
+  final RelativeRect rect = RelativeRect.fromRect(
+    Rect.fromPoints(event.localPosition, event.position),
+    offset & overlay.size,
+  );
+  return rect;
+}

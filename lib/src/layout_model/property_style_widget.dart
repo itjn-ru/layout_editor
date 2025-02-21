@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'controller/events.dart';
 import 'property_widget.dart';
 import 'style.dart';
 
 class PropertyStyleWidget extends PropertyWidget {
-  const PropertyStyleWidget(super.property, super.layoutModel, {super.key});
+  const PropertyStyleWidget(super.controller, super.propertyKey, {super.key});
 
   @override
-  Widget buildWidget(BuildContext context, Function onChanged) {
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
 
-
-    var styles = layoutModel.styles;
+    var styles = controller.layoutModel.styles;
 
     if(!styles.contains(property.value)) {
       property.value = Style.basic;
@@ -30,7 +32,7 @@ class PropertyStyleWidget extends PropertyWidget {
               .toList(),
           onChanged: (Style? value) {
             property.value = value ?? Style.basic;
-            onChanged();
+            controller.eventBus.emit(ChangeItem(id: const Uuid().v4()));
           },
         ),
 

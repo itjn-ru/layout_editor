@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'layout_model_controller.dart';
-import '../item.dart';
 
 /// События используются для связи между [LayoutModelController] и виджетами редактора.
 /// События могут (где это применимо) содержать данные, которые будут использоваться виджетами для обновления их состояния.
@@ -147,14 +146,12 @@ final class DragSelectionEndEvent extends LayoutModelEvent {
 }
 
 final class SelectionEvent extends LayoutModelEvent {
+
   const SelectionEvent({required super.id, super.isHandled});
 }
 
 final class AddItemEvent extends LayoutModelEvent {
-  final Item item;
-
-  const AddItemEvent(
-    this.item, {
+  const AddItemEvent({
     required super.id,
     super.isHandled,
   }) : super(isUndoable: true);
@@ -166,11 +163,9 @@ final class RemoveItemEvent extends LayoutModelEvent {
 }
 
 final class PasteSelectionEvent extends LayoutModelEvent {
-  final Offset position;
   final String clipboardContent;
 
   const PasteSelectionEvent(
-    this.position,
     this.clipboardContent, {
     required super.id,
     super.isHandled,
@@ -207,6 +202,9 @@ final class PanEnd extends LayoutModelEvent {
   const PanEnd({required super.id});
 }
 
+final class ChangeItem extends LayoutModelEvent {
+  const ChangeItem({required super.id});
+}
 
 /// Класс, позволяющий задавать логику сериализации и десериализации
 /// для пользовательских типов данных.

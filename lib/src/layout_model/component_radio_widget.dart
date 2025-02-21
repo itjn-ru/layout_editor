@@ -5,7 +5,6 @@ import 'component.dart';
 import 'component_widget.dart';
 import 'style_element.dart';
 
-import 'layout_model.dart';
 
 class ComponentRadioWidget extends ComponentWidget {
   const ComponentRadioWidget(super.component, {super.key});

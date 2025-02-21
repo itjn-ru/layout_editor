@@ -3,7 +3,7 @@ import 'menu.dart';
 import 'item.dart';
 
 class ComponentTextMenu extends ComponentAndSourceMenu {
-  ComponentTextMenu(super.layoutModel, super.target, {super.onChanged});
+  ComponentTextMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -11,7 +11,7 @@ class ComponentTextMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: const Text('Удалить текст'),
         onTap: () {
-          layoutModel.deleteItem(target);
+          controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+import 'controller/events.dart';
 import 'property_widget.dart';
 
 class PropertyFontWeightWidget extends PropertyWidget {
-  const PropertyFontWeightWidget(super.property, super.layoutModel, {super.key});
+  const PropertyFontWeightWidget(super.controller, super.propertyKey, {super.key});
 
   @override
-  Widget buildWidget(BuildContext context, Function onChanged) {
-
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
     return Row(children: [
 
       Expanded(
         child: DropdownButton<FontWeight>(
+          onTap: ()=>controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
           value: property.value,
           isExpanded: true,
           items: FontWeight.values
@@ -33,7 +36,7 @@ class PropertyFontWeightWidget extends PropertyWidget {
               .toList(),
           onChanged: (FontWeight? value) {
             property.value = value ?? FontWeight.normal;
-            onChanged();
+            //onChanged();
           },
         ),
 

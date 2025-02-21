@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid_value.dart';
 import 'component_and_source.dart';
 import 'constants.dart';
 

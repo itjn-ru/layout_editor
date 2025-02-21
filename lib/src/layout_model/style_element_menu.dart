@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'menu.dart';
-import 'component_table.dart';
 import 'item.dart';
-import 'page.dart';
-import 'root.dart';
 
 class StyleElementMenu extends ComponentAndSourceMenu {
-  StyleElementMenu(super.layoutModel, super.target, {super.onChanged});
+  StyleElementMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -14,7 +11,7 @@ class StyleElementMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: Text("Удалить стиль"),
         onTap: () {
-          layoutModel.deleteItem(target);
+  controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

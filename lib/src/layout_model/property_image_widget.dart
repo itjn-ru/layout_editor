@@ -7,10 +7,11 @@ import 'property.dart';
 import 'property_widget.dart';
 
 class PropertyImageWidget extends PropertyWidget {
-  const PropertyImageWidget(super.property, super.layoutModel, {super.key});
+  const PropertyImageWidget(super.controller, super.propertyKey, {super.key});
 
   @override
-  Widget buildWidget(BuildContext context, Function onChanged) {
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
     return  ShowImageProperty(property: property);
   }
 }

@@ -3,7 +3,7 @@ import 'menu.dart';
 import 'item.dart';
 
 class FormCheckboxMenu extends ComponentAndSourceMenu {
-  FormCheckboxMenu(super.layoutModel, super.target, {super.onChanged});
+  FormCheckboxMenu(super.controller, super.target, {super.onChanged});
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
@@ -11,7 +11,7 @@ class FormCheckboxMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: const Text("Удалить флажок"),
         onTap: () {
-          layoutModel.deleteItem(target);
+  controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

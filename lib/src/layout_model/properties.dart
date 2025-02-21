@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../admin_layout_editor.dart';
+import 'controller/layout_model_controller.dart';
 import 'property.dart';
 import 'property_widget.dart';
 
 class Properties extends StatefulWidget {
   //final Map<String, Property> _properties;
-  final LayoutModel layoutModel;
+  final LayoutModelController controller;
 
-  const Properties(this.layoutModel, {super.key});
+  const Properties(this.controller, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -20,13 +20,13 @@ class PropertiesState extends State<Properties> {
 late Map<String, Property> _properties;
  @override
   void initState() {
-   _properties=widget.layoutModel.curItem.properties;
+   _properties=widget.controller.layoutModel.curItem.properties;
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
    // var keys = widget.layoutModel.curItem.properties.keys;
-    _properties=widget.layoutModel.curItem.properties;
+    _properties=widget.controller.layoutModel.curItem.properties;
    var keys = _properties.keys;
 
     return Table(
@@ -41,38 +41,9 @@ late Map<String, Property> _properties;
             children: [
               Text(
                   "${_properties[keys.elementAt(index)]?.title ?? ""}:"),
-              if (_properties[keys.elementAt(index)]?.title ==
-                  'источник')
-                DragTarget<String>(
-                  builder: (
-                    BuildContext context,
-                    List<dynamic> accepted,
-                    List<dynamic> rejected,
-                  ) {
-                    return PropertyWidget.create(
-                        _properties[keys.elementAt(index)]!,widget.layoutModel);
-                  },
-                  onMove: (DragTargetDetails<String> details) {
-                    setState(() {
-                      dragging = true;
-                    });
-                  },
-                  onLeave: (details) {
-                    setState(() {
-                      dragging = false;
-                    });
-                  },
-                  onAcceptWithDetails: (DragTargetDetails<String> details) {
-                    setState(() {
-                      dragging = false;
-                      _properties[keys.elementAt(index)]?.value =
-                          details.data;
-                    });
-                  },
-                )
-              else
                 PropertyWidget.create(
-                    _properties[keys.elementAt(index)]!,widget.layoutModel),
+                    widget.controller,keys.elementAt(index)),
+                    //_properties[keys.elementAt(index)]!,widget.controller),
             ]),
       ),
     );

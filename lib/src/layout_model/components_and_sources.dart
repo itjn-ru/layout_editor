@@ -1,9 +1,8 @@
+import '../../admin_layout_editor.dart';
 import 'canvas/main_canvas.dart';
 import 'package:flutter/material.dart';
 import 'controller/layout_model_controller.dart';
-import 'layout_model.dart';
 import 'page.dart';
-import 'process_widget.dart';
 import 'style.dart';
 import 'style_widget.dart';
 
@@ -15,7 +14,7 @@ final BoxConstraints constraints;
 
   @override
   Widget build(BuildContext context) {
-    final ComponentAndSourcePage curPage =controller.layoutModel.getPageByItem(controller.layoutModel.curItem)!;
+    final ComponentAndSourcePage curPage =controller.layoutModel.getPageByItem(controller.layoutModel.curItem);
       if (curPage is StylePage) {
         return Column(
           children: List.generate(
@@ -35,12 +34,17 @@ final BoxConstraints constraints;
             : Container();
       } else {
         final curPage = controller.layoutModel.root.items.first;
-        return MainCanvas(
+        return ProcessItems(
+          controller.layoutModel.root.items
+              .whereType<ProcessPage>()
+              .first,controller,
+        );
+        /*return MainCanvas(
           items: curPage.items,
           constraints: constraints,
           screenSize:screenSize,
           controller: controller,
-        );
+        );*/
       }
 
     /*  if (widget._curPage is ComponentPage) {

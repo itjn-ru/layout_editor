@@ -1,14 +1,14 @@
+import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
+
 import 'constants.dart';
 import 'package:flutter/material.dart';
 import 'property.dart';
 import 'style.dart';
-import 'package:uuid/uuid.dart';
 
 class StyleElement extends LayoutStyle {
   StyleElement(name) : super("styleElement", name) {
-    properties['id'] =
-//        Property("идентификатор", Uuid.parse(uuid.v4()), type: Uuid);
-    Property("идентификатор", UuidNil, type: String);
+   if(kDebugMode) properties['id'] = Property("идентификатор", const Uuid().v4(), type: String);
     properties['color'] = Property("цвет", Colors.black, type: Color);
     properties['backgroundColor'] = Property("цвет фона", Colors.transparent, type: Color);
     properties['alignment'] =

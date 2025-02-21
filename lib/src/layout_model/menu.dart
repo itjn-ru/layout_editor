@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import '../flutter_context_menu/core/models/context_menu_entry.dart';
+import '../flutter_context_menu/flutter_context_menu.dart';
 import 'component.dart';
 import 'component_group.dart';
 import 'component_table_menu.dart';
 import 'component_text.dart';
+import 'controller/events.dart';
+import 'controller/layout_model_controller.dart';
 import 'form_checkbox.dart';
 import 'form_checkbox_menu.dart';
 import 'form_hidden_field.dart';
@@ -11,10 +15,12 @@ import 'form_image_menu.dart';
 import 'form_slider_button.dart';
 import 'form_slider_button_menu.dart';
 import 'item.dart';
-import 'layout_model.dart';
 import 'page.dart';
 import 'process.dart';
 import 'process_element.dart';
+import 'process_element_menu.dart';
+import 'process_group.dart';
+import 'process_group_menu.dart';
 import 'process_item_menu.dart';
 import 'process_page_menu.dart';
 import 'style.dart';
@@ -39,135 +45,99 @@ import 'form_radio_menu.dart';
 import 'form_text_field.dart';
 import 'form_text_field_menu.dart';
 
-class FAB extends StatelessWidget {
-  final Function(Item?)? onChanged;
-final LayoutModel layoutModel;
-  const FAB({this.onChanged, required this.layoutModel, super.key});
+RelativeRect _buttonMenuPosition(RenderBox renderBox, RenderBox overlay) {
+  //RenderBox renderBox = keyContext.findRenderObject() as RenderBox;
+  //RenderBox overlay = Overlay.of(keyContext).context.findRenderObject() as RenderBox;
 
-  @override
-  Widget build(BuildContext context) {
-    return FloatingActionButton(
-      child: const Icon(Icons.edit),
-      onPressed: () {
-        var keyContext = (key as GlobalKey).currentContext;
-
-        var menu =
-            ComponentAndSourceMenu.create(layoutModel, layoutModel.curItem);
-
-        var menuItems = menu.getComponentMenu(onChanged);
-
-        if (menuItems.isEmpty) {
-          return;
-        }
-
-        RenderBox renderBox = keyContext?.findRenderObject() as RenderBox;
-        RenderBox overlay =
-            Overlay.of(keyContext!).context.findRenderObject() as RenderBox;
-
-        showMenu(
-            context: keyContext,
-            position: _buttonMenuPosition(
-                renderBox, overlay), //RelativeRect.fromLTRB(0, 0, 0, 0),
-            items: menuItems);
-      },
-    );
-  }
-
-  RelativeRect _buttonMenuPosition(RenderBox renderBox, RenderBox overlay) {
-    //RenderBox renderBox = keyContext.findRenderObject() as RenderBox;
-    //RenderBox overlay = Overlay.of(keyContext).context.findRenderObject() as RenderBox;
-
-    final RelativeRect position = RelativeRect.fromRect(
-      Rect.fromPoints(
-        renderBox.localToGlobal(renderBox.size.bottomLeft(Offset.zero),
-            ancestor: overlay),
-        renderBox.localToGlobal(renderBox.size.bottomRight(Offset.zero),
-            ancestor: overlay),
-      ),
-      Offset.zero & overlay.size,
-    );
-    return position;
-  }
+  final RelativeRect position = RelativeRect.fromRect(
+    Rect.fromPoints(
+      renderBox.localToGlobal(renderBox.size.bottomLeft(Offset.zero),
+          ancestor: overlay),
+      renderBox.localToGlobal(renderBox.size.bottomRight(Offset.zero),
+          ancestor: overlay),
+    ),
+    Offset.zero & overlay.size,
+  );
+  return position;
 }
 
 class ComponentAndSourceMenu {
-  LayoutModel layoutModel;
-  Item target;
+  final LayoutModelController controller;
+  final Item target;
+  final void Function(Item?)? onChanged;
 
-  void Function(Item?)? onChanged;
-  void Function(Item?)? onDeleted;
+  const ComponentAndSourceMenu(this.controller, this.target, {this.onChanged});
 
-  ComponentAndSourceMenu(this.layoutModel, this.target,
-      {this.onChanged, this.onDeleted});
-
-  factory ComponentAndSourceMenu.create(LayoutModel layoutModel, Item target,
+  factory ComponentAndSourceMenu.create(
+      LayoutModelController controller, Item target,
       {void Function(Item?)? onChanged, Function(Item?)? onDeleted}) {
     if (target is Root) {
-      return ComponentRootMenu(layoutModel, target, onChanged: onChanged);
+      return ComponentRootMenu(controller, target, onChanged: onChanged);
     } else if (target is ComponentPage) {
-      return ComponentPageMenu(layoutModel, target, onChanged: onChanged);
+      return ComponentPageMenu(controller, target, onChanged: onChanged);
     } else if (target is ComponentGroup) {
-      return ComponentGroupMenu(layoutModel, target, onChanged: onChanged);
+      return ComponentGroupMenu(controller, target, onChanged: onChanged);
+    } else if (target is ProcessGroup) {
+      return ProcessGroupMenu(controller, target, onChanged: onChanged);
     } else if (target is SourcePage) {
-      return SourcePageMenu(layoutModel, target, onChanged: onChanged);
+      return SourcePageMenu(controller, target, onChanged: onChanged);
     } else if (target is StylePage) {
-      return StylePageMenu(layoutModel, target, onChanged: onChanged);
+      return StylePageMenu(controller, target, onChanged: onChanged);
     } else if (target is ProcessPage) {
-      return ProcessPageMenu(layoutModel, target, onChanged: onChanged);
-    }else if (target is LayoutComponent ||
+      return ProcessPageMenu(controller, target, onChanged: onChanged);
+    } else if (target is ProcessElement) {
+      return ProcessElementMenu(controller, target, onChanged: onChanged);
+    } else if (target is LayoutComponent ||
         target is LayoutSource ||
         target is LayoutStyle ||
         target is LayoutProcess) {
       switch (target.runtimeType) {
-        case ComponentTable:
-          return ComponentTableMenu(layoutModel, target,
-              onChanged: onChanged, onDeleted: onDeleted);
-        case ComponentText:
-          return ComponentTextMenu(layoutModel, target, onChanged: onChanged);
-        case FormImage:
-          return FormImageMenu(layoutModel, target,
-              onChanged: onChanged);
-        case FormSliderButton:
-          return FormSliderButtonMenu(layoutModel, target,
-              onChanged: onChanged);
-        case FormRadio:
-          return FormRadioMenu(layoutModel, target, onChanged: onChanged);
-        case FormCheckbox:
-          return FormCheckboxMenu(layoutModel, target, onChanged: onChanged);
-        case FormHiddenField:
-          return FormHiddenFieldMenu(layoutModel, target, onChanged: onChanged);
-        case FormTextField:
-          return FormTextFieldMenu(layoutModel, target, onChanged: onChanged);
-        case SourceVariable:
-          return SourceVariableMenu(layoutModel, target, onChanged: onChanged);
-        case StyleElement:
-          return StyleElementMenu(layoutModel, target, onChanged: onChanged);
-        case ProcessElement:
-          return ProcessItemMenu(layoutModel, target, onChanged: onChanged);
-        case SourceTable:
-          return SourceTableMenu(layoutModel, target,
-              onChanged: onChanged, onDeleted: onDeleted);
+        case const (ComponentTable):
+          return ComponentTableMenu(controller, target, onChanged: onChanged);
+        case const (ComponentText):
+          return ComponentTextMenu(controller, target, onChanged: onChanged);
+        case const (FormImage):
+          return FormImageMenu(controller, target, onChanged: onChanged);
+        case const (FormSliderButton):
+          return FormSliderButtonMenu(controller, target, onChanged: onChanged);
+        case const (FormRadio):
+          return FormRadioMenu(controller, target, onChanged: onChanged);
+        case const (FormCheckbox):
+          return FormCheckboxMenu(controller, target, onChanged: onChanged);
+        case const (FormHiddenField):
+          return FormHiddenFieldMenu(controller, target, onChanged: onChanged);
+        case const (FormTextField):
+          return FormTextFieldMenu(controller, target, onChanged: onChanged);
+        case const (SourceVariable):
+          return SourceVariableMenu(controller, target, onChanged: onChanged);
+        case const (StyleElement):
+          return StyleElementMenu(controller, target, onChanged: onChanged);
+        case const (ProcessElement):
+          return ProcessItemMenu(controller, target, onChanged: onChanged);
+        case const (SourceTable):
+          return SourceTableMenu(controller, target, onChanged: onChanged);
         default:
-          return ComponentAndSourceMenu(layoutModel, target,
+          return ComponentAndSourceMenu(controller, target,
               onChanged: onChanged);
       }
     } else {
-      var component = layoutModel.getComponentByItem(target);
+      var component = controller.layoutModel.getComponentByItem(target);
 
       if (/*layoutModel.curC*/ component == null) {
-        return ComponentAndSourceMenu(layoutModel, target,
-            onChanged: onChanged);
+        return ComponentAndSourceMenu(controller, target, onChanged: onChanged);
       }
 
       switch (/*layoutModel.curC*/ component.runtimeType) {
-        case ComponentTable:
-          return ComponentTableMenu(layoutModel, target,
-              onChanged: onChanged, onDeleted: onDeleted);
-        case SourceTable:
-          return SourceTableMenu(layoutModel, target,
-              onChanged: onChanged, onDeleted: onDeleted);
+        case const (ComponentTable):
+          return ComponentTableMenu(
+            controller,
+            target,
+            onChanged: onChanged,
+          );
+        case const (SourceTable):
+          return SourceTableMenu(controller, target, onChanged: onChanged);
         default:
-          return ComponentAndSourceMenu(layoutModel, target,
+          return ComponentAndSourceMenu(controller, target,
               onChanged: onChanged);
       }
     }
@@ -175,5 +145,42 @@ class ComponentAndSourceMenu {
 
   List<PopupMenuEntry> getComponentMenu(Function(Item?)? onChanged) {
     return [];
+  }
+
+  List<ContextMenuEntry> getContextMenu(
+      Function(LayoutModelEvent event)? onChanged) {
+    return [
+      const MenuHeader(text: "Редактирование"),
+      MenuItem(
+        label: 'Копировать',
+        icon: Icons.delete,
+        onSelected: () {
+          controller.clipboard.copySelection();
+        },
+      ),
+      MenuItem(
+        label: 'Вставить',
+        icon: Icons.delete,
+        onSelected: () {
+          controller.clipboard.pasteSelection(parent: target);
+        },
+      ),
+      MenuItem(
+        label: 'Вырезать',
+        icon: Icons.content_cut,
+        onSelected: () {
+          controller.clipboard.cutSelection();
+        },
+      ),
+      const MenuDivider(),
+      MenuItem(
+        label: 'Удалить',
+        icon: Icons.delete,
+        onSelected: () {
+          controller.layoutModel.deleteItem(target);
+          onChanged!(RemoveItemEvent(id: target.id));
+        },
+      ),
+    ];
   }
 }

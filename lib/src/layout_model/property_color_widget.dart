@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:uuid/uuid.dart';
+import 'controller/events.dart';
 import 'property_widget.dart';
 
 class PropertyColorWidget extends PropertyWidget {
-  const PropertyColorWidget(super.property, super.layoutModel, {super.key});
+  const PropertyColorWidget(super.controller, super.propertyKey, {super.key});
 
   @override
-  Widget buildWidget(BuildContext context, Function onChanged) {
+  Widget build(BuildContext context) {
+    final property = controller.layoutModel.curItem.properties[propertyKey]!;
     return Row(children: [
       ElevatedButton(
         style: ElevatedButton.styleFrom(backgroundColor: property.value),
@@ -15,7 +18,7 @@ class PropertyColorWidget extends PropertyWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('Pick a color!'),
+                title: const Text('Pick a color!'),
                 content: SingleChildScrollView(
                   child: BlockPicker(
                     pickerColor: property.value, //default color
@@ -24,7 +27,8 @@ class PropertyColorWidget extends PropertyWidget {
                       //print(color);
                       property.value = color;
                       Navigator.of(context).pop();
-                      onChanged();
+                      controller.eventBus
+                          .emit(ChangeItem(id: const Uuid().v4()));
                     },
                   ),
                 ),
@@ -39,11 +43,8 @@ class PropertyColorWidget extends PropertyWidget {
               );
             },
           );
-
-
-
         },
-        child: Text("Выбор цвета"),
+        child: const Text("Выбор цвета"),
       )
     ]);
   }

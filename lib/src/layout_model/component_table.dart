@@ -4,12 +4,12 @@ import 'style.dart';
 import 'item.dart';
 
 class ComponentTable extends LayoutComponent {
-  ComponentTable(name) : super("table", name) {
+  ComponentTable(name) : super("table", name,mayBeParent: true) {
     properties['source'] = Property('источник', '');
     items.add(ComponentTableColumn("колонка"));
 
     var row = ComponentTableRow("строка");
-    row.items.add(ComponentTableCell("ячейка",''));
+    row.items.add(ComponentTableCell("ячейка"));
 
     var rowGroup = ComponentTableRowGroup("группа строк");
     rowGroup.items.add(row);
@@ -40,9 +40,9 @@ class ComponentTableRow extends Item {
 }
 
 class ComponentTableCell extends Item {
-  ComponentTableCell(name,source) : super("cell", name,source) {
+  ComponentTableCell(name) : super("cell", name) {
     properties["text"] = Property("текст", "");
-    properties["source"] = Property("источник", source??"");
+    properties["source"] = Property("источник", "");
     properties["style"] = Property("стиль", Style.basic, type: Style);
     properties["colspan"] = Property("объединения колонок", 0,type: int);
     properties["rowspan"] = Property(" объединения строк", 0,type: int);

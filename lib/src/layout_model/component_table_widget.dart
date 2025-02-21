@@ -2,7 +2,6 @@ import 'canvas/layout_model_inherit.dart';
 import 'style_element.dart';
 import 'package:flutter/material.dart';
 import 'component_widget.dart';
-import 'layout_model.dart';
 
 import 'component_table.dart';
 import 'item.dart';
@@ -39,7 +38,7 @@ class ComponentTableWidget extends ComponentWidget {
 
         for (Item cell in cells) {
           String cellText = cell["source"]?.isNotEmpty ?? false
-              ? "\$" + cell["source"] ?? ""
+              ? "\$" + cell["source"]
               : "";
           if (cellText.isEmpty) {
             cellText = cell["text"] ?? "";

@@ -7,11 +7,11 @@ import 'process_element_widget.dart';
 class ProcessWidget extends StatelessWidget {
   final LayoutProcess process;
 
-  ProcessWidget(this.process);
+  const ProcessWidget(this.process, {super.key});
 
   factory ProcessWidget.create(LayoutProcess process) {
     switch (process.runtimeType) {
-      case ProcessElement:
+      case const (ProcessElement):
         return ProcessElementWidget(process as ProcessElement);
 
       default:
