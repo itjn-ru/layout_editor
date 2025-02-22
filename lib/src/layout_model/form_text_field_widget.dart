@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'component_widget.dart';
 
 class FormTextFieldWidget extends ComponentWidget {
-  const FormTextFieldWidget(super.component, {super.key});
+  const FormTextFieldWidget(super.component, super.controller, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -36,12 +36,13 @@ class _TextFieldPropertieState extends State<TextFieldPropertie> {
   late final bool isTime;
   TimeOfDay selectedTime24Hour = TimeOfDay.now();
   late final bool isDate;
-  List<String> parts =[];
+  List<String> parts = [];
+
   @override
   void initState() {
     isDate = widget.component['style']?.name == 'дата';
     isTime = widget.component['style']?.name == 'время';
-    textControllers.text =  '';
+    textControllers.text = '';
     style = StyleElement('стиль');
     super.initState();
   }
@@ -54,52 +55,46 @@ class _TextFieldPropertieState extends State<TextFieldPropertie> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return SizedBox(
       height: widget.component['size']?.height + 5,
-      child: Row(
+      child: Stack(
         children: [
-          if (widget.component['text'] != '')
-            SizedBox(
-              width: 40,
-              child: Text(
-                widget.component['text'],
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            ),
-          Expanded(
-            child: TextField(
-              maxLines: null,
-              expands: true,
-
-              controller: textControllers,
-              onTap: isDate
-                  ? onTapDateFunction
-                  : isTime
-                  ? onTapTimeFunction
-                  : null,
-              onChanged: (value) {
-              },
-              decoration: InputDecoration(
-                isDense: true,
-                label: Text(
-                  widget.component['caption'],
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).inputDecorationTheme.hoverColor,
+          Row(
+            children: [
+              if (widget.component['text'] != '')
+                SizedBox(
+                  width: 40,
+                  child: Text(
+                    widget.component['text'],
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    textControllers.text = '';
-                    setState(() {});
-                  },
+              Expanded(
+                child: TextField(
+                  maxLines: null,
+                  expands: true,
+                  readOnly: true,
+                  controller: textControllers,
+                  onTap: null,
+                  onChanged: null,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    label: Text(
+                      widget.component['caption'],
+                      style: TextStyle(
+                        fontSize: 12,
+                        color:
+                            Theme.of(context).inputDecorationTheme.hoverColor,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
+           Container(
+            decoration: const BoxDecoration(color: Colors.transparent),
+          )
         ],
       ),
     );
@@ -118,7 +113,6 @@ class _TextFieldPropertieState extends State<TextFieldPropertie> {
   }
 
   onTapTimeFunction() async {
-
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
@@ -132,13 +126,10 @@ class _TextFieldPropertieState extends State<TextFieldPropertie> {
               //Duration(hours: selectedTime24Hour.hour, minutes: selectedTime24Hour.minute),
               // This is called when the user changes the timer's
               // duration.
-              onTimerDurationChanged: (Duration newDuration) {
-
-              },
+              onTimerDurationChanged: (Duration newDuration) {},
             ),
           );
         });
-
   }
 }
 
@@ -158,7 +149,6 @@ class _DropDownWidgetState extends State<DropDownWidget> {
 
   @override
   void initState() {
-
     menuItems = widget.component['caption'].split(',');
     menuItems.map((e) => e.trim());
     selectedItem = menuItems.first;
@@ -171,7 +161,7 @@ class _DropDownWidgetState extends State<DropDownWidget> {
       value: selectedItem,
       //width: constraints.maxWidth,
       onChanged: (value) {
-       setState(() {
+        setState(() {
           selectedItem = value!;
         });
       },
@@ -239,8 +229,8 @@ class _CounterWidgetState extends State<CounterWidget> {
                 TextStyle(
                     color: Theme.of(context).textTheme.titleSmall?.color,
                     fontWeight:
-                    Theme.of(context).textTheme.titleSmall?.fontWeight ??
-                        style['fontWeight'],
+                        Theme.of(context).textTheme.titleSmall?.fontWeight ??
+                            style['fontWeight'],
                     fontSize: fontSizeText),
           ),
           Container(
@@ -254,7 +244,7 @@ class _CounterWidgetState extends State<CounterWidget> {
               children: [
                 _createIncrementDicrementButton(
                     Icons.remove,
-                        () => readOnly ? null : _decrementCounter(),
+                    () => readOnly ? null : _decrementCounter(),
                     fontSizeButton),
                 SizedBox(
                   width: widget.component["size"].height,
@@ -270,7 +260,7 @@ class _CounterWidgetState extends State<CounterWidget> {
                 ),
                 _createIncrementDicrementButton(
                     Icons.add,
-                        () => readOnly ? null : _incrementCounter(),
+                    () => readOnly ? null : _incrementCounter(),
                     fontSizeButton),
               ],
             ),

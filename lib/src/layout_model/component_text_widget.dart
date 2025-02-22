@@ -5,7 +5,7 @@ import 'component_widget.dart';
 import 'style_element.dart';
 
 class ComponentTextWidget extends ComponentWidget {
-  const ComponentTextWidget(super.component,{super.key});
+  const ComponentTextWidget(super.component, super.controller, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

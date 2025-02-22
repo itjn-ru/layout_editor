@@ -1,9 +1,6 @@
 import '../../admin_layout_editor.dart';
 import 'canvas/main_canvas.dart';
 import 'package:flutter/material.dart';
-import 'controller/layout_model_controller.dart';
-import 'page.dart';
-import 'style.dart';
 import 'style_widget.dart';
 
 class ComponentsAndSources extends StatelessWidget {

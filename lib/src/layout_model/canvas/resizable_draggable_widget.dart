@@ -39,7 +39,7 @@ class ResizableDraggableWidget extends StatefulWidget {
   final Color? squareColor;
   final Color? bgColor;
 
-  //final Function(double width, double height, Offset tranformOffset)? changed;
+  //final Function(double width, double height, Offset transformOffset)? changed;
   final double canvasHeight;
   final double canvasWidth;
   final LayoutModelController controller;
@@ -90,8 +90,7 @@ late final curComponentItem;*/
     _dynamicW = widget.initWidth ?? widget.canvasWidth;
     _dynamicSW = _dynamicW;
     _dynamicSH = _dynamicH;
-    _child = IgnorePointer(
-        child: ComponentWidget.create(widget.child as LayoutComponent));
+    _child = ComponentWidget.create(widget.child as LayoutComponent, widget.controller);
     _sqColor = widget.squareColor == null ? Colors.white : widget.squareColor!;
     _bgColor = widget.bgColor == null ? Colors.amber : widget.bgColor!;
     if (widget.controller.layoutModel.curItem == widget.child) {
@@ -325,13 +324,14 @@ late final curComponentItem;*/
         ));
   }
 
-  void onChanged(double width, double height, Offset tranformOffset) {
-    final component = widget.controller.layoutModel.curPage.items
-        .firstWhere((e) => e == widget.child);
-    component.properties["position"]?.value = Offset(
-        (tranformOffset.dx / widget.scaleConstraints).round().toDouble(),
-        (tranformOffset.dy / widget.scaleConstraints).round().toDouble());
-    component.properties["size"]?.value =
+  void onChanged(double width, double height, Offset transformOffset) {
+    /*final component = widget.controller.layoutModel.curPage.items
+        .firstWhere((e) => e == widget.child);*/
+    widget.child?.properties["position"]?.value = Offset(
+        (transformOffset.dx / widget.scaleConstraints).round().toDouble(),
+        (transformOffset.dy / widget.scaleConstraints).round().toDouble());
+    widget.child?.properties["size"]?.value =
         Size(width / widget.scaleConstraints, height / widget.scaleConstraints);
   }
+
 }

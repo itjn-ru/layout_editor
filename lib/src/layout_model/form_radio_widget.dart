@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'component_widget.dart';
 
 class FormRadioWidget extends ComponentWidget {
-  const FormRadioWidget(super.component, {super.key});
+  const FormRadioWidget(super.component,  super.controller,{super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

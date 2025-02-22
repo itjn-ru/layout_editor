@@ -67,9 +67,10 @@ class _MainCanvasState extends State<MainCanvas> {
   }
 
   void _handleRunnerEvents(LayoutModelEvent event) {
-    if (mounted && (event is SelectionEvent ||
-          event is PanEnd ||
-          event is NewProjectEvent)) {
+    if (mounted &&
+        (event is SelectionEvent ||
+            event is PanEnd ||
+            event is NewProjectEvent)) {
       setState(() {});
     }
   }
@@ -96,14 +97,6 @@ class _MainCanvasState extends State<MainCanvas> {
       items = widget.items;
       templateWidgets = _initWidgetList();
     }
-    /* if(!deepEq(widget.items,items)||changed) {
-
-      items = widget.items;
-      templateWidgets = _initWidgetList();
-      setState(() {
-        changed=false;
-      });
-    }*/
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -128,7 +121,7 @@ class _MainCanvasState extends State<MainCanvas> {
               },
               onInteractionEnd: (scaleEndDetails) {
                 scaleSize = _transform.value.getMaxScaleOnAxis();
-                widget.controller.viewportZoom=scaleSize;
+                widget.controller.viewportZoom = scaleSize;
                 widget.controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
                 /*setState(() {
                   onIteraction = false;
@@ -169,7 +162,7 @@ class _MainCanvasState extends State<MainCanvas> {
           position: Offset(itemChild["position"]?.dx * scaleConstraints ?? 0,
               itemChild["position"]?.dy * scaleConstraints ?? 0),
           initWidth:
-          itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
+              itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
           initHeight: itemChild["size"]?.height * scaleConstraints ?? 50,
           cellWidth: cellWidth / 2,
           cellHeight: cellHeight / 2,
@@ -206,7 +199,7 @@ class _MainCanvasState extends State<MainCanvas> {
     matrix.translate(delta.dx, delta.dy);
     if (delta.dy < 0) {
       Rect rect =
-      Rect.fromLTRB(0, 0, _canvasWidth, viewport.height + delta.dy.abs());
+          Rect.fromLTRB(0, 0, _canvasWidth, viewport.height + delta.dy.abs());
       setState(() {
         viewport = rect;
       });

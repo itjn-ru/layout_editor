@@ -7,7 +7,7 @@ import 'style_element.dart';
 
 
 class ComponentRadioWidget extends ComponentWidget {
-  const ComponentRadioWidget(super.component, {super.key});
+  const ComponentRadioWidget(super.component, super.controller, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -52,7 +52,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
 
   @override
   void initState() {
-    options = ['Исправно', 'Неисправно'];
+    options = ['Исправно', 'Не исправно'];
     super.initState();
   }
 
@@ -74,7 +74,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: () => handleRadioValueChanged(options[0]),
+                    onTap: null,
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -105,7 +105,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                 const VerticalDivider(),
                 Expanded(
                   child: InkWell(
-                    onTap: () => handleRadioValueChanged(options[1]),
+                    onTap: null,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -114,7 +114,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 173, 74, 197),
+                            color: Colors.redAccent,
                           ),
                         ),
                         // const Spacer(),
@@ -123,8 +123,8 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                           child: Radio(
                             key: UniqueKey(),
                             toggleable: true,
-                            fillColor: MaterialStateColor.resolveWith(
-                                  (states) => const Color.fromARGB(255, 173, 74, 197),
+                            fillColor: WidgetStateColor.resolveWith(
+                                  (states) => Colors.redAccent,
                             ),
                             value: options[1],
                             groupValue: widget.component.properties['source']?.value

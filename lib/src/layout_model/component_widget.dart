@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
-import '../../admin_layout_editor.dart';
 import 'component.dart';
 import 'component_radio_widget.dart';
 import 'component_table.dart';
 import 'component_text.dart';
+import 'controller/layout_model_controller.dart';
 import 'form_checkbox.dart';
 import 'form_checkbox_widget.dart';
 import 'form_hidden_field.dart';
@@ -20,29 +20,29 @@ import 'form_text_field_widget.dart';
 
 class ComponentWidget extends StatelessWidget {
   final LayoutComponent component;
+final LayoutModelController controller;
+  const ComponentWidget(this.component, this.controller, {super.key});
 
-  const ComponentWidget(this.component, {super.key});
-
-  factory ComponentWidget.create(LayoutComponent component) {
+  factory ComponentWidget.create(LayoutComponent component, LayoutModelController controller) {
     switch (component.runtimeType) {
       case const (FormHiddenField):
-        return FormHiddenFieldWidget(component);
+        return FormHiddenFieldWidget(component, controller);
       case const (FormRadio):
-        return ComponentRadioWidget(component);
+        return ComponentRadioWidget(component, controller);
       case const (ComponentGroup):
-        return ComponentGroupWidget(component);
+        return ComponentGroupWidget(component, controller);
       case const (ComponentText):
-        return ComponentTextWidget(component);
+        return ComponentTextWidget(component, controller);
       case const (ComponentTable):
-        return ComponentTableWidget(component);
+        return ComponentTableWidget(component, controller);
       case const (FormTextField):
-        return FormTextFieldWidget(component);
+        return FormTextFieldWidget(component, controller);
       case const (FormImage):
-        return FormImageWidget(component);
+        return FormImageWidget(component, controller);
       case const (FormCheckbox):
-        return FormCheckboxWidget(component);
+        return FormCheckboxWidget(component, controller);
       default:
-        return ComponentWidget(component);
+        return ComponentWidget(component, controller);
     }
   }
 

@@ -3,7 +3,7 @@ import 'component_widget.dart';
 import 'slider_button/slider_button.dart';
 
 class FormRadioWidget extends ComponentWidget {
-  const FormRadioWidget(super.component, {super.key});
+  const FormRadioWidget(super.component, super.controller, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

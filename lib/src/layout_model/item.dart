@@ -66,18 +66,3 @@ class Item with FromMapToMap {
   }
 }
 
-/*class Pages{
-  String type;
-  List<Pages> items = <Pages>[];
-  Map<String, Property> properties = {};
-
-  Pages(this.type, name) {
-    properties['name'] = Property('имя', name);
-
-    properties['style'] = Property('стиль', Style.basic, type: Style);
-  }
-
-  dynamic operator [](String name) {
-    return properties[name]?.value;
-  }
-}*/

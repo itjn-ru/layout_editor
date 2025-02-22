@@ -72,6 +72,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
     final curPageType = switch (widget._item.runtimeType) {
       const (SourcePage) => SourcePage,
       const (StylePage) => StylePage,
+      const (ProcessPage) => ProcessPage,
       _ => ComponentPage
     };
 
