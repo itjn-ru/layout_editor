@@ -8,8 +8,8 @@ class ComponentTextWidget extends ComponentWidget {
 
   @override
   Widget buildWidget(BuildContext context) {
-    String text = component["text"] ?? "";
-    text += component["source"]?? "";
+    String text = component["text"] ??component["source"]?? "";
+    //text += component["source"]?? "";
     final layoutModel = controller.layoutModel;
     var style = layoutModel.getStyleElementById(component['style'].id) ??
         StyleElement("стиль");
