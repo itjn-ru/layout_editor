@@ -4,9 +4,11 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import 'constants.dart';
+import 'custom_border_radius.dart';
 import 'item.dart';
 import 'process_group.dart';
 import 'property.dart';
+import 'screen_size_enum.dart';
 import 'style.dart';
 import 'package:flutter/widgets.dart';
 import 'component_group.dart';
@@ -29,7 +31,17 @@ mixin FromMapToMap{
     final map = {};
 
     item.properties.forEach((key, property) {
+      if(property.type == CustomBorderRadius){
+        print(property.type);
+      }
       map[key] = switch (property.type) {
+        const(CustomBorderRadius)=>
+        // {'type': property.value.runtimeType,
+        // 'borderRadius': property.value.toString(),
+        // },
+         property.value.toJson(),
+        
+         const (ScreenSizeEnum)=> property.value.index,
         const (Uint8List) => base64.encode(property.value),
         const (CustomBorderStyle) => property.value.toMap(),
         const (Offset) => {
@@ -80,6 +92,8 @@ mixin FromMapToMap{
         return MapEntry(
             key,
             switch (key) {
+              'borderRadius' => Property('закругление',  CustomBorderRadius.fromJson(value),
+                  type: CustomBorderRadius),
               'processType' => Property('тип процесса', value??'параллельно', type: String),
               'statusId' => Property('Status Id', value, type: String),
               'title' => Property('title', value, type: String),
@@ -132,6 +146,8 @@ mixin FromMapToMap{
                   Property('ширина', double.tryParse(value.toString()), type: double),
               'height' =>
                   Property('высота', double.tryParse(value.toString()), type: double),
+              'radius' =>
+                  Property('радиус', double.tryParse(value.toString()), type: double),
               'fontWeight' => Property("насыщенность шрифта",
                   FontWeight.values[((int.tryParse(value) ?? 400) ~/ 100) - 1],
                   type: FontWeight),

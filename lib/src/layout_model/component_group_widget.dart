@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'canvas/layout_model_inherit.dart';
 import 'canvas/resizable_draggable_widget.dart';
 import 'component.dart';
 import 'component_widget.dart';
-import 'components_and_sources.dart';
 import 'controller/layout_model_controller.dart';
 import 'item.dart';
+import 'screen_size_enum.dart';
 
 class ComponentGroupWidget extends ComponentWidget {
-   const ComponentGroupWidget(super.component, super.controller,{super.key});
+   const ComponentGroupWidget({required super.component,required super.controller,super.key, super.screenSize});
 
   @override
   Widget buildWidget(BuildContext context) {

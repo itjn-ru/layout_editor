@@ -7,7 +7,7 @@ import 'component_table.dart';
 import 'item.dart';
 
 class ComponentTableWidget extends ComponentWidget {
-  const ComponentTableWidget(super.component, super.controller, {super.key});
+  const ComponentTableWidget({required super.component,required super.controller,super.key, super.screenSize});
 
   @override
   Widget buildWidget(BuildContext context) {

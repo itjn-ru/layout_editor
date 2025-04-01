@@ -4,7 +4,7 @@ import 'component_widget.dart';
 import 'style_element.dart';
 
 class FormCheckboxWidget extends ComponentWidget {
-  const FormCheckboxWidget(super.component,  super.controller, {super.key});
+  const FormCheckboxWidget({required super.component,required super.controller,super.key, super.screenSize});
 
   @override
   Widget buildWidget(BuildContext context) {

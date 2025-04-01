@@ -39,15 +39,15 @@ Size? getSizeFromGlobalKey(GlobalKey key) {
 /// Извлекает границы виджета [Item].
 Rect? getNodeBoundsInWorld(Item item) {
   /// Нужен [GlobalKey]
-  /*final size = getSizeFromGlobalKey(item.key);
-  if (size != null) {
-    return Rect.fromLTWH(
-      item['position'].dx,
-      item['position'].dy,
-      size.width,
-      size.height,
-    );
-  }*/
+  // final size = getSizeFromGlobalKey(item.key);
+  // if (size != null) {
+  //   return Rect.fromLTWH(
+  //     item['position'].dx,
+  //     item['position'].dy,
+  //     size.width,
+  //     size.height,
+  //   );
+  // }
   return null;
 }
 
@@ -97,7 +97,7 @@ Offset? screenToWorld(
 }
 
 RelativeRect buttonMenuPosition(BuildContext context, PointerDownEvent event) {
-  final RenderBox bar = context.findRenderObject() as RenderBox;
+  //final RenderBox bar = context.findRenderObject() as RenderBox;
   final RenderBox overlay =
   Overlay.of(context).context.findRenderObject() as RenderBox;
   const Offset offset = Offset.zero;

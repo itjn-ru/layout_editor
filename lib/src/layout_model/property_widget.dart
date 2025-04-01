@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'controller/events.dart';
 import 'controller/layout_model_controller.dart';
-import 'property.dart';
+import 'custom_border_radius.dart';
 import 'property_alignment_widget.dart';
+import 'property_border_radius_widget.dart';
 import 'property_color_widget.dart';
 import 'property_font_weight_widget.dart';
 import 'property_image_widget.dart';
@@ -23,8 +24,10 @@ final LayoutModelController controller;
 
   factory PropertyWidget.create(LayoutModelController controller, String propertyKey) {
     switch (controller.layoutModel.curItem.properties[propertyKey]?.type) {
-      case const (CustomBorderStyle):
-        return PropertyBorderStyleWidget(controller,propertyKey);
+      case const (CustomBorderRadius):
+        return PropertyBorderRadiusWidget(controller,propertyKey);
+      // case const (CustomBorderStyle):
+      //   return PropertyBorderStyleWidget(controller,propertyKey);
       case const (Offset):
         return PropertyOffsetWidget(controller,propertyKey);
       case const (Size) :

@@ -38,7 +38,7 @@ class _ShowImagePropertyState extends State<ShowImageProperty> {
     }
     widget.property.value=files.first.bytes!;
     final asdas=base64.encode(files.first.bytes!);
-    final dsgfdgfd=base64.decode(asdas);
+    base64.decode(asdas);
     return files.first.bytes!;
   }
 

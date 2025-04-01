@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../flutter_context_menu/core/models/context_menu_entry.dart';
 import '../flutter_context_menu/flutter_context_menu.dart';
 import 'component.dart';
 import 'component_group.dart';

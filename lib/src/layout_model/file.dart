@@ -144,18 +144,18 @@ _saveProperties(XmlBuilder builder, Map<String, Property> properties) {
     properties.forEach((key, property) {
       builder.element(key, nest: () {
         switch (property.type) {
-          case Offset:
+          case const (Offset):
             builder.attribute("left", (property.value as Offset).dx);
             builder.attribute("top", (property.value as Offset).dy);
             break;
-          case Size:
+          case const (Size):
             builder.attribute("width", (property.value as Size).width);
             builder.attribute("height", (property.value as Size).height);
             break;
-          case Color:
+          case const (Color):
             builder.text(property.value.value.toRadixString(16).toUpperCase());
             break;
-          case TextStyle:
+          case const (TextStyle):
             builder.attribute("fontSize", property.value.fontSize);
             break;
           //case XFile:

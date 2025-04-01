@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart' show DeepCollectionEquality;
 import 'package:uuid/uuid.dart';
 
-import '../components_and_sources.dart';
 import '../controller/events.dart';
 import '../controller/layout_model_controller.dart';
 import '../item.dart';
 import '../layout_model.dart';
+import '../page.dart';
+import '../screen_size_enum.dart';
 import 'grid_background_widget.dart';
 import 'layout_model_inherit.dart';
 import 'resizable_draggable_widget.dart';
@@ -14,14 +15,12 @@ import 'resizable_draggable_widget.dart';
 class MainCanvas extends StatefulWidget {
   final BoxConstraints constraints;
   final List<Item> items;
-  final ScreenSizeEnum screenSize;
   final LayoutModelController controller;
 
   const MainCanvas({
     super.key,
     required this.items,
     required this.constraints,
-    required this.screenSize,
     required this.controller,
   });
 
@@ -52,14 +51,15 @@ class _MainCanvasState extends State<MainCanvas> {
   Function deepEq = const DeepCollectionEquality().equals;
   bool changed = false;
   late BoxConstraints oldConstraints;
-
+  late final ScreenSizeEnum screenSize =
+      widget.controller.layoutModel.currentScreenSize;
   @override
   void initState() {
     widget.controller.eventBus.events.listen(_handleRunnerEvents);
     oldConstraints = widget.constraints;
     _canvasWidth = widget.constraints.maxWidth - 20;
     _canvasHeight = widget.constraints.maxHeight - 20;
-    scaleConstraints = _canvasWidth / widget.screenSize.width;
+    scaleConstraints = _canvasWidth / screenSize.width;
     cellWidth = cellWidth * scaleConstraints;
     cellHeight = cellHeight * scaleConstraints;
     viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);
@@ -88,7 +88,7 @@ class _MainCanvasState extends State<MainCanvas> {
       oldConstraints = widget.constraints;
       _canvasWidth = widget.constraints.maxWidth - 20;
       _canvasHeight = widget.constraints.maxHeight - 20;
-      scaleConstraints = _canvasWidth / widget.screenSize.width;
+      scaleConstraints = _canvasWidth / screenSize.width;
       cellWidth = cellWidth * scaleConstraints.truncateToDouble();
       cellHeight = cellHeight * scaleConstraints.truncateToDouble();
       viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);

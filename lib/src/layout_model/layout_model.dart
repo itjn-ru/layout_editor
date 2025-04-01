@@ -1,5 +1,4 @@
-import 'package:uuid/uuid.dart';
-
+import 'component.dart';
 import 'component_group.dart';
 import 'component_table.dart';
 import 'constants.dart';
@@ -9,6 +8,7 @@ import 'page.dart';
 import 'process_group.dart';
 import 'property.dart';
 import 'root.dart';
+import 'screen_size_enum.dart';
 import 'source_table.dart';
 import 'style.dart';
 import 'style_element.dart';
@@ -22,6 +22,10 @@ class LayoutModel with FromMapToMap {
   Item? _curComponentItem;
   Item? _curSourceItem;
   late Item _curStyleItem;
+  final List<ScreenSizeEnum> screenSizes;
+
+
+ ScreenSizeEnum currentScreenSize=ScreenSizeEnum.mobile;
 
   late Type curPageType;
 
@@ -100,21 +104,29 @@ class LayoutModel with FromMapToMap {
     return _itemsOnPage[item]!;
   }
 
-  LayoutModel() {
-    init();
-  }
+  LayoutModel({required this.screenSizes}){init();}
 
   void init() {
     root = Root('макет');
-    curPage = ComponentPage('страница');
-    curPageType = ComponentPage;
-    //curItem = root;
+  //   for(var screenSize in screenSizes){
+  // var component =ScreenSizePage('ScreenSizeEnum',screenSize);
+  //       root.items.add(component);
+  //   }
+    // curPage = ComponentPage('страница');
+    // curPageType = ComponentPage;
+  
 
-    curItemOnPage[ComponentPage] = root;
+    //curItemOnPage[ComponentPage] = root;
 
-    root.items.add(curPage);
-
+   // root.items.add(curPage);
+    for(var screenSize in screenSizes){
+   var curPage =ComponentPage('страница',screenSize);
+   curPageType = ComponentPage;
+   curItemOnPage[ComponentPage] = root;
+         root.items.add(curPage);
+     }
     final sourcePage = SourcePage('страница данных');
+    
     root.items.add(sourcePage);
     curItemOnPage[SourcePage] = sourcePage;
 
@@ -250,11 +262,11 @@ class LayoutModel with FromMapToMap {
     if (item is ComponentPage) {
       var indexLastPage = root.items
           .lastIndexWhere((element) => element.runtimeType == ComponentPage);
-      root.items.insert(index??++indexLastPage, item);
+      root.items.insert(index ?? ++indexLastPage, item);
     } else if (item is LayoutComponentAndSource) {
       //_curItem.items.add(item);
 
-      parent.items.insert(index??parent.items.length, item);
+      parent.items.insert(index ?? parent.items.length, item);
 
       //curComponent = item is ComponentGroup ? null : item;
 
@@ -285,7 +297,7 @@ class LayoutModel with FromMapToMap {
 
       var indexLastItem = parent.items
           .lastIndexWhere((element) => element.runtimeType == item.runtimeType);
-      parent.items.insert(index??++indexLastItem, item);
+      parent.items.insert(index ?? ++indexLastItem, item);
 
       switch (item.runtimeType) {
         case const (ComponentTableColumn):
@@ -443,16 +455,16 @@ class LayoutModel with FromMapToMap {
     if (parent.items.isEmpty) return null;
     if (parent.items.contains(item)) {
       final index = parent.items.indexOf(item);
-      addItem(parent, pasteItem,index:index);
+      addItem(parent, pasteItem, index: index);
       return parent;
     }
     for (var element in parent.items) {
       if (element.items.contains(item)) {
         final index = element.items.indexOf(item);
-        addItem(element, pasteItem,index:index);
+        addItem(element, pasteItem, index: index);
         return element;
       } else {
-        var newParent = findParent(element, item,pasteItem);
+        var newParent = findParent(element, item, pasteItem);
         if (newParent != null) return newParent;
       }
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'canvas/layout_model_inherit.dart';
 import 'component.dart';
 import 'component_widget.dart';
@@ -7,7 +6,7 @@ import 'style_element.dart';
 
 
 class ComponentRadioWidget extends ComponentWidget {
-  const ComponentRadioWidget(super.component, super.controller, {super.key});
+  const ComponentRadioWidget({required super.component,required super.controller,super.key, super.screenSize});
 
   @override
   Widget buildWidget(BuildContext context) {

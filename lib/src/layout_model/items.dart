@@ -7,6 +7,7 @@ import 'page.dart';
 import 'root.dart';
 
 import 'menu.dart';
+import 'screen_size_enum.dart';
 
 class Items extends StatefulWidget {
   final Item _item;
@@ -22,14 +23,13 @@ class Items extends StatefulWidget {
 }
 
 class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return _buildItem(widget._item);
-  } 
+    return _buildItem(widget._item, widget.controller);
+  }
 
-  Widget _buildItem(Item item) {
+  Widget _buildItem(Item item, [LayoutModelController? controller]) {
     Widget child;
 
     if (item.items.isNotEmpty) {
@@ -37,10 +37,17 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
       children.add(
         ItemWidget(item, widget.controller),
       );
-
-      final items = item is Root
-          ? item.items.whereType<ComponentPage>().toList()
-          : item.items;
+      late final List<Item> items;
+      if (item is Root) {
+        final componentsList = item.items.whereType<ComponentPage>().toList();
+        items = componentsList
+            .where((e) =>
+                e.properties['screenSize']?.value ==
+                controller?.layoutModel.currentScreenSize)
+            .toList();
+      } else {
+        items = item.items;
+      }
 
       children
         ..addAll(List.generate(
@@ -66,7 +73,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
 
       child = ListView(shrinkWrap: true, children: children);
     } else {
-      child = ItemWidget(item,widget.controller);
+      child = ItemWidget(item, widget.controller);
     }
 
     final curPageType = switch (widget._item.runtimeType) {
@@ -114,7 +121,7 @@ class ItemsState extends State<Items> with AutomaticKeepAliveClientMixin {
 
 class ItemWidget extends StatefulWidget {
   final Item item;
-final LayoutModelController controller;
+  final LayoutModelController controller;
   const ItemWidget(this.item, this.controller, {super.key});
 
   @override
@@ -132,56 +139,55 @@ class ItemWidgetState extends State<ItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-      return MouseRegion(
-        onEnter: (event) {
-          setState(() {
-            position = event.position;
-          });
+    return MouseRegion(
+      onEnter: (event) {
+        setState(() {
+          position = event.position;
+        });
+      },
+      child: GestureDetector(
+        onTap: () {
+          if (widget.item == widget.controller.layoutModel.curItem) {
+            return;
+          }
+          widget.controller.layoutModel.curItem = widget.item;
+          widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
         },
-        child: GestureDetector(
-          onTap: () {
-            if (widget.item == widget.controller.layoutModel.curItem) {
-              return;
-            }
-            widget.controller.layoutModel.curItem = widget.item;
-            widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
-          },
-          onSecondaryTap: () {
-            final menu = ComponentAndSourceMenu.create(
-                widget.controller, widget.item);
+        onSecondaryTap: () {
+          final menu =
+              ComponentAndSourceMenu.create(widget.controller, widget.item);
 
-            final menuItems = menu.getContextMenu(
-                  (event) => widget.controller.eventBus.emit(event),
-            );
-            createAndShowContextMenu(
-              context,
-              entries: menuItems,
-              position: position!,
-            );
-            if (widget.item == widget.controller.layoutModel.curItem) {
-              return;
-            }
-            widget.controller.layoutModel.curItem = widget.item;
-            widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
-          },
-          child: Container(
-            padding: const EdgeInsets.only(bottom: 5, top: 5, left: 5, right: 5),
-            decoration: BoxDecoration(
-              color: dragging ? Colors.green : Colors.transparent,
-            ),
-            child:  Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.item['name'],
-                  overflow: TextOverflow.clip,
-                  maxLines: 2,
-                ),
-              ],
-            ),
+          final menuItems = menu.getContextMenu(
+            (event) => widget.controller.eventBus.emit(event),
+          );
+          createAndShowContextMenu(
+            context,
+            entries: menuItems,
+            position: position!,
+          );
+          if (widget.item == widget.controller.layoutModel.curItem) {
+            return;
+          }
+          widget.controller.layoutModel.curItem = widget.item;
+          widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
+        },
+        child: Container(
+          padding: const EdgeInsets.only(bottom: 5, top: 5, left: 5, right: 5),
+          decoration: BoxDecoration(
+            color: dragging ? Colors.green : Colors.transparent,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.item['name'],
+                overflow: TextOverflow.clip,
+                maxLines: 2,
+              ),
+            ],
           ),
         ),
-      );
-
+      ),
+    );
   }
 }

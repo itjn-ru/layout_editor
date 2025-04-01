@@ -5,9 +5,8 @@ import 'style_widget.dart';
 
 class ComponentsAndSources extends StatelessWidget {
 final BoxConstraints constraints;
-  final ScreenSizeEnum screenSize;
   final LayoutModelController controller;
-  const ComponentsAndSources( this.constraints,this.screenSize, {super.key,required this.controller});
+  const ComponentsAndSources( this.constraints, {super.key,required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,6 @@ final BoxConstraints constraints;
             ? MainCanvas(
                 items: curPage.items,
                 constraints: constraints,
-            screenSize:screenSize,
           controller: controller,
               )
             : Container();
@@ -93,19 +91,3 @@ final BoxConstraints constraints;
   }*/
 }
 
-enum ScreenSizeEnum {
-  mobile(width: 360, height: 720, title: 'мобильный', value: true),
-  desktop(width: 720, height: 720, title: 'десктоп', value: false);
-
-  final double width;
-  final double height;
-  final String title;
-  final bool value;
-
-  const ScreenSizeEnum(
-      {required this.height,
-        required this.width,
-        required this.title,
-        required this.value});
-
-}

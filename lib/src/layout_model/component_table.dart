@@ -4,7 +4,7 @@ import 'style.dart';
 import 'item.dart';
 
 class ComponentTable extends LayoutComponent {
-  ComponentTable(name) : super("table", name,mayBeParent: true) {
+  ComponentTable(name) : super("table", name) {
     properties['source'] = Property('источник', '');
     items.add(ComponentTableColumn("колонка"));
 

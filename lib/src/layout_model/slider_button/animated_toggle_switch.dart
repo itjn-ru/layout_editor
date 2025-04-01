@@ -281,7 +281,7 @@ class AnimatedToggleSwitch<T extends Object?>
     required this.values,
     SimpleIconBuilder<T>? iconBuilder,
     AnimatedIconBuilder<T>? customIconBuilder,
-    List<Widget>? iconList,
+    super.iconList,
     this.animationDuration = const Duration(milliseconds: 500),
     this.animationCurve = Curves.easeInOutCirc,
     this.indicatorSize = const Size.fromWidth(48.0),
@@ -329,7 +329,6 @@ class AnimatedToggleSwitch<T extends Object?>
         styleBuilder: styleBuilder,
         customStyleBuilder: customStyleBuilder,
         styleList: styleList,
-        iconList: iconList,
       );
 
   static AnimatedIconBuilder<T>? _iconSizeBuilder<T>(

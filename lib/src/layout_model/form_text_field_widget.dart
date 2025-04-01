@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'component_widget.dart';
 
 class FormTextFieldWidget extends ComponentWidget {
-  const FormTextFieldWidget(super.component, super.controller, {super.key});
+  const FormTextFieldWidget({required super.component,required super.controller,super.key, super.screenSize});
 
   @override
   Widget buildWidget(BuildContext context) {
