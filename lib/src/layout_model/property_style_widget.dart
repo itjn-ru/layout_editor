@@ -9,19 +9,19 @@ class PropertyStyleWidget extends PropertyWidget {
 
   @override
   Widget build(BuildContext context) {
-    final property = controller.layoutModel.curItem.properties[propertyKey]!;
+    final property = controller.getCurrentItem()?.properties[propertyKey]!;
 
     var styles = controller.layoutModel.styles;
 
-    if(!styles.contains(property.value)) {
-      property.value = Style.basic;
+    if(!styles.contains(property?.value)) {
+      property?.value = Style.basic;
     }
 
     return Row(children: [
 
       Expanded(
         child: DropdownButton<Style>(
-          value: property.value,
+          value: property?.value,
           isExpanded: true,
           items: styles
               .map<DropdownMenuItem<Style>>(
@@ -31,8 +31,8 @@ class PropertyStyleWidget extends PropertyWidget {
               ))
               .toList(),
           onChanged: (Style? value) {
-            property.value = value ?? Style.basic;
-            controller.eventBus.emit(ChangeItem(id: const Uuid().v4()));
+            property?.value = value ?? Style.basic;
+            controller.eventBus.emit(ChangeItem(id: const Uuid().v4(), itemId: controller.getCurrentItem()?.id));
           },
         ),
 

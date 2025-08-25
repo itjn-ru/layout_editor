@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'process_widget.dart';
 
 class ProcessElementWidget extends ProcessWidget {
-  ProcessElementWidget(super.process);
+  const ProcessElementWidget(super.process, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

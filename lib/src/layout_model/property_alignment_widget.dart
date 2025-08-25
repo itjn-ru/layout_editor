@@ -8,12 +8,12 @@ class PropertyAlignmentWidget extends PropertyWidget {
 
   @override
   Widget build(BuildContext context) {
-    final property = controller.layoutModel.curItem.properties[propertyKey]!;
+    final property = controller.getItemById(controller.selectedId)?.properties[propertyKey]!;
     return Row(
       children: [
         Expanded(
           child: DropdownButton<Alignment>(
-            value: property.value,
+            value: property?.value,
             isExpanded: true,
             items: [
               Alignment.topLeft,
@@ -44,8 +44,8 @@ class PropertyAlignmentWidget extends PropertyWidget {
                         ))
                 .toList(),
             onChanged: (Object? value) {
-              property.value = value;
-              controller.eventBus.emit(ChangeItem(id: const Uuid().v4()));
+              property?.value = value;
+              controller.eventBus.emit(ChangeItem(id: const Uuid().v4(), itemId: controller.layoutModel.curItem.id));
             },
           ),
         ),

@@ -1,5 +1,5 @@
+import 'package:admin_layout_editor/src/color_picker/color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:uuid/uuid.dart';
 import 'controller/events.dart';
 import 'property_widget.dart';
@@ -9,29 +9,28 @@ class PropertyColorWidget extends PropertyWidget {
 
   @override
   Widget build(BuildContext context) {
-    final property = controller.layoutModel.curItem.properties[propertyKey]!;
+    final property = controller.getCurrentItem()?.properties[propertyKey]!;
     return Row(children: [
       ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: property.value),
+        style: ElevatedButton.styleFrom(backgroundColor: property?.value),
         onPressed: () {
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: const Text('Pick a color!'),
+                title: const Text('Выберите цвет!'),
                 content: SingleChildScrollView(
                   child: BlockPicker(
-                    pickerColor: property.value, //default color
+                    pickerColor: property?.value,
                     onColorChanged: (Color color) {
-                      //on color picked
-                      //print(color);
-                      property.value = color;
+                      property?.value = color;
                       Navigator.of(context).pop();
                       controller.eventBus
-                          .emit(ChangeItem(id: const Uuid().v4()));
+                          .emit(ChangeItem(id: const Uuid().v4(), itemId: controller.layoutModel.curItem.id));
                     },
                   ),
                 ),
+                
                 /*actions: <Widget>[
                   ElevatedButton(
                     child: const Text('DONE'),
@@ -49,3 +48,5 @@ class PropertyColorWidget extends PropertyWidget {
     ]);
   }
 }
+
+

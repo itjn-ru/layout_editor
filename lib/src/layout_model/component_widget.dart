@@ -1,12 +1,12 @@
-import 'package:admin_layout_editor/src/layout_model/screen_size_enum.dart';
 import 'package:flutter/widgets.dart';
 import 'component.dart';
 import 'component_radio_widget.dart';
 import 'component_table.dart';
 import 'component_text.dart';
-import 'controller/layout_model_controller.dart';
 import 'form_checkbox.dart';
 import 'form_checkbox_widget.dart';
+import 'form_expandble_list.dart';
+import 'form_expandble_list_widget.dart';
 import 'form_hidden_field.dart';
 import 'form_image.dart';
 import 'form_image_widget.dart';
@@ -21,31 +21,45 @@ import 'form_text_field_widget.dart';
 
 class ComponentWidget extends StatelessWidget {
   final LayoutComponent component;
-final LayoutModelController controller;
-final ScreenSizeEnum? screenSize;
 
-  const ComponentWidget({super.key, required this.component, required this.controller, this.screenSize=ScreenSizeEnum.mobile});
+  const ComponentWidget(
+      {super.key,
+      required this.component});
 
-  factory ComponentWidget.create(LayoutComponent component, LayoutModelController controller, [ScreenSizeEnum? screenSize] ) {
+  factory ComponentWidget.create(LayoutComponent component,
+     ) {
     switch (component.runtimeType) {
       case const (FormHiddenField):
-        return FormHiddenFieldWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return FormHiddenFieldWidget(
+            component: component
+            );
       case const (FormRadio):
-        return ComponentRadioWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return ComponentRadioWidget(
+            component: component);
       case const (ComponentGroup):
-        return ComponentGroupWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return ComponentGroupWidget(
+            component: component);
       case const (ComponentText):
-        return ComponentTextWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return ComponentTextWidget(
+            component: component);
       case const (ComponentTable):
-        return ComponentTableWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return ComponentTableWidget(
+            component: component);
       case const (FormTextField):
-        return FormTextFieldWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return FormTextFieldWidget(
+            component: component);
       case const (FormImage):
-        return FormImageWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return FormImageWidget(
+            component: component);
       case const (FormCheckbox):
-        return FormCheckboxWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return FormCheckboxWidget(
+            component: component);
+      case const (FormExpandbleList):
+        return FormExpandbleListWidget(
+            component: component);
       default:
-        return ComponentWidget(component: component, controller: controller,screenSize: screenSize??ScreenSizeEnum.mobile);
+        return ComponentWidget(
+            component: component);
     }
   }
 

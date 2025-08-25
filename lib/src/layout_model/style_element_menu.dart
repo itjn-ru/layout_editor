@@ -9,7 +9,7 @@ class StyleElementMenu extends ComponentAndSourceMenu {
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
     return [
       PopupMenuItem(
-        child: Text("Удалить стиль"),
+        child: const Text("Удалить стиль"),
         onTap: () {
   controller.layoutModel.deleteItem(target);
           onChanged!(target);

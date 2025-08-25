@@ -26,7 +26,7 @@ final String title;
 
 sealed class CustomBorderRadius {
   const CustomBorderRadius();
-  BorderRadius borderRadius();
+  BorderRadius borderRadius(double scale);
 
   factory CustomBorderRadius.fromJson(Map<String, dynamic> json) {
     final discriminator = json['type'] as String;
@@ -59,7 +59,7 @@ class BorderRadiusNone extends CustomBorderRadius {
   const BorderRadiusNone();
 
   @override
-  BorderRadius borderRadius() => BorderRadius.zero;
+  BorderRadius borderRadius(double scale) => BorderRadius.zero;
 
 Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -77,7 +77,7 @@ class BorderRadiusAll extends CustomBorderRadius {
   const BorderRadiusAll(this.radius);
 
   @override
-  BorderRadius borderRadius() => BorderRadius.all(Radius.circular(radius));
+  BorderRadius borderRadius(double scale) => BorderRadius.all(Radius.circular(radius/scale));
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -98,8 +98,8 @@ class BorderRadiusTop extends CustomBorderRadius {
   const BorderRadiusTop(this.radius);
 
   @override
-  BorderRadius borderRadius() => BorderRadius.only(
-      topLeft: Radius.circular(radius), topRight: Radius.circular(radius));
+  BorderRadius borderRadius(double scale) => BorderRadius.only(
+      topLeft: Radius.circular(radius/scale), topRight: Radius.circular(radius/scale));
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -120,9 +120,9 @@ class BorderRadiusBottom extends CustomBorderRadius {
   const BorderRadiusBottom(this.radius);
 
   @override
-  BorderRadius borderRadius() => BorderRadius.only(
-      bottomLeft: Radius.circular(radius),
-      bottomRight: Radius.circular(radius));
+  BorderRadius borderRadius(double scale) => BorderRadius.only(
+      bottomLeft: Radius.circular(radius/scale),
+      bottomRight: Radius.circular(radius/scale));
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

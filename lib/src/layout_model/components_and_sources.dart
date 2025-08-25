@@ -1,93 +1,49 @@
+import 'package:admin_layout_editor/src/layout_model/canvas/screensize_provider.dart';
+
 import '../../admin_layout_editor.dart';
+import 'canvas/layout_model_provider.dart';
 import 'canvas/main_canvas.dart';
 import 'package:flutter/material.dart';
 import 'style_widget.dart';
 
 class ComponentsAndSources extends StatelessWidget {
-final BoxConstraints constraints;
+  final BoxConstraints constraints;
   final LayoutModelController controller;
-  const ComponentsAndSources( this.constraints, {super.key,required this.controller});
+  final ScreenSizeEnum screenSize;
+  const ComponentsAndSources(this.constraints,
+      {super.key, required this.controller, required this.screenSize});
 
   @override
   Widget build(BuildContext context) {
-    final ComponentAndSourcePage curPage =controller.layoutModel.getPageByItem(controller.layoutModel.curItem);
-      if (curPage is StylePage) {
-        return Column(
-          children: List.generate(
-            curPage.items.length, //widget._items.length,
-            (index) =>
-                StyleWidget.create(curPage.items[index] as LayoutStyle),
-          ),
-        );
-      }else if (curPage is ComponentPage) {
-        return curPage.items.isNotEmpty
-            ? MainCanvas(
-                items: curPage.items,
-                constraints: constraints,
-          controller: controller,
-              )
-            : Container();
-      } else {
-        final curPage = controller.layoutModel.root.items.first;
-        return ProcessItems(
-          controller.layoutModel.root.items
-              .whereType<ProcessPage>()
-              .first,controller,
-        );
-        /*return MainCanvas(
-          items: curPage.items,
-          constraints: constraints,
-          screenSize:screenSize,
-          controller: controller,
-        );*/
-      }
-
-    /*  if (widget._curPage is ComponentPage) {
-          return widget._curPage.items.isNotEmpty?
-           MainCanvas(items: widget._curPage.items,):Container();
-        } else if (widget._curPage is SourcePage) {
-          return Column(
-            children: List.generate(
-              widget._curPage.items.length, //widget._items.length,
-              (index) => SourceWidget.create(
-                  widget._curPage.items[index] as LayoutSource),
-            ),
-          );
-        } else {
-          return Column(
-            children: List.generate(
-              widget._curPage.items.length, //widget._items.length,
-              (index) => StyleWidget.create(
-                  widget._curPage.items[index] as LayoutStyle),
-            ),
-          );
-        }*/
+    return ScreenSizeProvider(
+      screenSize: screenSize,
+      child: LayoutModelControllerProvider(
+        controller: controller,
+        child: Builder(builder: (context) {
+          final ComponentAndSourcePage curPage =
+              controller.layoutModel.getCurPage;
+          if (curPage is StylePage) {
+            return Column(
+              children: List.generate(
+                curPage.items.length, //widget._items.length,
+                (index) =>
+                    StyleWidget.create(curPage.items[index] as LayoutStyle),
+              ),
+            );
+          } else if (curPage is ComponentPage) {
+            return curPage.items.isNotEmpty
+                ? MainCanvas(constraints: constraints)
+                : Container();
+          } 
+          else {
+            return ProcessItems(
+              controller.layoutModel.root.items.whereType<ProcessPage>().first,
+              controller,
+            );
+          }
+        }),
+      ),
+    );
   }
-
-/* List<Widget> componentsList(BoxConstraints constraints) {
-    List<Widget> componentsItems = [];
-    double incrementHeight = 12;
-    if (widget._curPage.items.isNotEmpty) {
-      incrementHeight = widget._curPage.items.last["position"].dy +
-          widget._curPage.items.last["size"].height +
-          12;
-    }
-    componentsItems
-      ..add(Container(height: incrementHeight))
-      ..addAll(List.generate(
-        widget._curPage.items.length, //widget._items.length,
-        (index) => Positioned(
-          left: (widget._curPage.items[index]["position"].dx / 360) *
-              constraints.maxWidth,
-          top: widget._curPage.items[index]["position"].dy,
-          width: (widget._curPage.items[index]["size"].width / 360) *
-              constraints.maxWidth,
-          height: widget._curPage.items[index]["size"].height,
-          child: ComponentWidget.create(
-              widget._curPage.items[index] as LayoutComponent),
-        ),
-      ));
-    return componentsItems;
-  }*/
 }
 

@@ -12,7 +12,7 @@ class SourceTableMenu extends ComponentAndSourceMenu {
     if (controller.layoutModel.curItem is LayoutSource) {
       return [
         PopupMenuItem(
-          child: Text("Добавить колонку"),
+          child: const Text("Добавить колонку"),
           onTap: () {
             var item = SourceTableColumn("колонка");
             controller.layoutModel.addItem(target, item);
@@ -37,7 +37,6 @@ class SourceTableMenu extends ComponentAndSourceMenu {
         case SourceTableColumn:
           return [
             PopupMenuItem(
-              child: Text("Удалить колонку"),
               onTap: controller.layoutModel.getComponentByItem(target)!.items
                           .whereType<SourceTableColumn>()
                           .length >
@@ -47,6 +46,7 @@ class SourceTableMenu extends ComponentAndSourceMenu {
                       onChanged!(controller.layoutModel.curItem);
                     }
                   : null,
+              child: Text("Удалить колонку"),
             ),
           ];
 

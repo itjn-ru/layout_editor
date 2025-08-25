@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'constants.dart';
 import 'custom_border_radius.dart';
+import 'custom_margin.dart';
+import 'form_expandble_list.dart';
 import 'item.dart';
 import 'process_group.dart';
 import 'property.dart';
@@ -26,42 +28,40 @@ import 'form_hidden_field.dart';
 import 'form_radio.dart';
 import 'form_text_field.dart';
 
-mixin FromMapToMap{
+mixin FromMapToMap {
   Map propertiesToMap(Item item) {
     final map = {};
 
     item.properties.forEach((key, property) {
-      if(property.type == CustomBorderRadius){
+      if (property.value == 'Начислено:') {
         print(property.type);
       }
       map[key] = switch (property.type) {
-        const(CustomBorderRadius)=>
-        // {'type': property.value.runtimeType,
-        // 'borderRadius': property.value.toString(),
-        // },
-         property.value.toJson(),
-        
-         const (ScreenSizeEnum)=> property.value.index,
+        const (String) => property.value,
+        const (CustomMargin) => property.value.join(','),
+        const (List<int>) => property.value.join(','),
+        const (CustomBorderRadius) => property.value.toJson(),
+        const (ScreenSizeEnum) => property.value.index,
         const (Uint8List) => base64.encode(property.value),
         const (CustomBorderStyle) => property.value.toMap(),
         const (Offset) => {
-          'left': property.value.dx.toString(),
-          'top': property.value.dy.toString()
-        },
+            'left': property.value.dx.toString(),
+            'top': property.value.dy.toString()
+          },
         const (Size) => {
-          'width': property.value.width.toString(),
-          'height': property.value.height.toString()
-        },
+            'width': property.value.width.toString(),
+            'height': property.value.height.toString()
+          },
         const (Color) => property.value.value.toRadixString(16).toUpperCase(),
         const (Style) => {
-          'id': property.value.id.toString(),
-          'name': property.value.name.toString()
-        },
+            'id': property.value.id.toString(),
+            'name': property.value.name.toString()
+          },
         const (FontWeight) => property.value.value.toString(),
         const (TextStyle) => {
-          'fontSize': property.value.fontSize,
-          'fontWeight': property.value.fontWeight.value
-        },
+            'fontSize': property.value.fontSize,
+            'fontWeight': property.value.fontWeight.value
+          },
         const (Alignment) => {'x': property.value.x, 'y': property.value.y},
         _ => property.value.toString(),
       };
@@ -84,23 +84,29 @@ mixin FromMapToMap{
     return list;
   }
 
-
-
   Map<String, Property> propertiesFromMap(Map map) {
     final Map<String, Property> properties = map.map(
-          (key, value) {
+      (key, value) {
         return MapEntry(
             key,
             switch (key) {
-              'borderRadius' => Property('закругление',  CustomBorderRadius.fromJson(value),
+              'margin' => Property('отступ',
+                  value.split(',').map((e) => int.tryParse(e) ?? 0).toList(),
+                  type: CustomMargin),
+              'padding' => Property('отступ',
+                  value.split(',').map((e) => int.tryParse(e) ?? 0).toList(),
+                  type: List<int>),
+              'borderRadius' => Property(
+                  'закругление', CustomBorderRadius.fromJson(value),
                   type: CustomBorderRadius),
-              'processType' => Property('тип процесса', value??'параллельно', type: String),
+              'processType' =>
+                Property('тип процесса', value ?? 'параллельно', type: String),
               'statusId' => Property('Status Id', value, type: String),
               'title' => Property('title', value, type: String),
               'creatorTitle' => Property('Creator Title', value, type: String),
               'Uint8List' =>
-              // Property('картинка', Uint8List.fromList(value.codeUnits), type: Uint8List ),
-              Property('картинка', base64.decode(value), type: Uint8List),
+                // Property('картинка', Uint8List.fromList(value.codeUnits), type: Uint8List ),
+                Property('картинка', base64.decode(value), type: Uint8List),
               'horizontalAlignment' => Property('горизонтальное выравнивание',
                   double.tryParse(value.toString()),
                   type: double),
@@ -111,7 +117,7 @@ mixin FromMapToMap{
                   'размер шрифта', double.tryParse(value.toString() ?? '9'),
                   type: double),
               'isItalic' =>
-                  Property('Курсив', value == 'true' ? true : false, type: bool),
+                Property('Курсив', value == 'true' ? true : false, type: bool),
               'topBorder' => Property(
                   'Верхняя граница',
                   value.runtimeType == CustomBorderStyle
@@ -142,12 +148,12 @@ mixin FromMapToMap{
               'rowspan' => Property(
                   'объединение колонок', int.tryParse(value.toString()) ?? 0,
                   type: int),
-              'width' =>
-                  Property('ширина', double.tryParse(value.toString()), type: double),
-              'height' =>
-                  Property('высота', double.tryParse(value.toString()), type: double),
-              'radius' =>
-                  Property('радиус', double.tryParse(value.toString()), type: double),
+              'width' => Property('ширина', double.tryParse(value.toString()),
+                  type: double),
+              'height' => Property('высота', double.tryParse(value.toString()),
+                  type: double),
+              'radius' => Property('радиус', double.tryParse(value.toString()),
+                  type: double),
               'fontWeight' => Property("насыщенность шрифта",
                   FontWeight.values[((int.tryParse(value) ?? 400) ~/ 100) - 1],
                   type: FontWeight),
@@ -175,6 +181,9 @@ mixin FromMapToMap{
               'color' => Property(
                   'цвет', Color(int.tryParse(value.toString(), radix: 16) ?? 0),
                   type: Color),
+              'backgroundColor' => Property('цвет фона',
+                  Color(int.tryParse(value.toString(), radix: 16) ?? 0),
+                  type: Color),
               'style' => Property(
                   'стиль',
                   Style(
@@ -183,9 +192,10 @@ mixin FromMapToMap{
               'textStyle' => Property(
                   'стиль текста',
                   TextStyle(
-                    fontSize: double.tryParse(value['fontSize'].toString()) ?? 0,
+                    fontSize:
+                        double.tryParse(value['fontSize'].toString()) ?? 0,
                     fontWeight: switch (
-                    int.tryParse(value['fontWeight'].toString()) ?? 0) {
+                        int.tryParse(value['fontWeight'].toString()) ?? 0) {
                       100 => FontWeight.w100,
                       200 => FontWeight.w200,
                       300 => FontWeight.w300,
@@ -240,7 +250,7 @@ mixin FromMapToMap{
     return items;
   }
 
-  Item switchItem (Map<String,dynamic> element, Item parent){
+  Item switchItem(Map<String, dynamic> element, Item parent) {
     switch (element['type']) {
       case 'componentPage':
         return ComponentPage('');
@@ -294,8 +304,9 @@ mixin FromMapToMap{
         return ProcessElement('');
       case 'processGroup':
         return ProcessGroup('');
+      case 'expandblelist':
+        return FormExpandbleList('');
     }
     return Item('item', 'item');
   }
-
 }

@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'style_widget.dart';
 
 class StyleElementWidget extends StyleWidget {
-  StyleElementWidget(super.style);
+  const StyleElementWidget(super.style, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

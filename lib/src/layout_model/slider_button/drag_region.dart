@@ -8,13 +8,13 @@ class HoverRegion extends StatefulWidget {
   final MouseCursor defaultCursor;
 
   const HoverRegion({
-    Key? key,
+    super.key,
     this.cursor,
     required this.hoverCursor,
     required this.child,
     this.hoverCheck = _defaultHoverCheck,
     this.defaultCursor = MouseCursor.defer,
-  }) : super(key: key);
+  });
 
   static bool _defaultHoverCheck(Offset offset) => true;
 
@@ -72,14 +72,14 @@ class DragRegion extends StatelessWidget {
   final MouseCursor draggingCursor;
 
   const DragRegion({
-    Key? key,
+    super.key,
     this.dragging = false,
     required this.child,
     this.hoverCheck = HoverRegion._defaultHoverCheck,
     this.defaultCursor = MouseCursor.defer,
     this.dragCursor = SystemMouseCursors.grab,
     this.draggingCursor = SystemMouseCursors.grabbing,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

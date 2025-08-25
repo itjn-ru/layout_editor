@@ -9,7 +9,7 @@ class FormSliderButtonMenu extends ComponentAndSourceMenu {
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
     return [
       PopupMenuItem(
-        child: Text("Удалить переключатель"),
+        child: const Text("Удалить переключатель"),
         onTap: () {
           controller.layoutModel.deleteItem(target);
           onChanged!(target);

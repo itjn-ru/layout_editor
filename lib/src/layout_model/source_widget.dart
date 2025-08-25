@@ -9,7 +9,7 @@ import 'source_variable_widget.dart';
 class SourceWidget extends StatelessWidget {
   final LayoutSource source;
 
-  SourceWidget(this.source);
+  const SourceWidget(this.source, {super.key});
 
   factory SourceWidget.create(LayoutSource source) {
     switch (source.runtimeType) {

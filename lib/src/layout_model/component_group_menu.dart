@@ -6,7 +6,6 @@ import 'form_checkbox.dart';
 import 'form_text_field.dart';
 import 'menu.dart';
 import 'component_table.dart';
-import 'item.dart';
 import 'page.dart';
 
 import 'form_hidden_field.dart';
@@ -16,77 +15,7 @@ import 'form_slider_button.dart';
 class ComponentGroupMenu extends ComponentAndSourceMenu {
   ComponentGroupMenu(super.controller, super.target, {super.onChanged});
 
-  @override
-  List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
-
-    return [
-      PopupMenuItem(
-        child: const Text("Добавить текст"),
-        onTap: () {
-          var item = ComponentText("текст");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить таблицу"),
-        onTap: () {
-          var item = ComponentTable("таблица");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить текстовое поле"),
-        onTap: () {
-          var item = FormTextField("текстовое поле");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить радиокнопку"),
-        onTap: () {
-          var item = FormRadio("радиокнопка");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить слайдер"),
-        onTap: () {
-          var item = FormSliderButton("слайдер");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить флажок"),
-        onTap: () {
-          var item = FormCheckbox("флажок");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить скрытое поле"),
-        onTap: () {
-          var item = FormHiddenField("скрытое поле");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Удалить группу"),
-        onTap: () {
-          controller.layoutModel.deleteItem(controller.layoutModel.curItem);
-
-          onChanged!(controller.layoutModel.curItem);
-        },
-      ),
-    ];
-  }
-
+  
   @override
   List<ContextMenuEntry> getContextMenu(
       void Function(LayoutModelEvent event)? onChanged) {

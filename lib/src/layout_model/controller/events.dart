@@ -146,9 +146,10 @@ final class DragSelectionEndEvent extends LayoutModelEvent {
 }
 
 final class SelectionEvent extends LayoutModelEvent {
-
-  const SelectionEvent({required super.id, super.isHandled});
+final String? itemId;
+  const SelectionEvent({required super.id,required this.itemId, super.isHandled});
 }
+
 
 final class AddItemEvent extends LayoutModelEvent {
   const AddItemEvent({
@@ -203,7 +204,8 @@ final class PanEnd extends LayoutModelEvent {
 }
 
 final class ChangeItem extends LayoutModelEvent {
-  const ChangeItem({required super.id});
+  final String? itemId;
+  const ChangeItem({required super.id, required this.itemId});
 }
 
 /// Класс, позволяющий задавать логику сериализации и десериализации

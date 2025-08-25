@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'component_widget.dart';
 
 class FormImageWidget extends ComponentWidget {
-  const FormImageWidget({required super.component,required super.controller,super.key, super.screenSize});
+  const FormImageWidget({required super.component,super.key});
 
   @override
   Widget buildWidget(BuildContext context) {

@@ -14,7 +14,7 @@ class AnimationTypeHoverBuilder<T, V> extends StatefulWidget {
   final Curve indicatorAppearingCurve;
   final bool animateExternalChanges;
 
-  const AnimationTypeHoverBuilder({
+  const AnimationTypeHoverBuilder({super.key, 
     required this.valueProvider,
     required this.lerp,
     required this.builder,

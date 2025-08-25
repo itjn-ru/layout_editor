@@ -7,11 +7,11 @@ import 'style_element_widget.dart';
 class StyleWidget extends StatelessWidget {
   final LayoutStyle style;
 
-  StyleWidget(this.style);
+  const StyleWidget(this.style, {super.key});
 
   factory StyleWidget.create(LayoutStyle style) {
     switch (style.runtimeType) {
-      case StyleElement:
+      case const (StyleElement):
         return StyleElementWidget(style as StyleElement);
 
       default:

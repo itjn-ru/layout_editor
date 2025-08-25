@@ -8,13 +8,13 @@ class PropertyFontWeightWidget extends PropertyWidget {
 
   @override
   Widget build(BuildContext context) {
-    final property = controller.layoutModel.curItem.properties[propertyKey]!;
+    final property = controller.getCurrentItem()?.properties[propertyKey]!;
     return Row(children: [
 
       Expanded(
         child: DropdownButton<FontWeight>(
-          onTap: ()=>controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-          value: property.value,
+          onTap: ()=>controller.eventBus.emit(ChangeItem(id: const Uuid().v4(), itemId: controller.layoutModel.curItem.id)),
+          value: property?.value,
           isExpanded: true,
           items: FontWeight.values
               .map<DropdownMenuItem<FontWeight>>(
@@ -35,7 +35,7 @@ class PropertyFontWeightWidget extends PropertyWidget {
                       ))
               .toList(),
           onChanged: (FontWeight? value) {
-            property.value = value ?? FontWeight.normal;
+            property?.value = value ?? FontWeight.normal;
             //onChanged();
           },
         ),

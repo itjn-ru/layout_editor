@@ -88,7 +88,7 @@ class LayoutModelClipboard with FromMapToMap {
     if (parent.mayBeParent) {
       controller.layoutModel.addItem(parent, pasteItem);
     } else {
-      controller.layoutModel.findParent(page, parent, pasteItem);
+      controller.layoutModel.addItemToParent(page, parent, pasteItem);
     }
     eventBus.emit(
       PasteSelectionEvent(

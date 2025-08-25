@@ -8,6 +8,8 @@ import 'controller/events.dart';
 import 'controller/layout_model_controller.dart';
 import 'form_checkbox.dart';
 import 'form_checkbox_menu.dart';
+import 'form_expandble_list.dart';
+import 'form_expandble_list_menu.dart';
 import 'form_hidden_field.dart';
 import 'form_hidden_field_menu.dart';
 import 'form_image_menu.dart';
@@ -115,6 +117,9 @@ class ComponentAndSourceMenu {
           return ProcessItemMenu(controller, target, onChanged: onChanged);
         case const (SourceTable):
           return SourceTableMenu(controller, target, onChanged: onChanged);
+        case const (FormExpandbleList):
+          return FormExpandbleListMenu(controller, target,
+              onChanged: onChanged);
         default:
           return ComponentAndSourceMenu(controller, target,
               onChanged: onChanged);
@@ -140,10 +145,6 @@ class ComponentAndSourceMenu {
               onChanged: onChanged);
       }
     }
-  }
-
-  List<PopupMenuEntry> getComponentMenu(Function(Item?)? onChanged) {
-    return [];
   }
 
   List<ContextMenuEntry> getContextMenu(

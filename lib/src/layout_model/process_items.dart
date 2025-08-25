@@ -1,4 +1,6 @@
 
+import 'package:uuid/uuid.dart';
+
 import '../../admin_layout_editor.dart';
 import 'canvas/context_menu.dart';
 import 'package:flutter/material.dart';
@@ -124,8 +126,8 @@ class _ItemWrapperState extends State<ItemWrapper> {
           if (widget.item == widget.controller.layoutModel.curItem) {
             return;
           }
-          widget.controller.layoutModel.curItem = widget.item;
-          widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
+          // widget.controller.layoutModel.curItem = widget.item;
+          widget.controller.eventBus.emit(SelectionEvent(id: const Uuid().v4(), itemId: widget.item.id));
         },
         onSecondaryTap: () {
           final menu = ComponentAndSourceMenu.create(
@@ -142,8 +144,8 @@ class _ItemWrapperState extends State<ItemWrapper> {
           if (widget.item == widget.controller.layoutModel.curItem) {
             return;
           }
-          widget.controller.layoutModel.curItem = widget.item;
-          widget.controller.eventBus.emit(SelectionEvent(id: widget.item.id));
+          // widget.controller.layoutModel.curItem = widget.item;
+          widget.controller.eventBus.emit(SelectionEvent(id: const Uuid().v4(), itemId: widget.item.id));
         },
         child: Container(
             decoration: BoxDecoration(

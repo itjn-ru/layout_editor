@@ -1,22 +1,20 @@
-import 'package:admin_layout_editor/src/layout_model/form_expandble_list.dart';
 import 'package:flutter/material.dart';
 import '../flutter_context_menu/flutter_context_menu.dart';
+import 'component_group.dart';
 import 'component_text.dart';
 import 'controller/events.dart';
 import 'form_checkbox.dart';
-import 'form_hidden_field.dart';
-import 'form_image.dart';
-import 'form_slider_button.dart';
 import 'form_text_field.dart';
 import 'menu.dart';
 import 'component_table.dart';
 import 'page.dart';
 
-import 'component_group.dart';
+import 'form_hidden_field.dart';
 import 'form_radio.dart';
+import 'form_slider_button.dart';
 
-class ComponentPageMenu extends ComponentAndSourceMenu {
-  ComponentPageMenu(super.controller, super.target, {super.onChanged});
+class FormExpandbleListMenu extends ComponentAndSourceMenu {
+  FormExpandbleListMenu(super.controller, super.target, {super.onChanged});
 
   
   @override
@@ -36,15 +34,6 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
             icon: Icons.widgets,
             onSelected: () {
               var item = ComponentGroup("группа");
-              controller.layoutModel.addItem(target, item);
-              onChanged!(AddItemEvent(id: item.id));
-            },
-          ),
-           MenuItem(
-            label: 'Добавить список',
-            icon: Icons.widgets,
-            onSelected: () {
-              var item = FormExpandbleList("список");
               controller.layoutModel.addItem(target, item);
               onChanged!(AddItemEvent(id: item.id));
             },
@@ -108,24 +97,6 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
             icon: Icons.text_fields,
             onSelected: () {
               var item = FormHiddenField("скрытое поле");
-              controller.layoutModel.addItem(target, item);
-              onChanged!(AddItemEvent(id: item.id));
-            },
-          ),
-           MenuItem(
-            label: 'Добавить раскрывающийся список',
-            icon: Icons.list_rounded,
-            onSelected: () {
-              var item = FormExpandbleList("список");
-              controller.layoutModel.addItem(target, item);
-              onChanged!(AddItemEvent(id: item.id));
-            },
-          ),
-          MenuItem(
-            label: 'Добавить картинку',
-            icon: Icons.picture_in_picture,
-            onSelected: () {
-              var item = FormImage("картинка");
               controller.layoutModel.addItem(target, item);
               onChanged!(AddItemEvent(id: item.id));
             },

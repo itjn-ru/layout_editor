@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'component_widget.dart';
 
 class FormTextFieldWidget extends ComponentWidget {
-  const FormTextFieldWidget({required super.component,required super.controller,super.key, super.screenSize});
+  const FormTextFieldWidget({required super.component,super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -218,54 +218,37 @@ class _CounterWidgetState extends State<CounterWidget> {
             style['fontSize'].toDouble();
     return SizedBox(
       height: widget.component["size"].height ?? 30,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            widget.component["caption"] != ''
-                ? '${widget.component["caption"]}: '
-                : '',
-            style: Theme.of(context).textTheme.titleMedium ??
-                TextStyle(
-                    color: Theme.of(context).textTheme.titleSmall?.color,
-                    fontWeight:
-                        Theme.of(context).textTheme.titleSmall?.fontWeight ??
-                            style['fontWeight'],
-                    fontSize: fontSizeText),
-          ),
-          Container(
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Theme.of(context).disabledColor,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _createIncrementDicrementButton(
-                    Icons.remove,
-                    () => readOnly ? null : _decrementCounter(),
-                    fontSizeButton),
-                SizedBox(
-                  width: widget.component["size"].height,
-                  child: Center(
-                    child: Text(
-                      '$selectedQuantitie',
-                      style: TextStyle(
-                        fontSize: fontSizeButton,
-                        color: Theme.of(context).indicatorColor,
-                      ),
-                    ),
+      child: Container(
+        padding: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: Theme.of(context).disabledColor,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _createIncrementDicrementButton(
+                Icons.remove,
+                () => readOnly ? null : _decrementCounter(),
+                fontSizeButton),
+            SizedBox(
+              width: widget.component["size"].height,
+              child: Center(
+                child: Text(
+                  '$selectedQuantitie',
+                  style: TextStyle(
+                    fontSize: fontSizeButton,
+                    color: Theme.of(context).indicatorColor,
                   ),
                 ),
-                _createIncrementDicrementButton(
-                    Icons.add,
-                    () => readOnly ? null : _incrementCounter(),
-                    fontSizeButton),
-              ],
+              ),
             ),
-          ),
-        ],
+            _createIncrementDicrementButton(
+                Icons.add,
+                () => readOnly ? null : _incrementCounter(),
+                fontSizeButton),
+          ],
+        ),
       ),
     );
   }

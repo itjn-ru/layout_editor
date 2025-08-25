@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'canvas/layout_model_inherit.dart';
+import 'canvas/layout_model_provider.dart';
 import 'component.dart';
 import 'component_widget.dart';
 import 'style_element.dart';
 
 
 class ComponentRadioWidget extends ComponentWidget {
-  const ComponentRadioWidget({required super.component,required super.controller,super.key, super.screenSize});
+  const ComponentRadioWidget({required super.component,super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -16,7 +16,8 @@ class ComponentRadioWidget extends ComponentWidget {
     if (text.isEmpty) {
       text = component['text'] ?? '';
     }
-    final layoutModel = LayoutModelInheritedWidget.of(context).layoutModel;
+        final controller = LayoutModelControllerProvider.of(context);
+    final layoutModel = controller.layoutModel;
     var style = layoutModel.getStyleElementById(component['style'].id) ??
         StyleElement('стиль');
 

@@ -5,15 +5,31 @@ import 'property_widget.dart';
 
 class PropertyOffsetWidget extends PropertyWidget {
   const PropertyOffsetWidget(super.controller, super.propertyKey, {super.key});
+  void _emitChange() {
+    controller.eventBus.emit(
+      ChangeItem(
+        id: const Uuid().v4(),
+        itemId: controller.getCurrentItem()?.id,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final property = controller.layoutModel.curItem.properties[propertyKey]!;
-    var controllerDx = TextEditingController();
-    controllerDx.text = property.value.dx.toString();
+    final property =
+        controller.getItemById(controller.selectedId)?.properties[propertyKey];
+    final Offset offset = property?.value ?? Offset.zero;
 
-    var controllerDy = TextEditingController();
-    controllerDy.text = property.value.dy.toString();
+    final controllerDx = TextEditingController(text: offset.dx.toString());
+    final controllerDy = TextEditingController(text: offset.dy.toString());
+
+    void updateDx(String value) {
+      property?.value = Offset(double.tryParse(value) ?? 0, offset.dy);
+    }
+
+    void updateDy(String value) {
+      property?.value = Offset(offset.dx, double.tryParse(value) ?? 0);
+    }
 
     return Row(
       children: [
@@ -21,39 +37,24 @@ class PropertyOffsetWidget extends PropertyWidget {
         Expanded(
           child: TextField(
             controller: controllerDx,
-            focusNode: FocusNode(),
-            onTap: () =>
-                controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onSubmitted: (value) =>
-                controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onTapOutside: (value) =>
-                controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onEditingComplete: () =>
-                controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onChanged: (value) {
-              property.value =
-                  Offset(double.tryParse(value) ?? 0, property.value.dy);
-            },
+            onTap: _emitChange,
+            onSubmitted: (_) => _emitChange(),
+            onTapOutside: (_) => _emitChange(),
+            onEditingComplete: _emitChange,
+            onChanged: updateDx,
           ),
         ),
         const Text("В: "),
         Expanded(
-            child: TextField(
-          controller: controllerDy,
-              focusNode: FocusNode(),
-          onTap: () =>
-              controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-          onSubmitted: (value) =>
-              controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-          onTapOutside: (value) =>
-              controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-          onEditingComplete: () =>
-              controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-          onChanged: (value) {
-            property.value =
-                Offset(property.value.dx, double.tryParse(value) ?? 0);
-          },
-        )),
+          child: TextField(
+            controller: controllerDy,
+            onTap: _emitChange,
+            onSubmitted: (_) => _emitChange(),
+            onTapOutside: (_) => _emitChange(),
+            onEditingComplete: _emitChange,
+            onChanged: updateDy,
+          ),
+        ),
       ],
     );
   }
