@@ -11,7 +11,7 @@ class FormTextFieldMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: const Text("Удалить текстовое поле"),
         onTap: () {
-  controller.layoutModel.deleteItem(target);
+          controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

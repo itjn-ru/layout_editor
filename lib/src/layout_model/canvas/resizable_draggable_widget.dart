@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import '../component.dart';
 import '../component_widget.dart';
 import '../controller/events.dart';
-import '../controller/layout_model_controller.dart';
 import '../item.dart';
+import '../property.dart';
+import 'layout_model_provider.dart';
 import 'resizable_draggable_widget_platform_interface.dart';
 
 ///Возвращает изменяемый виджет
@@ -19,11 +20,11 @@ class ResizableDraggableWidget extends StatefulWidget {
     // this.changed,
     required this.canvasWidth,
     required this.canvasHeight,
-    required this.controller,
     required this.scaleConstraints,
     this.cellWidth = 10.0,
     this.cellHeight = 10.0,
     required this.position,
+    required this.selected,
   });
 
   ///Начальня ширина, по умолчанию ширина canvas
@@ -37,13 +38,13 @@ class ResizableDraggableWidget extends StatefulWidget {
   final Offset position;
   final Item? child;
   final Color? squareColor;
+
   final Color? bgColor;
 
   //final Function(double width, double height, Offset transformOffset)? changed;
   final double canvasHeight;
   final double canvasWidth;
-  final LayoutModelController controller;
-
+  final bool selected;
   @override
   State<ResizableDraggableWidget> createState() =>
       _ResizableDraggableWidgetState();
@@ -70,13 +71,11 @@ class _ResizableDraggableWidgetState extends State<ResizableDraggableWidget> {
   bool _lockW = false;
 
   Widget? _child;
-  Color? _sqColor;
   Color? _bgColor;
-  bool _showSquare = true;
   double scale = 1.0;
 
-/*late Item component;
-late final curComponentItem;*/
+  late final controller = LayoutModelControllerProvider.of(context);
+
   @override
   void initState() {
     trW = widget.position.dx;
@@ -90,24 +89,208 @@ late final curComponentItem;*/
     _dynamicW = widget.initWidth ?? widget.canvasWidth;
     _dynamicSW = _dynamicW;
     _dynamicSH = _dynamicH;
-    _child = ComponentWidget.create(widget.child as LayoutComponent, widget.controller);
-    _sqColor = widget.squareColor == null ? Colors.white : widget.squareColor!;
+    _child = ComponentWidget.create(widget.child as LayoutComponent);
     _bgColor = widget.bgColor == null ? Colors.amber : widget.bgColor!;
-    if (widget.controller.layoutModel.curItem == widget.child) {
-      // context.read<ActiveWidgetProvider>().activeKey = widget.key!;
-      _showSquare = true;
-    } else {
-      _showSquare = false;
-    }
-    /* if (context.read<ActiveWidgetProvider>().activeKey == widget.key) {
-      context.read<LayoutModel>().curItem = widget.child!;
-      _showSquare = true;
-    } else {
-      _showSquare = false;
-    }*/
     super.initState();
 
     // if(_showSquare) context.read<LayoutModel>().curComponentItem=widget.child!;
+  }
+
+  final Offset _panStartOffset = const Offset(0, 0);
+  Offset _panUpdateOffset = const Offset(0, 0);
+  Offset _panIntervalOffset = const Offset(0, 0);
+
+  Widget panResizeSquare(Alignment alignment) {
+    if (!widget.selected) return const SizedBox.shrink();
+    return Align(
+      alignment: alignment,
+      child: GestureDetector(
+        onPanUpdate: (details) => _onResize(details, alignment),
+        onPanEnd: (details) => _onEndResize(details),
+        behavior:
+            HitTestBehavior.translucent, // чтобы реагировать на всю область
+        child: Container(
+          width: 40, // увеличенная область для жестов
+          height: 40,
+          alignment: alignment,
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.blue, width: 2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.circle, size: 12, color: Colors.blue),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget getResizeable() {
+    return Container(
+      // color: _bgColor,
+      decoration: BoxDecoration(
+        color: _bgColor,
+        border: Border.all(
+          color: widget.selected ? Colors.red : Colors.transparent,
+          width: widget.selected ? 2 : 0,
+        ),
+      ),
+      width: _dynamicW <= 0 ? 1 : _dynamicW,
+      height: _dynamicH <= 0 ? 1 : _dynamicH,
+      child: Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
+          children: [
+            _child!,
+            Positioned(
+              left: _dynamicW / 2 - 10,
+              top: -10,
+              child: panResizeSquare(Alignment.topCenter),
+            ),
+            Positioned(
+              left: _dynamicW / 2 - 10,
+              bottom: -10,
+              child: panResizeSquare(Alignment.bottomCenter),
+            ),
+            Positioned(
+              left: -10,
+              top: _dynamicH / 2 - 10,
+              child: panResizeSquare(Alignment.centerLeft),
+            ),
+            Positioned(
+              right: -10,
+              top: _dynamicH / 2 - 10,
+              child: panResizeSquare(Alignment.centerRight),
+            ),
+            if (widget.selected)
+              Positioned(
+                  right: 10,
+                  top: -10,
+                  child: IconButton(
+                      onPressed: () {
+                        controller.layoutModel.deleteItem(widget.child!);
+                        controller.eventBus
+                            .emit(RemoveItemEvent(id: widget.child!.id));
+                      },
+                      icon: const Icon(Icons.delete)))
+          ]),
+    );
+  }
+
+  Offset startMoveOffset = const Offset(0, 0);
+  Offset endMoveOffset = const Offset(0, 0);
+  Offset updateMoveOffset = const Offset(0, 0);
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: updateMoveOffset + Offset(trW, trH),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          if (widget.selected) {
+            controller.select(null);
+            return;
+          }
+          controller.select(widget.child!.id);
+        },
+        child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onPanStart: (details) {
+              if (widget.selected) startMoveOffset = details.localPosition;
+            },
+            onPanUpdate: (details) {
+              if (!widget.selected) return;
+
+              var intervalOffset =
+                  details.localPosition - startMoveOffset + endMoveOffset;
+
+              // Ограничение по вертикали
+              if (intervalOffset.dy < -trLastH) {
+                intervalOffset = Offset(intervalOffset.dx, -trLastH);
+              }
+
+              // Смещение кратно cellWidth и cellHeight
+              final snappedOffset = Offset(
+                (intervalOffset.dx / widget.cellWidth).round() *
+                    widget.cellWidth,
+                (intervalOffset.dy / widget.cellHeight).round() *
+                    widget.cellHeight,
+              );
+
+              setState(() {
+                updateMoveOffset = snappedOffset;
+              });
+              onChanged(
+                  _dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
+            },
+            onPanEnd: (details) {
+              if (widget.selected) endMoveOffset = updateMoveOffset;
+              controller.eventBus.emit(PanEnd(id: widget.child!.id));
+            },
+            child: getResizeable()),
+      ),
+    );
+  }
+
+  void onChanged(double width, double height, Offset transformOffset) {
+    final offset = Offset(
+        (transformOffset.dx / widget.scaleConstraints).round().toDouble(),
+        (transformOffset.dy / widget.scaleConstraints).round().toDouble());
+    widget.child?.properties["position"]?.value = offset;
+    controller.updateProperty(
+        "position", Property("положение", offset, type: Offset));
+    final size =
+        Size(width / widget.scaleConstraints, height / widget.scaleConstraints);
+    widget.child?.properties["size"]?.value = size;
+    controller.updateProperty("size", Property("размер", size, type: Size));
+  }
+
+  void _onResize(DragUpdateDetails details, Alignment alignment) {
+    setState(() {
+      _panUpdateOffset = Offset(
+          details.localPosition.dx.clamp(
+              0 +
+                  _panStartOffset.dx -
+                  (alignment == Alignment.centerRight
+                      ? widget.canvasWidth
+                      : widget.canvasWidth),
+              widget.canvasWidth - _panStartOffset.dx.abs() - trLastW),
+          details.localPosition.dy.clamp(
+              0 +
+                  _panStartOffset.dy -
+                  (alignment == Alignment.bottomCenter
+                      ? widget.canvasHeight
+                      : widget.canvasHeight),
+              widget.canvasHeight - _panStartOffset.dy.abs() - trLastH));
+    });
+    if (alignment == Alignment.centerRight ||
+        alignment == Alignment.centerLeft) {
+      if (alignment == Alignment.centerRight) {
+        _panIntervalOffset = -_panUpdateOffset + _panStartOffset;
+      } else if (alignment == Alignment.centerLeft) {
+        _panIntervalOffset = _panUpdateOffset - _panStartOffset;
+      }
+      refreshW(alignment, _panIntervalOffset.dx);
+    } else if (alignment == Alignment.bottomCenter) {
+      _panIntervalOffset = -_panUpdateOffset + _panStartOffset;
+      refreshH(alignment, _panIntervalOffset.dy);
+    } else if (alignment == Alignment.topCenter) {
+      _panIntervalOffset = _panUpdateOffset - _panStartOffset;
+      refreshH(alignment, _panIntervalOffset.dy);
+    }
+    onChanged(_dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
+  }
+
+  void _onEndResize(DragEndDetails details) {
+    trLastH = trH;
+    _lockH = false;
+    trLastW = trW;
+    _lockW = false;
+    controller.eventBus.emit(PanEnd(id: widget.child!.id));
   }
 
   refreshW(Alignment dir, double dx) {
@@ -162,176 +345,4 @@ late final curComponentItem;*/
       });
     }
   }
-
-  Offset _panStartOffset = const Offset(0, 0);
-  Offset _panUpdateOffset = const Offset(0, 0);
-  Offset _panIntervalOffset = const Offset(0, 0);
-
-  panResizeSquare(Alignment dir) {
-    return GestureDetector(
-      onPanStart: (details) {
-        _panStartOffset = details.localPosition;
-        _dynamicSW = _dynamicW;
-        _dynamicSH = _dynamicH;
-      },
-      onPanUpdate: (details) {
-        //_panUpdateOffset = details.localPosition;
-        ///Если выходит за границы
-        ///Offset intervalOffset =
-        //                   details.localPosition - startMoveOffset + endMoveOffset;
-        setState(() {
-          _panUpdateOffset = Offset(
-              details.localPosition.dx.clamp(
-                  0 +
-                      _panStartOffset.dx -
-                      (dir == Alignment.centerRight
-                          ? widget.canvasWidth
-                          : widget.canvasWidth),
-                  widget.canvasWidth - _panStartOffset.dx.abs() - trLastW),
-              details.localPosition.dy.clamp(
-                  0 +
-                      _panStartOffset.dy -
-                      (dir == Alignment.bottomCenter
-                          ? widget.canvasHeight
-                          : widget.canvasHeight),
-                  widget.canvasHeight - _panStartOffset.dy.abs() - trLastH));
-        });
-        if (dir == Alignment.centerRight || dir == Alignment.centerLeft) {
-          if (dir == Alignment.centerRight) {
-            _panIntervalOffset = -_panUpdateOffset + _panStartOffset;
-          } else if (dir == Alignment.centerLeft) {
-            _panIntervalOffset = _panUpdateOffset - _panStartOffset;
-          }
-          refreshW(dir, _panIntervalOffset.dx);
-        } else if (dir == Alignment.bottomCenter) {
-          _panIntervalOffset = -_panUpdateOffset + _panStartOffset;
-          refreshH(dir, _panIntervalOffset.dy);
-        } else if (dir == Alignment.topCenter) {
-          _panIntervalOffset = _panUpdateOffset - _panStartOffset;
-          refreshH(dir, _panIntervalOffset.dy);
-        }
-        onChanged(_dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
-      },
-      onPanEnd: ((details) {
-        trLastH = trH;
-        _lockH = false;
-        trLastW = trW;
-        _lockW = false;
-        widget.controller.eventBus.emit(PanEnd(id: widget.child!.id));
-      }),
-      child: Visibility(
-        visible: _showSquare,
-        child: Icon(
-          color: _sqColor!,
-          size: 20,
-          Icons.circle_sharp,
-        ),
-      ),
-    );
-  }
-
-  Widget getResizeable() {
-    return Container(
-      color: _bgColor,
-      width: _dynamicW <= 0 ? 1 : _dynamicW,
-      height: _dynamicH <= 0 ? 1 : _dynamicH,
-      child: Stack(alignment: Alignment.center, children: [
-        _child!,
-        Positioned(
-          left: _dynamicW / 2 - 10,
-          top: 0,
-          child: panResizeSquare(Alignment.topCenter),
-        ),
-        Positioned(
-          left: _dynamicW / 2 - 10,
-          bottom: 0,
-          child: panResizeSquare(Alignment.bottomCenter),
-        ),
-        Positioned(
-          left: 0,
-          top: _dynamicH / 2 - 10,
-          child: panResizeSquare(Alignment.centerLeft),
-        ),
-        Positioned(
-          right: 0,
-          top: _dynamicH / 2 - 10,
-          child: panResizeSquare(Alignment.centerRight),
-        ),
-        Positioned(
-            right: 10,
-            top: -10,
-            child: IconButton(
-                onPressed: () {
-                  widget.controller.layoutModel.deleteItem(widget.child!);
-                  widget.controller.eventBus
-                      .emit(RemoveItemEvent(id: widget.child!.id));
-                },
-                icon: const Icon(Icons.delete)))
-      ]),
-    );
-  }
-
-  Offset startMoveOffset = const Offset(0, 0);
-  Offset endMoveOffset = const Offset(0, 0);
-  Offset updateMoveOffset = const Offset(0, 0);
-
-  @override
-  Widget build(BuildContext context) {
-    return Transform.translate(
-        offset: updateMoveOffset + Offset(trW, trH),
-        child: GestureDetector(
-          child: getResizeable(),
-          onTap: () {
-            widget.controller.layoutModel.curItem = widget.child!;
-            widget.controller.eventBus
-                .emit(SelectionEvent(id: widget.child!.id));
-          },
-          onPanStart: (details) {
-            if (_showSquare) startMoveOffset = details.localPosition;
-          },
-          onPanUpdate: (details) {
-            if (_showSquare) {
-              Offset intervalOffset =
-                  details.localPosition - startMoveOffset + endMoveOffset;
-
-              ///Если выходит за границы
-              /*  intervalOffset = Offset(
-                        intervalOffset.dx.clamp(0 - trLastW, widget.canvasWidth - _dynamicW - trLastW),
-                        intervalOffset.dy
-                            .clamp(0 - trLastH, widget.canvasHeight - _dynamicH - trLastH));*/
-              if (intervalOffset.dy < -trLastH) {
-                intervalOffset = Offset(intervalOffset.dx, 0 - trLastH);
-              }
-              setState(() {
-                updateMoveOffset = Offset(
-                    (intervalOffset.dx / widget.cellWidth).round() *
-                        widget.cellWidth,
-                    (intervalOffset.dy / widget.cellHeight).round() *
-                        widget.cellHeight);
-              });
-              widget.child!.properties["position"]?.value =
-                  updateMoveOffset + Offset(trW, trH);
-              onChanged(
-                  _dynamicW, _dynamicH, updateMoveOffset + Offset(trW, trH));
-            }
-          },
-          onPanEnd: (details) {
-            if (_showSquare) endMoveOffset = updateMoveOffset;
-            widget.controller.eventBus.emit(PanEnd(id: widget.child!.id));
-          },
-          //);
-          //}
-        ));
-  }
-
-  void onChanged(double width, double height, Offset transformOffset) {
-    /*final component = widget.controller.layoutModel.curPage.items
-        .firstWhere((e) => e == widget.child);*/
-    widget.child?.properties["position"]?.value = Offset(
-        (transformOffset.dx / widget.scaleConstraints).round().toDouble(),
-        (transformOffset.dy / widget.scaleConstraints).round().toDouble());
-    widget.child?.properties["size"]?.value =
-        Size(width / widget.scaleConstraints, height / widget.scaleConstraints);
-  }
-
 }

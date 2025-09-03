@@ -1,15 +1,14 @@
-import 'component.dart';
+import 'package:uuid/uuid.dart';
+
 import 'component_group.dart';
 import 'component_table.dart';
 import 'constants.dart';
 import 'from_map_to_map_mixin.dart';
 import 'item.dart';
 import 'page.dart';
-import 'process_group.dart';
 import 'property.dart';
 import 'root.dart';
 import 'screen_size_enum.dart';
-import 'source_table.dart';
 import 'style.dart';
 import 'style_element.dart';
 import 'component_and_source.dart';
@@ -18,25 +17,17 @@ class LayoutModel with FromMapToMap {
   late Root root;
   late ComponentAndSourcePage curPage;
 
-  late Item _curItem;
   Item? _curComponentItem;
   Item? _curSourceItem;
   late Item _curStyleItem;
   final List<ScreenSizeEnum> screenSizes;
 
-
- ScreenSizeEnum currentScreenSize=ScreenSizeEnum.mobile;
+  ComponentAndSourcePage get getCurPage => getPageByItem(curItem);
 
   late Type curPageType;
 
   Item get curItem {
     return curItemOnPage[curPageType]!;
-  }
-
-  set curItem(Item value) {
-    _curItem = value;
-
-    curItemOnPage[curPageType] = value;
   }
 
   Item get curComponentItem {
@@ -104,29 +95,20 @@ class LayoutModel with FromMapToMap {
     return _itemsOnPage[item]!;
   }
 
-  LayoutModel({required this.screenSizes}){init();}
+  LayoutModel({required this.screenSizes}) {
+    init();
+  }
 
   void init() {
     root = Root('макет');
-  //   for(var screenSize in screenSizes){
-  // var component =ScreenSizePage('ScreenSizeEnum',screenSize);
-  //       root.items.add(component);
-  //   }
-    // curPage = ComponentPage('страница');
-    // curPageType = ComponentPage;
-  
 
-    //curItemOnPage[ComponentPage] = root;
+    var curPage = ComponentPage('страница');
+    curPageType = ComponentPage;
+    curItemOnPage[ComponentPage] = root;
+    root.items.add(curPage);
 
-   // root.items.add(curPage);
-    for(var screenSize in screenSizes){
-   var curPage =ComponentPage('страница',screenSize);
-   curPageType = ComponentPage;
-   curItemOnPage[ComponentPage] = root;
-         root.items.add(curPage);
-     }
     final sourcePage = SourcePage('страница данных');
-    
+
     root.items.add(sourcePage);
     curItemOnPage[SourcePage] = sourcePage;
 
@@ -148,10 +130,12 @@ class LayoutModel with FromMapToMap {
 
   void fromMap(Map map) {
     root = Root(map['properties']['name']);
+
+    usedIds.clear();
+
     root
       ..properties = propertiesFromMap(map['properties'])
       ..items = _itemsFromMap(root, map['items']);
-    curItem = root;
     curItemOnPage[ComponentPage] = root;
 
     if (root.items.whereType<ComponentPage>().isEmpty) {
@@ -203,6 +187,26 @@ class LayoutModel with FromMapToMap {
     //добавляем базовый стиль
   }
 
+  /// Мапа для складирования properties для проверки на уникальность
+  final Set<String> usedIds = {};
+
+// Функция для проверки и замены id
+  void ensureUniqueIds(Map<String, dynamic> properties) {
+    properties.forEach((key, value) {
+      if (key == 'id' && value is Property && value.value is String) {
+        String id = value.value;
+        if (usedIds.contains(id)) {
+          // Генерируем новый уникальный id
+          final newId = const Uuid().v4();
+          value.value = newId;
+          usedIds.add(newId);
+        } else {
+          usedIds.add(id);
+        }
+      }
+    });
+  }
+
   List<Item> _itemsFromMap(Item parent, List list) {
     final List<Item> items = [];
 
@@ -210,6 +214,9 @@ class LayoutModel with FromMapToMap {
       Item item = switchItem(element, parent);
 
       final itemProperties = propertiesFromMap(element['properties']);
+
+      /// Проверка на уникальность id
+      ensureUniqueIds(itemProperties);
 
       item.properties.forEach((key, value) {
         if (itemProperties.containsKey(key)) {
@@ -254,7 +261,6 @@ class LayoutModel with FromMapToMap {
       'properties': propertiesToMap(root),
       'items': itemsToMap(root)
     };
-
     return map['layout'];
   }
 
@@ -346,88 +352,29 @@ class LayoutModel with FromMapToMap {
     deleteItem(curItem);
   }
 
+  Item? findParentById(Item _root, String targetId) {
+    for (final child in _root.items) {
+      // Проверяем, есть ли у текущего элемента properties с нужным id
+      final hasTargetId = child.properties['id']?.value == targetId;
+
+      if (hasTargetId) {
+        return _root; // Возвращаем текущий элемент как родителя
+      }
+
+      // Рекурсивный поиск вглубь
+      final found = findParentById(child, targetId);
+      if (found != null) {
+        return found;
+      }
+    }
+    return null;
+  }
+
   void deleteItem(Item item) {
-    final component = getComponentByItem(item);
-
-    final page = getPageByItem(item);
-
-    if (item is ComponentAndSourcePage) {
-      root.items.remove(item);
-      curItem = root;
-    } else if (item is LayoutComponentAndSource) {
-      if (page.items.contains(item)) {
-        page.items.remove(item);
-        _curItem = page;
-      } else {
-        final groups = page.items.whereType<ComponentGroup>();
-
-        for (final group in groups) {
-          if (group.items.contains(item)) {
-            group.items.remove(item);
-            _curItem = group;
-            break;
-          }
-        }
-        final processGroups = page.items.whereType<ProcessGroup>();
-        for (final group in processGroups) {
-          if (group.items.contains(item)) {
-            group.items.remove(item);
-            _curItem = group;
-            break;
-          }
-        }
-      }
-    } else {
-      if (component == null) {
-        return;
-      }
-
-      switch (item.runtimeType) {
-        case const (ComponentTableColumn):
-          final indexOfColumn = component.items
-              .where((element) => element.runtimeType == ComponentTableColumn)
-              .toList()
-              .indexOf(item);
-
-          component.items.remove(item);
-          component.items
-              .where((element) => element.runtimeType == ComponentTableRowGroup)
-              .forEach((rowGroup) {
-            for (final row in rowGroup.items) {
-              row.items.removeAt(indexOfColumn);
-            }
-          });
-
-          curItem = component;
-
-        case const (ComponentTableRowGroup):
-          component.items.remove(item);
-          curItem = component;
-        case const (ComponentTableRow):
-          ComponentTableRowGroup? foundGroup;
-          component.items
-              .whereType<ComponentTableRowGroup>()
-              .forEach((rowGroup) {
-            if (rowGroup.items.where((row) => row == item).isNotEmpty) {
-              foundGroup = rowGroup;
-            }
-          });
-
-          if (foundGroup == null) {
-            return;
-          }
-
-          foundGroup!.items.remove(item);
-          curItem = foundGroup!;
-
-        case const (SourceTableColumn):
-          component.items.remove(item);
-          curItem = component;
-
-        default:
-          component.items.remove(item);
-          curItem = component;
-      }
+    final parent = findParentById(root, item.id);
+    if (parent != null) {
+      parent.items.remove(item);
+      return;
     }
   }
 
@@ -451,7 +398,7 @@ class LayoutModel with FromMapToMap {
     }
   }
 
-  Item? findParent(Item parent, Item item, Item pasteItem) {
+  Item? addItemToParent(Item parent, Item item, Item pasteItem) {
     if (parent.items.isEmpty) return null;
     if (parent.items.contains(item)) {
       final index = parent.items.indexOf(item);
@@ -464,7 +411,7 @@ class LayoutModel with FromMapToMap {
         addItem(element, pasteItem, index: index);
         return element;
       } else {
-        var newParent = findParent(element, item, pasteItem);
+        var newParent = addItemToParent(element, item, pasteItem);
         if (newParent != null) return newParent;
       }
     }

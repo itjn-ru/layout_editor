@@ -29,5 +29,4 @@ class ProcessWidget extends StatelessWidget {
   Widget buildWidget(BuildContext context) {
     return Text(process.type);
   }
-
 }

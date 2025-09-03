@@ -12,14 +12,13 @@ class SourceTableMenu extends ComponentAndSourceMenu {
     if (controller.layoutModel.curItem is LayoutSource) {
       return [
         PopupMenuItem(
-          child: Text("Добавить колонку"),
+          child: const Text("Добавить колонку"),
           onTap: () {
             var item = SourceTableColumn("колонка");
             controller.layoutModel.addItem(target, item);
             onChanged!(item);
           },
         ),
-
         PopupMenuItem(
           child: const Text("Удалить таблицу"),
           onTap: () {
@@ -37,20 +36,21 @@ class SourceTableMenu extends ComponentAndSourceMenu {
         case SourceTableColumn:
           return [
             PopupMenuItem(
-              child: Text("Удалить колонку"),
-              onTap: controller.layoutModel.getComponentByItem(target)!.items
+              onTap: controller.layoutModel
+                          .getComponentByItem(target)!
+                          .items
                           .whereType<SourceTableColumn>()
                           .length >
                       1
                   ? () {
-                      controller.layoutModel.deleteItem(controller.layoutModel.curItem);
+                      controller.layoutModel
+                          .deleteItem(controller.layoutModel.curItem);
                       onChanged!(controller.layoutModel.curItem);
                     }
                   : null,
+              child: Text("Удалить колонку"),
             ),
           ];
-
-
 
         default:
           return [];

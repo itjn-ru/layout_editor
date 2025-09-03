@@ -1,4 +1,4 @@
-library admin_layout_editor;
+library frame_forge;
 
 export 'src/layout_model/layout_model.dart';
 export 'src/layout_model/file.dart';

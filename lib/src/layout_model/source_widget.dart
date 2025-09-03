@@ -5,17 +5,16 @@ import 'source_table_widget.dart';
 import 'source_variable.dart';
 import 'source_variable_widget.dart';
 
-
 class SourceWidget extends StatelessWidget {
   final LayoutSource source;
 
-  SourceWidget(this.source);
+  const SourceWidget(this.source, {super.key});
 
   factory SourceWidget.create(LayoutSource source) {
     switch (source.runtimeType) {
-      case SourceVariable:
+      case const (SourceVariable):
         return SourceVariableWidget(source as SourceVariable);
-      case SourceTable:
+      case const (SourceTable):
         return SourceTableWidget(source as SourceTable);
 
       default:

@@ -1,36 +1,35 @@
 import 'package:flutter/material.dart';
-import 'canvas/layout_model_inherit.dart';
+import 'canvas/layout_model_provider.dart';
 import 'component.dart';
 import 'component_widget.dart';
 import 'style_element.dart';
 
-
 class ComponentRadioWidget extends ComponentWidget {
-  const ComponentRadioWidget({required super.component,required super.controller,super.key, super.screenSize});
+  const ComponentRadioWidget({required super.component, super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
-    String text = component['source']?.isNotEmpty ?? false
-        ? '\$' + component['source']
-        : '';
-    if (text.isEmpty) {
-      text = component['text'] ?? '';
-    }
-    final layoutModel = LayoutModelInheritedWidget.of(context).layoutModel;
+    final controller = LayoutModelControllerProvider.of(context);
+    final layoutModel = controller.layoutModel;
     var style = layoutModel.getStyleElementById(component['style'].id) ??
         StyleElement('стиль');
 
     return Container(
       alignment: component['alignment'],
-      child: CustomRadioButton(component: component,),
+      child: CustomRadioButton(
+        component: component,
+      ),
     );
   }
 }
+
 class CustomRadioButton extends StatefulWidget {
   final LayoutComponent component;
 
-  const CustomRadioButton(
-      {super.key, required this.component,});
+  const CustomRadioButton({
+    super.key,
+    required this.component,
+  });
 
   @override
   State<CustomRadioButton> createState() => _CustomRadioButtonState();
@@ -40,9 +39,9 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
   void handleRadioValueChanged(String? value) {
     setState(() {
       widget.component.properties['source']?.value =
-      widget.component.properties['source']?.value == value
-          ? 'none'
-          : value ?? 'none';
+          widget.component.properties['source']?.value == value
+              ? 'none'
+              : value ?? 'none';
     });
   }
 
@@ -83,7 +82,8 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                             key: UniqueKey(),
                             toggleable: true,
                             value: options[0],
-                            groupValue: widget.component.properties['source']?.value
+                            groupValue: widget
+                                .component.properties['source']?.value
                                 .toString(),
                             onChanged: handleRadioValueChanged,
                           ),
@@ -100,7 +100,6 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                     ),
                   ),
                 ),
-
                 const VerticalDivider(),
                 Expanded(
                   child: InkWell(
@@ -123,10 +122,11 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                             key: UniqueKey(),
                             toggleable: true,
                             fillColor: WidgetStateColor.resolveWith(
-                                  (states) => Colors.redAccent,
+                              (states) => Colors.redAccent,
                             ),
                             value: options[1],
-                            groupValue: widget.component.properties['source']?.value
+                            groupValue: widget
+                                .component.properties['source']?.value
                                 .toString(),
                             onChanged: handleRadioValueChanged,
                           ),

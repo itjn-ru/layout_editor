@@ -1,5 +1,4 @@
 class Property {
-
   String title;
   dynamic value;
   Type type;

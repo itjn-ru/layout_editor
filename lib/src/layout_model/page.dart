@@ -1,11 +1,10 @@
 import 'item.dart';
-import 'property.dart';
 import 'screen_size_enum.dart';
 
 class ComponentAndSourcePage extends Item {
-
   ComponentAndSourcePage(super.type, super.name);
 }
+
 // class ScreenSizeLayout extends ComponentAndSourcePage{
 //   final ScreenSizeEnum? screenSize;
 //   ScreenSizeLayout(super.type, super.name, [this.screenSize = ScreenSizeEnum.mobile]){
@@ -17,10 +16,9 @@ class ComponentAndSourcePage extends Item {
 //   }
 // }
 class ComponentPage extends ComponentAndSourcePage {
-   final ScreenSizeEnum? screenSize;
-  ComponentPage(name, [this.screenSize = ScreenSizeEnum.mobile]) : super("componentPage", name){
-    properties['screenSize']=Property('размер экрана', screenSize, type: ScreenSizeEnum);
-  }
+  final ScreenSizeEnum? screenSize;
+  ComponentPage(name, [this.screenSize = ScreenSizeEnum.mobile])
+      : super("componentPage", name);
 }
 
 class SourcePage extends ComponentAndSourcePage {

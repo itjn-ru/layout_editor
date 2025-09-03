@@ -9,7 +9,6 @@ class ProcessItemMenu extends ComponentAndSourceMenu {
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
-
     return [
       PopupMenuItem(
         child: const Text("Добавить событие"),

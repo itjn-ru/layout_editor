@@ -11,7 +11,7 @@ class FormImageMenu extends ComponentAndSourceMenu {
       PopupMenuItem(
         child: const Text("Удалить картинку"),
         onTap: () {
-  controller.layoutModel.deleteItem(target);
+          controller.layoutModel.deleteItem(target);
           onChanged!(target);
         },
       )

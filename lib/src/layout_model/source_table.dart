@@ -3,14 +3,13 @@ import 'source.dart';
 
 class SourceTable extends LayoutSource {
   SourceTable(name, [values]) : super('table', name) {
-    if(values==null) {
+    if (values == null) {
       items.add(SourceTableColumn('колонка'));
-    }else{
-      for(final value in values){
+    } else {
+      for (final value in values) {
         items.add(SourceTableColumn(value.toString()));
       }
     }
-
   }
 }
 

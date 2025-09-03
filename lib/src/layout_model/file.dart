@@ -16,7 +16,6 @@ String saveMap(Map root) {
   });
 
   final document = builder.buildDocument();
-
   return document.toXmlString(pretty: true);
 }
 
@@ -29,7 +28,8 @@ _saveMapProperties(XmlBuilder builder, Map properties) {
             builder.attribute(key, value);
           });
         } else {
-          builder.text(property.toString());
+          builder.text(property.toString().replaceAll(' ', '&#x20;'));
+          // builder.text(property.toString());
         }
       });
     });
@@ -47,11 +47,11 @@ _saveMapItems(XmlBuilder builder, List items) {
   });
 }
 
-Map<String,dynamic>  readMap(String layout) {
+Map<String, dynamic> readMap(String layout) {
   final xml = XmlDocument.parse(layout);
   final xmlRoot = xml.rootElement;
 
-  final Map<String,dynamic>  root = {};
+  final Map<String, dynamic> root = {};
   root['properties'] = _readMapProperties(xmlRoot.getElement("properties"));
   root['items'] = _readMapItems(xmlRoot.getElement("items"));
 
@@ -83,7 +83,9 @@ Map _readMapProperties(XmlElement? xmlProperties) {
       propertyValue = xmlValue.single.value;
     }
 
-    properties[propertyKey] = propertyValue ?? "";
+    properties[propertyKey] = propertyValue.runtimeType == String
+        ? propertyValue.toString().replaceAll('&#x20;', ' ')
+        : propertyValue ?? "";
 
     /*if (xmlProperty.childElements.isEmpty) {
       json[propertyKey] =
@@ -254,46 +256,54 @@ Map<String, Property> _readProperties(XmlElement? xmlProperties) {
       case "topBorder":
         propertyValue = CustomBorderStyle(
             double.tryParse(xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "width")
-                .single
-                .value) ??
+                    .where((attribute) => attribute.name.local == "width")
+                    .single
+                    .value) ??
                 0.0,
             Colors.black,
             xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "side").single.value as CustomBorderSide);
+                .where((attribute) => attribute.name.local == "side")
+                .single
+                .value as CustomBorderSide);
         break;
       case "leftBorder":
         propertyValue = CustomBorderStyle(
             double.tryParse(xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "width")
-                .single
-                .value) ??
+                    .where((attribute) => attribute.name.local == "width")
+                    .single
+                    .value) ??
                 0.0,
             Colors.black,
             xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "side").single.value as CustomBorderSide);
+                .where((attribute) => attribute.name.local == "side")
+                .single
+                .value as CustomBorderSide);
         break;
       case "rightBorder":
         propertyValue = CustomBorderStyle(
             double.tryParse(xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "width")
-                .single
-                .value) ??
+                    .where((attribute) => attribute.name.local == "width")
+                    .single
+                    .value) ??
                 0.0,
             Colors.black,
             xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "side").single.value as CustomBorderSide);
+                .where((attribute) => attribute.name.local == "side")
+                .single
+                .value as CustomBorderSide);
         break;
       case "bottomBorder":
         propertyValue = CustomBorderStyle(
             double.tryParse(xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "width")
-                .single
-                .value) ??
+                    .where((attribute) => attribute.name.local == "width")
+                    .single
+                    .value) ??
                 0.0,
             Colors.black,
             xmlProperty.attributes
-                .where((attribute) => attribute.name.local == "side").single.value as CustomBorderSide);
+                .where((attribute) => attribute.name.local == "side")
+                .single
+                .value as CustomBorderSide);
         break;
       case "position":
         propertyValue = Offset(
@@ -383,4 +393,3 @@ Map<String, dynamic> _readItem(XmlElement xmlElement) {
 
   return json;
 }
-

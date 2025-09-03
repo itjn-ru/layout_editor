@@ -50,4 +50,3 @@ class HiddenFieldFile extends StatelessWidget {
     );
   }
 }
-

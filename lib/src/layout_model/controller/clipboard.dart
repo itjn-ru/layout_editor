@@ -68,7 +68,7 @@ class LayoutModelClipboard with FromMapToMap {
     try {
       final base64Data = utf8.decode(base64Decode(clipboardData.text!));
       final Map<String, dynamic> itemJson =
-      jsonDecode(base64Data) as Map<String, dynamic>;
+          jsonDecode(base64Data) as Map<String, dynamic>;
       newItem = Item('item', 'item').fromMap(itemJson);
     } catch (e) {
       showNodeEditorSnackbar(
@@ -88,7 +88,7 @@ class LayoutModelClipboard with FromMapToMap {
     if (parent.mayBeParent) {
       controller.layoutModel.addItem(parent, pasteItem);
     } else {
-      controller.layoutModel.findParent(page, parent, pasteItem);
+      controller.layoutModel.addItemToParent(page, parent, pasteItem);
     }
     eventBus.emit(
       PasteSelectionEvent(

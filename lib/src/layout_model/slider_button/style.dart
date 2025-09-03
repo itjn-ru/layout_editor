@@ -25,39 +25,39 @@ abstract class _BaseToggleStyle {
   ToggleStyleProperty<List<BoxShadow>>? get _boxShadow;
 
   _BaseToggleStyle _merge(
-      _BaseToggleStyle? other,
-      BorderRadiusGeometry indicatorBorderRadiusDifference,
-      ) =>
+    _BaseToggleStyle? other,
+    BorderRadiusGeometry indicatorBorderRadiusDifference,
+  ) =>
       other == null
           ? this
           : _CustomToggleStyle._(
-        indicatorColor: other._indicatorColor ?? _indicatorColor,
-        indicatorGradient: other._indicatorGradient ??
-            (other._indicatorColor != null ? null : _indicatorGradient),
-        backgroundColor: other._backgroundColor ?? _backgroundColor,
-        backgroundGradient: other._backgroundGradient ??
-            (other._backgroundColor != null ? null : _backgroundGradient),
-        borderColor: other._borderColor ?? _borderColor,
-        borderRadius: other._borderRadius ?? _borderRadius,
-        indicatorBorderRadius: other._indicatorBorderRadius ??
-            other._borderRadius?._map((value) =>
-                value.subtract(indicatorBorderRadiusDifference)) ??
-            _indicatorBorderRadius ??
-            _borderRadius?._map((value) =>
-                value.subtract(indicatorBorderRadiusDifference)),
-        indicatorBorder: other._indicatorBorder ?? _indicatorBorder,
-        indicatorBoxShadow:
-        other._indicatorBoxShadow ?? _indicatorBoxShadow,
-        boxShadow: other._boxShadow ?? _boxShadow,
-      );
+              indicatorColor: other._indicatorColor ?? _indicatorColor,
+              indicatorGradient: other._indicatorGradient ??
+                  (other._indicatorColor != null ? null : _indicatorGradient),
+              backgroundColor: other._backgroundColor ?? _backgroundColor,
+              backgroundGradient: other._backgroundGradient ??
+                  (other._backgroundColor != null ? null : _backgroundGradient),
+              borderColor: other._borderColor ?? _borderColor,
+              borderRadius: other._borderRadius ?? _borderRadius,
+              indicatorBorderRadius: other._indicatorBorderRadius ??
+                  other._borderRadius?._map((value) =>
+                      value.subtract(indicatorBorderRadiusDifference)) ??
+                  _indicatorBorderRadius ??
+                  _borderRadius?._map((value) =>
+                      value.subtract(indicatorBorderRadiusDifference)),
+              indicatorBorder: other._indicatorBorder ?? _indicatorBorder,
+              indicatorBoxShadow:
+                  other._indicatorBoxShadow ?? _indicatorBoxShadow,
+              boxShadow: other._boxShadow ?? _boxShadow,
+            );
 
   static _BaseToggleStyle Function(
       _BaseToggleStyle style1, _BaseToggleStyle style2, double t) _lerpFunction(
-      AnimationType animationType) =>
-          (style1, style2, t) => _lerp(style1, style2, t, animationType);
+          AnimationType animationType) =>
+      (style1, style2, t) => _lerp(style1, style2, t, animationType);
 
   static _BaseToggleStyle _lerp(_BaseToggleStyle style1,
-      _BaseToggleStyle style2, double t, AnimationType animationType) =>
+          _BaseToggleStyle style2, double t, AnimationType animationType) =>
       _CustomToggleStyle._(
         indicatorColor: ToggleStyleProperty._lerpConditional(
             style1._indicatorColor,
@@ -304,18 +304,18 @@ class ToggleStyle extends _BaseToggleStyle {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ToggleStyle &&
-              runtimeType == other.runtimeType &&
-              indicatorColor == other.indicatorColor &&
-              indicatorGradient == other.indicatorGradient &&
-              backgroundColor == other.backgroundColor &&
-              backgroundGradient == other.backgroundGradient &&
-              borderColor == other.borderColor &&
-              borderRadius == other.borderRadius &&
-              indicatorBorderRadius == other.indicatorBorderRadius &&
-              indicatorBorder == other.indicatorBorder &&
-              indicatorBoxShadow == other.indicatorBoxShadow &&
-              boxShadow == other.boxShadow;
+      other is ToggleStyle &&
+          runtimeType == other.runtimeType &&
+          indicatorColor == other.indicatorColor &&
+          indicatorGradient == other.indicatorGradient &&
+          backgroundColor == other.backgroundColor &&
+          backgroundGradient == other.backgroundGradient &&
+          borderColor == other.borderColor &&
+          borderRadius == other.borderRadius &&
+          indicatorBorderRadius == other.indicatorBorderRadius &&
+          indicatorBorder == other.indicatorBorder &&
+          indicatorBoxShadow == other.indicatorBoxShadow &&
+          boxShadow == other.boxShadow;
 
   @override
   int get hashCode =>
@@ -341,14 +341,14 @@ class ToggleStyleProperty<T> {
   final bool animationEnabled;
 
   const ToggleStyleProperty(
-      this.value, {
-        this.animationEnabled = true,
-      });
+    this.value, {
+    this.animationEnabled = true,
+  });
 
   static ToggleStyleProperty<T>? nullable<T>(
-      T? value, {
-        bool animationEnabled = true,
-      }) =>
+    T? value, {
+    bool animationEnabled = true,
+  }) =>
       value == null
           ? null
           : ToggleStyleProperty(value, animationEnabled: animationEnabled);

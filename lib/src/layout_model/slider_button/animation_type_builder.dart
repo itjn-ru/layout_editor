@@ -15,6 +15,7 @@ class AnimationTypeHoverBuilder<T, V> extends StatefulWidget {
   final bool animateExternalChanges;
 
   const AnimationTypeHoverBuilder({
+    super.key,
     required this.valueProvider,
     required this.lerp,
     required this.builder,
@@ -59,12 +60,12 @@ class _AnimationTypeHoverBuilderState<T, V>
     final index1 = pos.floor();
     final index2 = pos.ceil();
     V listedValueFunction() => widget.lerp(
-      widget.valueProvider(
-          StyledToggleProperties(value: values[index1], index: index1)),
-      widget.valueProvider(
-          StyledToggleProperties(value: values[index2], index: index2)),
-      pos - pos.floor(),
-    );
+          widget.valueProvider(
+              StyledToggleProperties(value: values[index1], index: index1)),
+          widget.valueProvider(
+              StyledToggleProperties(value: values[index2], index: index2)),
+          pos - pos.floor(),
+        );
     final indicatorAppearingAnimation =
         widget.properties.indicatorAppearingAnimation;
     return AnimatedBuilder(
@@ -88,7 +89,7 @@ class _AnimationTypeHoverBuilderState<T, V>
                 child: widget.builder(appearingValue <= 0.0
                     ? unlistedValue
                     : widget.lerp(
-                    unlistedValue, listedValueFunction(), appearingValue)),
+                        unlistedValue, listedValueFunction(), appearingValue)),
               );
             });
       },

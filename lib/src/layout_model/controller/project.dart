@@ -104,9 +104,9 @@ class LayoutModelEditorProject {
     );
   }
 
-  void create(){
+  void create() {
     try {
-    controller.layoutModel.init();
+      controller.layoutModel.init();
     } catch (e) {
       showNodeEditorSnackbar(
         'Не удалось создать новый проект',

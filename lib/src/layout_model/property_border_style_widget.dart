@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:uuid/uuid.dart';
+import '../color_picker/color_picker.dart';
 import 'controller/events.dart';
 import 'property_widget.dart';
 import 'style.dart';
 
-
 class PropertyBorderStyleWidget extends PropertyWidget {
-  const PropertyBorderStyleWidget(super.controller, super.propertyKey, {super.key});
+  const PropertyBorderStyleWidget(super.controller, super.propertyKey,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,26 +31,30 @@ class PropertyBorderStyleWidget extends PropertyWidget {
               child: TextField(
                 focusNode: FocusNode(),
                 controller: controllerWidth,
-                onTap: () =>
-                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-                onSubmitted: (value) =>
-                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-                onTapOutside: (value) =>
-                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-                onEditingComplete: () =>
-                    controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+                onTap: () => controller.eventBus.emit(ChangeItem(
+                    id: const Uuid().v4(),
+                    itemId: controller.layoutModel.curItem.id)),
+                onSubmitted: (value) => controller.eventBus.emit(ChangeItem(
+                    id: const Uuid().v4(),
+                    itemId: controller.layoutModel.curItem.id)),
+                onTapOutside: (value) => controller.eventBus.emit(ChangeItem(
+                    id: const Uuid().v4(),
+                    itemId: controller.layoutModel.curItem.id)),
+                onEditingComplete: () => controller.eventBus.emit(ChangeItem(
+                    id: const Uuid().v4(),
+                    itemId: controller.layoutModel.curItem.id)),
                 onChanged: (value) {
-                  property.value.width =
-                      double.tryParse(value) ?? 0;
+                  property.value.width = double.tryParse(value) ?? 0;
                 },
               ),
             ),
           ],
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical:8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: property.value.color),
+            style:
+                ElevatedButton.styleFrom(backgroundColor: property.value.color),
             onPressed: () {
               showDialog(
                 context: context,
@@ -67,7 +71,6 @@ class PropertyBorderStyleWidget extends PropertyWidget {
                         },
                       ),
                     ),
-
                   );
                 },
               );
@@ -80,9 +83,9 @@ class PropertyBorderStyleWidget extends PropertyWidget {
           isExpanded: true,
           items: sides
               .map<DropdownMenuItem<CustomBorderSide>>((e) => DropdownMenuItem(
-            value: e,
-            child: Text(e.title),
-          ))
+                    value: e,
+                    child: Text(e.title),
+                  ))
               .toList(),
           onChanged: (value) {
             property.value.side = value ?? CustomBorderSide.none;
@@ -92,7 +95,9 @@ class PropertyBorderStyleWidget extends PropertyWidget {
       ],
     );
   }
-  onChanged(){
-    controller.eventBus.emit(ChangeItem(id: const Uuid().v4()));
+
+  onChanged() {
+    controller.eventBus.emit(ChangeItem(
+        id: const Uuid().v4(), itemId: controller.layoutModel.curItem.id));
   }
 }

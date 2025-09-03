@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class ToggleCursors {
@@ -43,14 +42,14 @@ class ToggleCursors {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is ToggleCursors &&
-              runtimeType == other.runtimeType &&
-              defaultCursor == other.defaultCursor &&
-              tapCursor == other.tapCursor &&
-              draggingCursor == other.draggingCursor &&
-              dragCursor == other.dragCursor &&
-              loadingCursor == other.loadingCursor &&
-              inactiveCursor == other.inactiveCursor;
+      other is ToggleCursors &&
+          runtimeType == other.runtimeType &&
+          defaultCursor == other.defaultCursor &&
+          tapCursor == other.tapCursor &&
+          draggingCursor == other.draggingCursor &&
+          dragCursor == other.dragCursor &&
+          loadingCursor == other.loadingCursor &&
+          inactiveCursor == other.inactiveCursor;
 
   @override
   int get hashCode =>

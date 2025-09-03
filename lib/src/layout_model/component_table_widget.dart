@@ -1,4 +1,4 @@
-import 'canvas/layout_model_inherit.dart';
+import 'canvas/layout_model_provider.dart';
 import 'style_element.dart';
 import 'package:flutter/material.dart';
 import 'component_widget.dart';
@@ -7,14 +7,14 @@ import 'component_table.dart';
 import 'item.dart';
 
 class ComponentTableWidget extends ComponentWidget {
-  const ComponentTableWidget({required super.component,required super.controller,super.key, super.screenSize});
+  const ComponentTableWidget({required super.component, super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
     Map<int, TableColumnWidth> columnWidths = {};
     int columnWidthIndex = 0;
 
-  //  var headers = component.items.whereType<ComponentTableHeader>();
+    var headers = component.items.whereType<ComponentTableHeader>();
 
     var columns = component.items.whereType<ComponentTableColumn>();
 
@@ -37,13 +37,13 @@ class ComponentTableWidget extends ComponentWidget {
         var cells = row.items.whereType<ComponentTableCell>();
 
         for (Item cell in cells) {
-          String cellText = cell["source"]?.isNotEmpty ?? false
-              ? "\$" + cell["source"]
-              : "";
+          String cellText =
+              cell["source"]?.isNotEmpty ?? false ? "\$" + cell["source"] : "";
           if (cellText.isEmpty) {
             cellText = cell["text"] ?? "";
           }
-          final layoutModel = LayoutModelInheritedWidget.of(context).layoutModel;
+          final controller = LayoutModelControllerProvider.of(context);
+          final layoutModel = controller.layoutModel;
           var style = layoutModel.getStyleElementById(cell['style'].id) ??
               StyleElement("стиль");
 

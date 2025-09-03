@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'component_and_source.dart';
 import 'constants.dart';
@@ -39,9 +37,9 @@ class CustomBorderStyle {
 
   Map<String, dynamic> toMap() {
     return {
-      'width': this.width,
-      'color': this.color.value,
-      'side': this.side,
+      'width': width,
+      'color': color.value,
+      'side': side,
     };
   }
 

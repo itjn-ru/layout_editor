@@ -19,7 +19,6 @@ class StylePageMenu extends ComponentAndSourceMenu {
           onChanged!(item);
         },
       )
-
     ];
   }
 
@@ -28,7 +27,6 @@ class StylePageMenu extends ComponentAndSourceMenu {
       void Function(LayoutModelEvent event)? onChanged) {
     return [
       const MenuHeader(text: "Редактирование"),
-
       MenuItem(
         label: 'Добавить стиль',
         icon: Icons.add,

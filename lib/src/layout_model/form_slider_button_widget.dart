@@ -3,10 +3,13 @@ import 'component_widget.dart';
 import 'slider_button/slider_button.dart';
 
 class FormRadioWidget extends ComponentWidget {
-  const FormRadioWidget({required super.component,required super.controller,super.key, super.screenSize});
+  const FormRadioWidget({required super.component, super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
-    return SliderButton(width: component['size'].width, height: component['size'].height,);
+    return SliderButton(
+      width: component['size'].width,
+      height: component['size'].height,
+    );
   }
 }

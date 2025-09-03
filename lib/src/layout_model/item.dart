@@ -5,8 +5,8 @@ import 'property.dart';
 import 'style.dart';
 
 class Item with FromMapToMap {
-   bool mayBeParent;
-   String type;
+  bool mayBeParent;
+  String type;
   String? itemId;
   List<Item> items = <Item>[];
   Map<String, Property> properties = {};
@@ -65,4 +65,3 @@ class Item with FromMapToMap {
     return item;
   }
 }
-

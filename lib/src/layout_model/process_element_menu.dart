@@ -1,12 +1,16 @@
-import 'package:admin_layout_editor/src/flutter_context_menu/components/menu_divider.dart';
 import 'package:flutter/material.dart';
-import '../../admin_layout_editor.dart';
+import '../../frame_forge.dart';
+import '../flutter_context_menu/components/menu_divider.dart';
 import '../flutter_context_menu/components/menu_header.dart';
 import '../flutter_context_menu/components/menu_item.dart';
 import '../flutter_context_menu/core/models/context_menu_entry.dart';
 
 class ProcessElementMenu extends ComponentAndSourceMenu {
-  ProcessElementMenu(super.controller, super.target, {super.onChanged,});
+  ProcessElementMenu(
+    super.controller,
+    super.target, {
+    super.onChanged,
+  });
 
   @override
   List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {

@@ -1,11 +1,11 @@
-import 'package:admin_layout_editor/src/layout_model/process_group.dart';
 import 'package:flutter/material.dart';
-import '../../admin_layout_editor.dart';
+import '../../frame_forge.dart';
 import '../flutter_context_menu/components/menu_divider.dart';
 import '../flutter_context_menu/components/menu_header.dart';
 import '../flutter_context_menu/components/menu_item.dart';
 import '../flutter_context_menu/core/models/context_menu_entry.dart';
 import 'process_element.dart';
+import 'process_group.dart';
 
 class ProcessPageMenu extends ComponentAndSourceMenu {
   ProcessPageMenu(super.controller, super.target, {super.onChanged});
@@ -38,7 +38,7 @@ class ProcessPageMenu extends ComponentAndSourceMenu {
             icon: Icons.widgets,
             onSelected: () {
               var item = ProcessGroup("Параллельный процесс");
-              item.properties['processType']?.value='параллельно';
+              item.properties['processType']?.value = 'параллельно';
               controller.layoutModel.addItem(target, item);
               onChanged!(AddItemEvent(id: item.id));
             },
@@ -48,7 +48,7 @@ class ProcessPageMenu extends ComponentAndSourceMenu {
             icon: Icons.widgets,
             onSelected: () {
               var item = ProcessGroup("Последовательный процесс");
-              item.properties['processType']?.value='последовательно';
+              item.properties['processType']?.value = 'последовательно';
               controller.layoutModel.addItem(target, item);
               onChanged!(AddItemEvent(id: item.id));
             },

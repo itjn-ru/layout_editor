@@ -1,4 +1,5 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart' show PlatformInterface;
+import 'package:plugin_platform_interface/plugin_platform_interface.dart'
+    show PlatformInterface;
 
 import 'resizable_draggable_widget_method_channel.dart';
 
@@ -8,7 +9,8 @@ abstract class ResizableDraggableWidgetPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static ResizableDraggableWidgetPlatform _instance = MethodChannelResizableDraggableWidget();
+  static ResizableDraggableWidgetPlatform _instance =
+      MethodChannelResizableDraggableWidget();
 
   /// The default instance of [ResizableDraggableWidgetPlatform] to use.
   ///

@@ -9,9 +9,7 @@ enum ScreenSizeEnum {
 
   const ScreenSizeEnum(
       {required this.height,
-        required this.width,
-        required this.title,
-        required this.value});
-
-
+      required this.width,
+      required this.title,
+      required this.value});
 }

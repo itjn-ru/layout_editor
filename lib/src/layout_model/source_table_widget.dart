@@ -3,12 +3,10 @@ import 'source_table.dart';
 import 'source_widget.dart';
 
 class SourceTableWidget extends SourceWidget {
-  SourceTableWidget(source) : super(source);
+  const SourceTableWidget(super.source, {super.key});
 
   @override
   Widget buildWidget(BuildContext context) {
-
-
     var columns = source.items.whereType<SourceTableColumn>();
 
     List<TableRow> tableRows = [];
@@ -16,17 +14,16 @@ class SourceTableWidget extends SourceWidget {
     for (var column in columns) {
       List<TableCell> tableCells = [];
 
-
-        var cellText = column['name'] ?? '';
-
+      var cellText = column['name'] ?? '';
 
       tableCells.add(TableCell(
-        child: Text(cellText,
-            //style: TextStyle(
-              //fontSize: column["fontSize"],
-              //fontWeight: column["fontWeight"],
-            //)
-                ),
+        child: Text(
+          cellText,
+          //style: TextStyle(
+          //fontSize: column["fontSize"],
+          //fontWeight: column["fontWeight"],
+          //)
+        ),
       ));
 
       tableRows.add(TableRow(children: tableCells));

@@ -6,22 +6,17 @@ import '../controller/events.dart';
 import '../controller/layout_model_controller.dart';
 import '../item.dart';
 import '../layout_model.dart';
-import '../page.dart';
 import '../screen_size_enum.dart';
 import 'grid_background_widget.dart';
-import 'layout_model_inherit.dart';
+import 'layout_model_provider.dart';
 import 'resizable_draggable_widget.dart';
+import 'screensize_provider.dart';
 
 class MainCanvas extends StatefulWidget {
   final BoxConstraints constraints;
-  final List<Item> items;
-  final LayoutModelController controller;
-
   const MainCanvas({
     super.key,
-    required this.items,
     required this.constraints,
-    required this.controller,
   });
 
   @override
@@ -38,41 +33,49 @@ class _MainCanvasState extends State<MainCanvas> {
   late double _canvasHeight;
   late double _canvasWidth;
 
+  /// The transformation controller for the interactive viewer.
   final TransformationController _transform = TransformationController();
-  double scaleConstraints = 1.0;
+
+  /// The scale factor for the canvas, calculated based on the screen size.
+  double scaleFactor = 1.0;
+
+  /// The scale size for the viewport, used to zoom in and out.
+  /// This is updated when the user interacts with the canvas.
   double scaleSize = 1;
   double cellWidth = 20;
   double cellHeight = 20;
   bool onIteraction = false;
-  Key activeWidget = UniqueKey();
   late Rect viewport;
-  GlobalKey globalKey = GlobalKey();
   late LayoutModel layoutModel;
   Function deepEq = const DeepCollectionEquality().equals;
   bool changed = false;
   late BoxConstraints oldConstraints;
-  late final ScreenSizeEnum screenSize =
-      widget.controller.layoutModel.currentScreenSize;
+  late final LayoutModelController controller;
+
+  late final ScreenSizeEnum screenSize;
   @override
   void initState() {
-    widget.controller.eventBus.events.listen(_handleRunnerEvents);
     oldConstraints = widget.constraints;
-    _canvasWidth = widget.constraints.maxWidth - 20;
-    _canvasHeight = widget.constraints.maxHeight - 20;
-    scaleConstraints = _canvasWidth / screenSize.width;
-    cellWidth = cellWidth * scaleConstraints;
-    cellHeight = cellHeight * scaleConstraints;
-    viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);
+
     super.initState();
   }
 
-  void _handleRunnerEvents(LayoutModelEvent event) {
-    if (mounted &&
-        (event is SelectionEvent ||
-            event is PanEnd ||
-            event is NewProjectEvent)) {
-      setState(() {});
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    controller = LayoutModelControllerProvider.of(context);
+    screenSize = ScreenSizeProvider.of(context);
+    layoutModel = controller.layoutModel;
+    _recalculateScale();
+  }
+
+  void _recalculateScale() {
+    _canvasWidth = widget.constraints.maxWidth - 20;
+    _canvasHeight = widget.constraints.maxHeight - 20;
+    scaleFactor = _canvasWidth / screenSize.width;
+    cellWidth = 20 * scaleFactor;
+    cellHeight = 20 * scaleFactor;
+    viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);
   }
 
   @override
@@ -83,114 +86,86 @@ class _MainCanvasState extends State<MainCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    // templateWidgets = _initWidgetList();
-    if ((oldConstraints.maxWidth - widget.constraints.maxWidth).abs() > 10) {
-      oldConstraints = widget.constraints;
-      _canvasWidth = widget.constraints.maxWidth - 20;
-      _canvasHeight = widget.constraints.maxHeight - 20;
-      scaleConstraints = _canvasWidth / screenSize.width;
-      cellWidth = cellWidth * scaleConstraints.truncateToDouble();
-      cellHeight = cellHeight * scaleConstraints.truncateToDouble();
-      viewport = Rect.fromLTRB(0, 0, _canvasWidth, _canvasHeight);
-    }
-    if (!onIteraction) {
-      items = widget.items;
-      templateWidgets = _initWidgetList();
-    }
-
     return DecoratedBox(
       decoration: BoxDecoration(
         border: Border.all(),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Center(
-        child: Container(
-          color: Colors.grey.shade50,
-          width: _canvasWidth,
-          height: _canvasHeight,
-          child: InteractiveViewer.builder(
-              panEnabled: true,
-              transformationController: _transform,
-              onInteractionStart: (details) {},
-              onInteractionUpdate: (details) {
-                /*setState(() {
-                  onIteraction = true;
-                });*/
-                _onPanUpdate(details.focalPointDelta);
-                widget.controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
-              },
-              onInteractionEnd: (scaleEndDetails) {
-                scaleSize = _transform.value.getMaxScaleOnAxis();
-                widget.controller.viewportZoom = scaleSize;
-                widget.controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
-                /*setState(() {
-                  onIteraction = false;
-                });*/
-              },
-              minScale: 1,
-              maxScale: 8,
-              builder: (BuildContext context, quad) {
-                return SizedBox.fromSize(
-                  key: UniqueKey(),
-                  size: viewport.size,
-                  child: Stack(clipBehavior: Clip.none, children: [
-                    Positioned.fill(
-                      child: GridBackgroundBuilder(
-                        quad: quad,
-                        cellHeight: cellHeight,
-                        cellWidth: cellWidth,
-                        canvasWidth: _canvasWidth,
-                      ),
-                    ),
-                    ...templateWidgets,
-                  ]),
-                  // }),
-                );
-              }),
-        ),
+      child: Container(
+        color: Colors.grey.shade50,
+        margin: const EdgeInsets.all(10),
+        child: InteractiveViewer.builder(
+            panEnabled: true,
+            transformationController: _transform,
+            onInteractionStart: (details) {},
+            onInteractionUpdate: (details) {
+              _onPanUpdate(details.focalPointDelta);
+              controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
+            },
+            onInteractionEnd: (scaleEndDetails) {
+              scaleSize = _transform.value.getMaxScaleOnAxis();
+              controller.viewportZoom = scaleSize;
+              controller.eventBus.emit(PanEnd(id: const Uuid().v4()));
+            },
+            minScale: 1,
+            maxScale: 8,
+            builder: (BuildContext context, quad) {
+              return SizedBox.fromSize(
+                key: ValueKey('${_canvasWidth}_${_canvasHeight}'),
+                // key: UniqueKey(),
+                size: viewport.size,
+                child: ValueListenableBuilder<Set<String?>>(
+                    valueListenable: controller.changedItems,
+                    builder: (context, updatedItemIds, _) {
+                      final curPage = layoutModel.getCurPage;
+                      final list = List.generate(curPage.items.length, (index) {
+                        final item = layoutModel.getCurPage.items[index];
+                        return _ItemUpdateScope(
+                          itemId: item.id,
+                          updatedItemIds: updatedItemIds,
+                          child: ValueListenableBuilder<String?>(
+                              valueListenable: controller.selectedIdNotifier,
+                              builder: (context, selectedId, _) {
+                                return ResizableDraggableWidget(
+                                  key: ValueKey(item.id),
+                                  position: Offset(
+                                      item["position"]?.dx * scaleFactor ?? 0,
+                                      item["position"]?.dy * scaleFactor ?? 0),
+                                  initWidth:
+                                      item["size"]?.width * scaleFactor ??
+                                          _canvasWidth,
+                                  initHeight:
+                                      item["size"]?.height * scaleFactor ?? 50,
+                                  cellWidth: cellWidth / 2,
+                                  cellHeight: cellHeight / 2,
+                                  canvasWidth: _canvasWidth,
+                                  canvasHeight: _canvasHeight,
+                                  bgColor: Colors.white,
+                                  squareColor: Colors.blueAccent,
+                                  scaleConstraints: scaleFactor,
+                                  child: item,
+                                  selected: selectedId == item.id,
+                                );
+                              }),
+                        );
+                      });
+                      return Stack(children: [
+                        Positioned.fill(
+                          child: GridBackgroundBuilder(
+                            quad: quad,
+                            cellHeight: cellHeight,
+                            cellWidth: cellWidth,
+                            canvasWidth: _canvasWidth,
+                          ),
+                        ),
+                        ...list,
+                        // ...templateWidgets,
+                      ]);
+                    }),
+                // }),
+              );
+            }),
       ),
-    );
-  }
-
-  List<LayoutModelInheritedWidget> _initWidgetList() {
-    final List<LayoutModelInheritedWidget> _list = [];
-    for (final itemChild in items) {
-      _list.add(LayoutModelInheritedWidget(
-        layoutModel: widget.controller.layoutModel,
-        child: ResizableDraggableWidget(
-          //key: UniqueKey(),
-          position: Offset(itemChild["position"]?.dx * scaleConstraints ?? 0,
-              itemChild["position"]?.dy * scaleConstraints ?? 0),
-          initWidth:
-              itemChild["size"]?.width * scaleConstraints ?? _canvasWidth,
-          initHeight: itemChild["size"]?.height * scaleConstraints ?? 50,
-          cellWidth: cellWidth / 2,
-          cellHeight: cellHeight / 2,
-          canvasWidth: _canvasWidth,
-          canvasHeight: _canvasHeight,
-          bgColor: Colors.white,
-          squareColor: Colors.blueAccent,
-          scaleConstraints: scaleConstraints,
-          controller: widget.controller,
-          child: itemChild,
-        ),
-      ));
-    }
-    return _list;
-  }
-
-  Widget textField(UniqueKey key, Offset offset) {
-    return ResizableDraggableWidget(
-      key: key,
-      position: offset,
-      canvasWidth: _canvasWidth,
-      canvasHeight: _canvasHeight,
-      cellHeight: cellHeight,
-      cellWidth: cellWidth,
-      scaleConstraints: scaleConstraints,
-      bgColor: Colors.white,
-      squareColor: Colors.blueAccent,
-      controller: widget.controller,
     );
   }
 
@@ -207,13 +182,34 @@ class _MainCanvasState extends State<MainCanvas> {
   }
 }
 
-/*class Components extends StatelessWidget {
-  const Components({super.key});
+class _ItemUpdateScope extends StatelessWidget {
+  final String itemId;
+  final Widget child;
+  final Set<String?> updatedItemIds;
+  const _ItemUpdateScope({
+    required this.itemId,
+    required this.child,
+    required this.updatedItemIds,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LayoutModel>(builder: (_, value, __) {
-      return Stack(children: templateWidgets);
-    });
+    final controller = LayoutModelControllerProvider.of(context);
+    final shouldUpdate = updatedItemIds.contains(itemId);
+// Отметим как обработанный после перерисовки
+    if (shouldUpdate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.markItemAsHandled(itemId);
+      });
+
+      // Перерисовываем — данные изменились
+      return child;
+    }
+    // Здесь RepaintBoundary помогает избежать лишней перерисовки,
+    // если это просто был ChangeItem, но не относящийся к этому item
+    final last = controller.lastEvent;
+
+    final isIsolated = last is ChangeItem;
+    return isIsolated ? RepaintBoundary(child: child) : child;
   }
-}*/
+}

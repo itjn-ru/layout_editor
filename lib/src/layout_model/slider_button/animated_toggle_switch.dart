@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'animation_type_builder.dart';
 import 'cursor.dart';
@@ -13,7 +12,6 @@ part 'style.dart';
 
 typedef SimpleIconBuilder<T> = Widget Function(T value);
 
-
 typedef LoadingIconBuilder<T> = Widget Function(
     BuildContext context, DetailedGlobalToggleProperties<T> global);
 
@@ -24,18 +22,18 @@ typedef AnimatedIconBuilder<T> = Widget Function(
     DetailedGlobalToggleProperties<T> global);
 
 typedef IconBuilder<T> = Widget Function(
-    BuildContext context,
-    StyledToggleProperties<T> local,
-    DetailedGlobalToggleProperties<T> global,
-    );
+  BuildContext context,
+  StyledToggleProperties<T> local,
+  DetailedGlobalToggleProperties<T> global,
+);
 
 typedef StyleBuilder<T> = ToggleStyle Function(T value);
 
 typedef CustomStyleBuilder<T> = ToggleStyle Function(
-    BuildContext context,
-    StyledToggleProperties<T> local,
-    GlobalToggleProperties<T> global,
-    );
+  BuildContext context,
+  StyledToggleProperties<T> local,
+  GlobalToggleProperties<T> global,
+);
 
 typedef SeparatorBuilder = Widget Function(int index);
 
@@ -61,15 +59,15 @@ abstract class _AnimatedToggleSwitchParent<T> extends StatelessWidget {
     required List<ToggleStyle>? styleList,
     required List<Widget>? iconList,
   })  : assert(
-  (styleBuilder ?? customStyleBuilder) == null ||
-      (styleBuilder ?? styleList) == null ||
-      (customStyleBuilder ?? styleList) == null,
-  'Only one parameter of styleBuilder, customStyleBuilder and styleList can be set.',
-  ),
+          (styleBuilder ?? customStyleBuilder) == null ||
+              (styleBuilder ?? styleList) == null ||
+              (customStyleBuilder ?? styleList) == null,
+          'Only one parameter of styleBuilder, customStyleBuilder and styleList can be set.',
+        ),
         assert(styleList == null || styleList.length == values.length,
-        'styleList must be null or have the same length as values'),
+            'styleList must be null or have the same length as values'),
         assert(iconList == null || iconList.length == values.length,
-        'iconList must be null or have the same length as values');
+            'iconList must be null or have the same length as values');
 }
 
 /// A class with constructors for different switches.
@@ -205,7 +203,6 @@ class AnimatedToggleSwitch<T extends Object?>
   /// If [null], the [TextDirection] is taken from the [BuildContext].
   final TextDirection? textDirection;
 
-
   /// Indicates that no error should be thrown if [current] is not contained in [values].
   ///
   /// If [allowUnlistedValues] is [true] and [values] does not contain [current],
@@ -269,7 +266,6 @@ class AnimatedToggleSwitch<T extends Object?>
 
   final bool animateStyleChanges = true;
 
-
   /// Provides an [AnimatedToggleSwitch] with the standard size animation of the icons.
   ///
   /// Maximum one argument of [iconBuilder], [customIconBuilder] and [iconList] must be provided.
@@ -322,14 +318,14 @@ class AnimatedToggleSwitch<T extends Object?>
     this.positionListener,
     this.clipBehavior = Clip.antiAlias,
   })  : animatedIconBuilder = _iconSizeBuilder<T>(
-      iconBuilder, customIconBuilder, iconList, selectedIconScale),
+            iconBuilder, customIconBuilder, iconList, selectedIconScale),
         _iconArrangement = IconArrangement.row,
         super(
-        values: values,
-        styleBuilder: styleBuilder,
-        customStyleBuilder: customStyleBuilder,
-        styleList: styleList,
-      );
+          values: values,
+          styleBuilder: styleBuilder,
+          customStyleBuilder: customStyleBuilder,
+          styleList: styleList,
+        );
 
   static AnimatedIconBuilder<T>? _iconSizeBuilder<T>(
       SimpleIconBuilder<T>? iconBuilder,
@@ -337,10 +333,10 @@ class AnimatedToggleSwitch<T extends Object?>
       List<Widget>? iconList,
       double selectedIconScale) {
     assert(
-    (iconBuilder ?? customIconBuilder) == null ||
-        (iconBuilder ?? iconList) == null ||
-        (customIconBuilder ?? iconList) == null,
-    'Only one parameter from iconBuilder, customIconBuilder and iconList can be set.',
+      (iconBuilder ?? customIconBuilder) == null ||
+          (iconBuilder ?? iconList) == null ||
+          (customIconBuilder ?? iconList) == null,
+      'Only one parameter from iconBuilder, customIconBuilder and iconList can be set.',
     );
 
     final AnimatedIconBuilder<T>? finalIconBuilder;
@@ -355,9 +351,9 @@ class AnimatedToggleSwitch<T extends Object?>
     return finalIconBuilder == null
         ? null
         : (context, local, global) => Transform.scale(
-      scale: 1.0 + local.animationValue * (selectedIconScale - 1.0),
-      child: finalIconBuilder!(context, local, global),
-    );
+              scale: 1.0 + local.animationValue * (selectedIconScale - 1.0),
+              child: finalIconBuilder!(context, local, global),
+            );
   }
 
   _BaseToggleStyle? _styleBuilder(BuildContext context,
@@ -384,7 +380,7 @@ class AnimatedToggleSwitch<T extends Object?>
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     BorderRadiusGeometry defaultBorderRadius =
-    BorderRadius.circular(height / 2);
+        BorderRadius.circular(height / 2);
     final style = ToggleStyle._(
       indicatorColor: theme.colorScheme.secondary,
       indicatorGradient: null,
@@ -425,12 +421,14 @@ class AnimatedToggleSwitch<T extends Object?>
                 : (context, local, global) => separatorBuilder!(local.index)),
         backgroundIndicatorBuilder: /*foregroundIndicatorIconBuilder != null
             ? null
-            :*/ (context, properties) =>
-            _indicatorBuilder(context, properties, style),
+            :*/
+            (context, properties) =>
+                _indicatorBuilder(context, properties, style),
         foregroundIndicatorBuilder: /*foregroundIndicatorIconBuilder == null
             ? null
-            :*/ (context, properties) =>
-            _indicatorBuilder(context, properties, style),
+            :*/
+            (context, properties) =>
+                _indicatorBuilder(context, properties, style),
         iconBuilder: (context, local, global) => _animatedOpacityIcon(
             _animatedSizeIcon(context, local, global), local.value == current),
         padding: EdgeInsets.all(borderWidth),
@@ -443,12 +441,12 @@ class AnimatedToggleSwitch<T extends Object?>
             child: _animationTypeBuilder<_BaseToggleStyle>(
               context,
               styleAnimationType,
-                  (local) => style._merge(
+              (local) => style._merge(
                 _styleBuilder(context, local, global),
                 indicatorBorderRadiusDifference,
               ),
               _BaseToggleStyle._lerpFunction(styleAnimationType),
-                  (style) => DecoratedBox(
+              (style) => DecoratedBox(
                 decoration: BoxDecoration(
                   color: style._backgroundGradient != null
                       ? null
@@ -463,15 +461,15 @@ class AnimatedToggleSwitch<T extends Object?>
                     border: borderWidth <= 0.0 || style._borderColor == null
                         ? null
                         : Border.all(
-                      color: style._borderColor!.value,
-                      width: borderWidth,
-                    ),
+                            color: style._borderColor!.value,
+                            width: borderWidth,
+                          ),
                     borderRadius: style._borderRadius?.value,
                   ),
                   child: ClipRRect(
                     clipBehavior: clipBehavior,
                     borderRadius:
-                    style._borderRadius?.value ?? BorderRadius.zero,
+                        style._borderRadius?.value ?? BorderRadius.zero,
                     child: child,
                   ),
                 ),
@@ -483,17 +481,17 @@ class AnimatedToggleSwitch<T extends Object?>
   }
 
   Widget _animationTypeBuilder<V>(
-      BuildContext context,
-      AnimationType animationType,
-      V Function(StyledToggleProperties<T> local) valueProvider,
-      V Function(V value1, V value2, double t) lerp,
-      Widget Function(V value) builder,
-      GlobalToggleProperties<T> properties,
-      ) {
+    BuildContext context,
+    AnimationType animationType,
+    V Function(StyledToggleProperties<T> local) valueProvider,
+    V Function(V value1, V value2, double t) lerp,
+    Widget Function(V value) builder,
+    GlobalToggleProperties<T> properties,
+  ) {
     currentValueProvider() => valueProvider(
-      StyledToggleProperties(
-          value: current, index: values.indexOf(current)),
-    );
+          StyledToggleProperties(
+              value: current, index: values.indexOf(current)),
+        );
     switch (animationType) {
       case AnimationType.none:
         return builder(currentValueProvider());
@@ -525,12 +523,12 @@ class AnimatedToggleSwitch<T extends Object?>
     return _animationTypeBuilder<_BaseToggleStyle>(
       context,
       indicatorAnimationType,
-          (local) => style._merge(
+      (local) => style._merge(
         _styleBuilder(context, local, properties),
         indicatorBorderRadiusDifference,
       ),
       _BaseToggleStyle._lerpFunction(indicatorAnimationType),
-          (style) => _customIndicatorBuilder(context, style, child, properties),
+      (style) => _customIndicatorBuilder(context, style, child, properties),
       properties,
     );
   }
@@ -562,7 +560,7 @@ class AnimatedToggleSwitch<T extends Object?>
           curve: iconAnimationCurve,
           duration: iconAnimationDuration ?? animationDuration,
           tween:
-          Tween<double>(begin: currentTweenValue, end: currentTweenValue),
+              Tween<double>(begin: currentTweenValue, end: currentTweenValue),
           builder: (c, value, child) {
             return _animatedIcon(
               c,
@@ -598,10 +596,10 @@ class AnimatedToggleSwitch<T extends Object?>
     return iconOpacity >= 1.0 && selectedIconOpacity >= 1.0
         ? icon
         : AnimatedOpacity(
-      opacity: active ? selectedIconOpacity : iconOpacity,
-      duration: animationDuration,
-      child: icon,
-    );
+            opacity: active ? selectedIconOpacity : iconOpacity,
+            duration: animationDuration,
+            child: icon,
+          );
   }
 
   Widget _customIndicatorBuilder(BuildContext context, _BaseToggleStyle style,
@@ -633,7 +631,6 @@ class AnimatedToggleSwitch<T extends Object?>
         ));
   }
 }
-
 
 extension _XTargetPlatform on TargetPlatform {
   bool get isApple =>

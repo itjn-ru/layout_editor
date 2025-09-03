@@ -1,5 +1,5 @@
 import 'item.dart';
 
 class LayoutComponentAndSource extends Item {
-  LayoutComponentAndSource(super.type, super.name,{super.mayBeParent});
+  LayoutComponentAndSource(super.type, super.name);
 }

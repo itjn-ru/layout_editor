@@ -54,6 +54,7 @@ class GridBackgroundBuilder extends StatelessWidget {
       ),
     );
   }
+
   Rect axisAlignedBoundingBox(Quad quad) {
     double xMin = quad.point0.x;
     double xMax = quad.point0.x;

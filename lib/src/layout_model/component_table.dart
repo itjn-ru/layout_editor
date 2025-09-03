@@ -18,6 +18,12 @@ class ComponentTable extends LayoutComponent {
   }
 }
 
+class ComponentTableHeader extends Item {
+  ComponentTableHeader(name) : super("column", name) {
+    properties["width"] = Property("ширина", 20, type: double);
+  }
+}
+
 class ComponentTableColumn extends Item {
   ComponentTableColumn(name) : super("column", name) {
     properties["width"] = Property("ширина", 20, type: double);
@@ -30,12 +36,9 @@ class ComponentTableRowGroup extends Item {
   }
 }
 
-
 class ComponentTableRow extends Item {
   ComponentTableRow(name) : super("row", name) {
     properties["style"] = Property("стиль", Style.basic, type: Style);
-    properties["height"] = Property("высота", 20, type: double);
-
   }
 }
 
@@ -44,17 +47,5 @@ class ComponentTableCell extends Item {
     properties["text"] = Property("текст", "");
     properties["source"] = Property("источник", "");
     properties["style"] = Property("стиль", Style.basic, type: Style);
-    properties["colspan"] = Property("объединения колонок", 0,type: int);
-    properties["rowspan"] = Property(" объединения строк", 0,type: int);
-    properties["stylefontSize"] = Property("размер шрифта", 9.0,type: double);
-    properties["verticalAlignment"] = Property("вертикальное выравнивание", 1.0,type: double);
-    properties["horizontalAlignment"] = Property("горизонтальное выравнивание", -1.0,type: double);
-    properties["topBorder"] = Property("верхняя граница", CustomBorderStyle.init(),type: CustomBorderStyle);
-    properties["leftBorder"] = Property("левая граница", CustomBorderStyle.init(),type: CustomBorderStyle);
-    properties["rightBorder"] = Property("правая граница", CustomBorderStyle.init(),type: CustomBorderStyle);
-    properties["bottomBorder"] = Property("нижняя граница", CustomBorderStyle.init(),type: CustomBorderStyle);
-    properties["isItalic"] = Property("наклонный шрифт", false,type: bool);
   }
 }
-
-

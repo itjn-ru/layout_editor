@@ -8,12 +8,13 @@ class PropertySizeWidget extends PropertyWidget {
 
   @override
   Widget build(BuildContext context) {
-    final property = controller.layoutModel.curItem.properties[propertyKey]!;
+    final property =
+        controller.getItemById(controller.selectedId)?.properties[propertyKey]!;
     var controllerWidth = TextEditingController();
-    controllerWidth.text = property.value.width.toString();
+    controllerWidth.text = property?.value.width.toString() ?? '';
 
     var controllerHeight = TextEditingController();
-    controllerHeight.text = property.value.height.toString();
+    controllerHeight.text = property?.value.height.toString() ?? '';
 
     return Row(
       children: [
@@ -21,13 +22,21 @@ class PropertySizeWidget extends PropertyWidget {
         Expanded(
           child: TextField(
             focusNode: FocusNode(),
-            onTap: ()=>controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onSubmitted: (value)=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onTapOutside: (value)=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onEditingComplete:()=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+            onTap: () => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
+            onSubmitted: (value) => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
+            onTapOutside: (value) => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
+            onEditingComplete: () => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
             controller: controllerWidth,
             onChanged: (value) {
-              property.value =
+              property?.value =
                   Size(double.tryParse(value) ?? 0, property.value.height);
             },
           ),
@@ -36,13 +45,21 @@ class PropertySizeWidget extends PropertyWidget {
         Expanded(
           child: TextField(
             focusNode: FocusNode(),
-            onTap: ()=>controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onSubmitted: (value)=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onTapOutside: (value)=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
-            onEditingComplete:()=> controller.eventBus.emit(ChangeItem(id: const Uuid().v4())),
+            onTap: () => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
+            onSubmitted: (value) => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
+            onTapOutside: (value) => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
+            onEditingComplete: () => controller.eventBus.emit(ChangeItem(
+                id: const Uuid().v4(),
+                itemId: controller.layoutModel.curItem.id)),
             controller: controllerHeight,
             onChanged: (value) {
-              property.value =
+              property?.value =
                   Size(property.value.width, double.tryParse(value) ?? 0);
             },
           ),

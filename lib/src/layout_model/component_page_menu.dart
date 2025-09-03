@@ -3,14 +3,13 @@ import '../flutter_context_menu/flutter_context_menu.dart';
 import 'component_text.dart';
 import 'controller/events.dart';
 import 'form_checkbox.dart';
+import 'form_expandble_list.dart';
 import 'form_hidden_field.dart';
 import 'form_image.dart';
 import 'form_slider_button.dart';
 import 'form_text_field.dart';
 import 'menu.dart';
 import 'component_table.dart';
-import 'item.dart';
-import 'page.dart';
 
 import 'component_group.dart';
 import 'form_radio.dart';
@@ -19,106 +18,8 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
   ComponentPageMenu(super.controller, super.target, {super.onChanged});
 
   @override
-  List<PopupMenuEntry<Item>> getComponentMenu(void Function(Item)? onChanged) {
-    var pageCount = controller.layoutModel.root.items
-        .where((element) => element.runtimeType == ComponentPage)
-        .length;
-
-    return [
-      PopupMenuItem(
-        child: const Text("Добавить группу"),
-        onTap: () {
-          var item = ComponentGroup("группа");
-          // var page = controller.layoutModel.getPageByItem(target);
-          //item.properties['size']?.value = Size(page?.properties['size']?.width, 30);
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить слайдер"),
-        onTap: () {
-          var item = FormSliderButton("слайдер");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить текст"),
-        onTap: () {
-          var item = ComponentText("текст");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить таблицу"),
-        onTap: () {
-          var item = ComponentTable("таблица");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить текстовое поле"),
-        onTap: () {
-          var item = FormTextField("текстовое поле");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить радиокнопку"),
-        onTap: () {
-          var item = FormRadio("радиокнопка");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить флажок"),
-        onTap: () {
-          var item = FormCheckbox("флажок");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить скрытое поле"),
-        onTap: () {
-          var item = FormHiddenField("скрытое поле");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        child: const Text("Добавить картинку"),
-        onTap: () {
-          var item = FormImage("картинка");
-          controller.layoutModel.addItem(target, item);
-          onChanged!(item);
-        },
-      ),
-      PopupMenuItem(
-        onTap: pageCount > 1
-            ? () {
-                controller.layoutModel.root.items.remove(controller.layoutModel.curItem);
-                controller.layoutModel.curItem = controller.layoutModel.root;
-
-                //onChanged!(controller.layoutModel.curItem);
-              }
-            : null,
-        child: const Text("Удалить страницу"),
-      )
-    ];
-  }
-
-  @override
   List<ContextMenuEntry> getContextMenu(
       void Function(LayoutModelEvent event)? onChanged) {
-    var pageCount = controller.layoutModel.root.items
-        .where((element) => element.runtimeType == ComponentPage)
-        .length;
     return [
       const MenuHeader(text: "Редактирование"),
       MenuItem.submenu(
@@ -130,6 +31,15 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
             icon: Icons.widgets,
             onSelected: () {
               var item = ComponentGroup("группа");
+              controller.layoutModel.addItem(target, item);
+              onChanged!(AddItemEvent(id: item.id));
+            },
+          ),
+          MenuItem(
+            label: 'Добавить список',
+            icon: Icons.widgets,
+            onSelected: () {
+              var item = FormExpandbleList("список");
               controller.layoutModel.addItem(target, item);
               onChanged!(AddItemEvent(id: item.id));
             },
@@ -193,6 +103,15 @@ class ComponentPageMenu extends ComponentAndSourceMenu {
             icon: Icons.text_fields,
             onSelected: () {
               var item = FormHiddenField("скрытое поле");
+              controller.layoutModel.addItem(target, item);
+              onChanged!(AddItemEvent(id: item.id));
+            },
+          ),
+          MenuItem(
+            label: 'Добавить раскрывающийся список',
+            icon: Icons.list_rounded,
+            onSelected: () {
+              var item = FormExpandbleList("список");
               controller.layoutModel.addItem(target, item);
               onChanged!(AddItemEvent(id: item.id));
             },

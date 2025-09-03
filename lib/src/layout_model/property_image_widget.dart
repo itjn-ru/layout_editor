@@ -12,13 +12,13 @@ class PropertyImageWidget extends PropertyWidget {
   @override
   Widget build(BuildContext context) {
     final property = controller.layoutModel.curItem.properties[propertyKey]!;
-    return  ShowImageProperty(property: property);
+    return ShowImageProperty(property: property);
   }
 }
 
 class ShowImageProperty extends StatefulWidget {
   const ShowImageProperty({super.key, required this.property});
-final Property property;
+  final Property property;
   @override
   State<ShowImageProperty> createState() => _ShowImagePropertyState();
 }
@@ -29,15 +29,16 @@ class _ShowImagePropertyState extends State<ShowImageProperty> {
   initState() {
     super.initState();
   }
+
   Future<Uint8List> pickUploadFiles() async {
-    List<PlatformFile> files=[];
-    final FilePickerResult? result = await FilePicker.platform
-        .pickFiles(type: FileType.image);
+    List<PlatformFile> files = [];
+    final FilePickerResult? result =
+        await FilePicker.platform.pickFiles(type: FileType.image);
     if (result != null) {
       files = result.files;
     }
-    widget.property.value=files.first.bytes!;
-    final asdas=base64.encode(files.first.bytes!);
+    widget.property.value = files.first.bytes!;
+    final asdas = base64.encode(files.first.bytes!);
     base64.decode(asdas);
     return files.first.bytes!;
   }
@@ -47,10 +48,10 @@ class _ShowImagePropertyState extends State<ShowImageProperty> {
     return FutureBuilder(
         future: images,
         builder: (context, snapshot) {
-          if(widget.property.value!=null) {
+          if (widget.property.value != null) {
             return InkWell(
               onTap: () async {
-                setState(()  {
+                setState(() {
                   images = pickUploadFiles();
                 });
               },
@@ -59,26 +60,29 @@ class _ShowImagePropertyState extends State<ShowImageProperty> {
                   height: 128,
                   child: Image.memory(widget.property.value!)),
             );
-          }else{
-          if (snapshot.hasData) {
-            return InkWell(
-              onTap: () async {
-                setState(()  {
-                images = pickUploadFiles();
-                });
-              },
-              child: SizedBox(
-                  width: 128,
-                  height: 128,
-                  child: Image.memory(snapshot.data!)),
-            );
           } else {
-            return InkWell(onTap: () async {
-              setState(()  {
-                images = pickUploadFiles();
-              });
-            },child: const CircularProgressIndicator());
-          }}
+            if (snapshot.hasData) {
+              return InkWell(
+                onTap: () async {
+                  setState(() {
+                    images = pickUploadFiles();
+                  });
+                },
+                child: SizedBox(
+                    width: 128,
+                    height: 128,
+                    child: Image.memory(snapshot.data!)),
+              );
+            } else {
+              return InkWell(
+                  onTap: () async {
+                    setState(() {
+                      images = pickUploadFiles();
+                    });
+                  },
+                  child: const CircularProgressIndicator());
+            }
+          }
         });
   }
 }
