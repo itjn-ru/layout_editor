@@ -1,11 +1,12 @@
 # Frame Forge
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/itjn-ru/layout_editor/blob/frame_forge/README.md)
-[![ru](https://img.shields.io/badge/lang-ru-blue.svg)](https://github.com/itjn-ru/layout_editor/blob/frame_forge/README.ru.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/itjn-ru/frame_forge/blob/main/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-blue.svg)](https://github.com/itjn-ru/frame_forge/blob/main/README.ru.md)
 
 ## Description
 
-A Flutter package for creating dynamic UI layouts with a visual editor.
+This package provides a visual editor for designing and rendering user interfaces.
+Its core concept is using XML as the structure definition for UI. Originally built for documents and structured data, it is well suited for applications following the BDUI (Backend-Driven UI) architecture.
 
 ## Motivation
 
